@@ -1,0 +1,28 @@
+ar:
+  login: "دخول"
+  error: "خطأ"
+  logout: "تسجيل الخروج"
+  signup: "التسجيل"
+  must_match_password: "يجب أن تتطابق مع كلمة المرور"
+  activerecord:
+    errors:
+      format: "%{attribute} %{message}"
+      messages:
+        required: "لا يمكن أن يكون فارغًا"
+        blank: "لا يمكن أن يكون فارغًا"
+        invalid: "غير صالح"
+        too_short: "قصير جدًا (الحد الأدنى هو %{count} حرفًا)"
+        confirmation: "يجب أن يتطابق مع %{attribute}"
+        not_a_number: "يجب أن يكون رقمًا"
+        greater_than: "يجب أن يكون أكبر من %{count}"
+        taken: "تم استخدامه من قبل"
+        attached: "يجب أن تكون مرفقة"
+        greater_than: "يجب أن يكون أكبر من %{count}"
+        wrong_length: "يجب أن يكون %{count} حرفًا"
+    attributes:
+      user: 
+        email: "الايميل"
+        password: "كلمة المرور"
+        name: "اسم المستخدم"
+        password_confirmation: "تأكيد كلمة المرور"
+        phone_number: "رقم الهاتف المحمول"
