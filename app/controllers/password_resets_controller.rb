@@ -7,7 +7,7 @@ class PasswordResetsController < ApplicationController
     if user
       user.generate_password_reset
       UserMailer.reset_password_instructions(user).deliver_now
-      redirect_to login_admin_path, notice: t("check_email_to_reset_password")
+      redirect_to login_user_path, notice: t("check_email_to_reset_password")
     else
       flash.now[:alert] = t("email_not_found")
       render :new
@@ -22,7 +22,7 @@ class PasswordResetsController < ApplicationController
   def update
     @user = User.find_by(reset_password_token: params[:token])
     if @user&.password_token_valid? && @user.reset_password!(params[:password])
-      redirect_to login_admin_path, notice: t("password_reset_please_login")
+      redirect_to login_user_path, notice: t("password_reset_please_login")
     else
       flash.now[:alert] = t("password_reset_token_invalid_or_expired")
       render :edit

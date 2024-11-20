@@ -1,11 +1,10 @@
-<%= render "shared_partials/notice" %>
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card mt-5">
         <div class="card-body">
           <h4><%= t("forgot_password") %></h4>
-          <%= form_with(url: password_resets_path, local: true, data: { turbo: false }, class: "pt-3") do |form| %>
+          <%= form_with(url: password_resets_path, local: true, data: { turbo: false },method: :post, class: "pt-3") do |form| %>
             <div class="form-group">
               <%= form.label t("email"), class: "form-label" %>
               <%= form.email_field :email, class: "form-control form-control-lg" %>

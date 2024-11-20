@@ -1,11 +1,10 @@
-<%= render "shared_partials/notice" %>
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card mt-5">
         <div class="card-body">
           <h4><%= t("reset_password") %></h4>
-          <%= form_with(url: password_reset_path(params[:token]), local: true, data: { turbo: false }, method: :patch, class: "pt-3") do |form| %>
+            <%= form_with(url: update_password_reset_path(params[:token]), local: true, method: :patch, class: "pt-3") do |form| %>
             <div class="form-group">
               <%= form.label t("password"), class: "form-label" %>
               <%= form.password_field :password, class: "form-control form-control-lg" %>

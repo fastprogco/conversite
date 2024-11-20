@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
 
   
-  resources :password_resets, only: [:new, :create, :update]
+  resources :password_resets, only: [:new, :create]
 
   resources :users, only: [:new, :create] do
     collection do
@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   get 'login/user', to: 'sessions#new', as: 'login_user'
 
   get 'password_resets/:token/edit', to: 'password_resets#edit', as: 'edit_password_reset'
-  patch 'password_resets/:token', to: 'password_resets#update', as: 'password_reset_path'
+  patch 'password_resets/:token', to: 'password_resets#update', as: 'update_password_reset'
   get 'confirm_email', to: 'users#confirm_email'
 
 
