@@ -44,6 +44,9 @@ gem "bootsnap", require: false
 gem 'bcrypt'
 
 
+gem 'sidekiq'
+gem 'roo'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 

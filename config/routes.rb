@@ -15,6 +15,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :masters do
+    collection do
+      post :import
+    end
+  end
+
   root "users#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
