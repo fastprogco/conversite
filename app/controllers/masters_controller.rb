@@ -16,4 +16,8 @@ class MastersController < ApplicationController
        redirect_to excel_import_show_masters_path, alert: "Error: #{e.message}"
      end
 
+     def index
+       @masters = Master.all
+     end
+
 end
