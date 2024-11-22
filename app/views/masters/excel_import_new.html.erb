@@ -1,0 +1,4 @@
+<%= form_with url: import_excel_masters_path, local: true, method: :post, multipart: true do |form| %>
+    <%= form.file_field :file %>
+    <%= form.submit 'Import Excel' %>
+<% end %>
