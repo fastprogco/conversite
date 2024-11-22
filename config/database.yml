@@ -79,6 +79,8 @@ test:
 #
 production:
   <<: *default
-  database: globex_production
-  username: globex
+  host: <%= ENV["GLOBEX_DATABASE_HOST"] %>
+  database: <%= ENV["GLOBEX_DATABASE_NAME"] %>
+  username: <%= ENV["GLOBEX_DATABASE_USERNAME"] %>
   password: <%= ENV["GLOBEX_DATABASE_PASSWORD"] %>
+  port: <%= ENV["GLOBEX_DATABASE_PORT"] %>
