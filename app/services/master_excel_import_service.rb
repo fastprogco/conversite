@@ -20,9 +20,6 @@ class MasterExcelImportService
       end
 
      def import
-       # Clear existing records before import
-       Master.delete_all
-
        # Download file from S3
        temp_file = Tempfile.new(["excel_import_#{Time.now.to_i}_#{SecureRandom.hex(8)}", '.xlsx'])
        begin
