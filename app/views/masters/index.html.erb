@@ -10,6 +10,7 @@
             <tr>
               <th>File Name</th>
               <th>Date</th>
+              <th>Name</th>
               <th>Mobile</th>
               <th>Nationality</th>
               <th>Procedure</th>
@@ -28,6 +29,7 @@
               <th>DM Sub Num</th>
               <th>Property Type</th>
               <th>Land Number</th>
+              <th>Land Sub Num<th>
               <th>Phone</th>
               <th>Secondary Mobile</th>
               <th>ID Number</th>
@@ -46,11 +48,12 @@
               <tr>
                 <td><%= master.file_name %></td>
                 <td><%= master.date %></td>
+                <td><%= master.name %></td>
                 <td><%= master.mobile %></td>
                 <td><%= master.nationality %></td>
                 <td><%= master.procedure %></td>
                 <td><%= master.procedure_name %></td>
-                <td><%= number_to_currency(master.amount) %></td>
+                <td><%= master.amount %></td>
                 <td><%= master.area_name %></td>
                 <td><%= master.combine %></td>
                 <td><%= master.master_project %></td>
@@ -64,6 +67,7 @@
                 <td><%= master.dm_sub_num %></td>
                 <td><%= master.property_type %></td>
                 <td><%= master.land_number %></td>
+                <td><%= master.land_sub_num %></td>
                 <td><%= master.phone %></td>
                 <td><%= master.secondary_mobile_number %></td>
                 <td><%= master.id_number %></td>
