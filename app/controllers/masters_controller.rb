@@ -21,7 +21,8 @@ class MastersController < ApplicationController
      end
 
      def index
-       @masters = Master.all
+      @count = Master.count
+       @masters = Master.limit(100)
      end
 
 end
