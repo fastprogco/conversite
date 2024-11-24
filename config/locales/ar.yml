@@ -26,6 +26,8 @@ ar:
         name: "اسم المستخدم"
         password_confirmation: "تأكيد كلمة المرور"
         phone_number: "رقم الهاتف المحمول"
+      master:
+        file: "الملف الاكسل"
   views:
     pagination:
       first: "الأولى"
@@ -33,3 +35,15 @@ ar:
       previous: "السابق"
       next: "التالي"
       truncate: "&hellip;"
+  confirmation_instructions: "تأكيد التسجيل"
+  dear: "عزيزي"
+  welcome_to_globex: "مرحبا بك في جلوبكس"
+  click_below_to_confirm_email: "يرجى النقر على الرابط أدناه لتأكيد بريدك الإلكتروني"
+  confirm_email: "تأكيد البريد الإلكتروني"
+  reset_password: "إعادة تعيين كلمة المرور"
+  hi: "مرحباً"
+  some_requested_password_reset: "لقد تم طلب رابط لإعادة تعيين كلمة المرور الخاصة بحسابك"
+  reset_my_password: "إعادة تعيين كلمة المرور"
+  if_link_doesnt_work: "إذا لم يعمل الرابط أعلاه، يرجى نسخ ولصق عنوان URL التالي في متصفحك"
+  thanks: "شكراً لك"
+  globex_team: "فريق جلوبكس"
