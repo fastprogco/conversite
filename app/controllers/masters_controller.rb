@@ -23,7 +23,15 @@ class MastersController < ApplicationController
      def index
       @page = params[:page] || 1
       @count = Master.count
-      @masters = Master.limit(100).page(@page).per(10)
+      search_column = params[:search_column]
+      search_term = params[:search_term]
+      
+      @masters = Master.all
+      if search_column.present? && search_term.present?
+        @masters = @masters.where("#{search_column} ILIKE ?", "%#{search_term}%")
+      end
+      
+      @masters = @masters.limit(100).page(@page).per(10)
      end
 
 end

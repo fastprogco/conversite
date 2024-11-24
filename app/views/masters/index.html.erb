@@ -9,11 +9,12 @@
     <% @column_groups = [
       ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
       ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],
-      ['dm_sub_num', 'property_type', 'land_number', 'land_sub_num', 'phone', 'secondary_mobile', 'id_number', 'uae_id', 'passport_expiry'],
+      ['dm_sub_num', 'property_type', 'land_number', 'land_sub_num', 'phone', 'secondary_mobile_number', 'id_number', 'uae_id', 'passport_expiry_date'],
       ['birthdate', 'unified_num', 'email', 'extra_info_1', 'extra_info_2', 'extra_info_3']
     ] %>
 
     <%= render 'shared_partials/column_select', path: masters_path %>
+    <%= render 'shared_partials/column_search', path: masters_path %>
       <div class="table-responsive">
         <table class="table table-striped table-hover">
           <thead class="table-dark">
@@ -28,7 +29,7 @@
             <% @masters.each do |master| %>
               <tr>
                 <% selected_columns.each do |column| %>
-                  <td><%= master.send(column == 'secondary_mobile' ? 'secondary_mobile_number' : (column == 'passport_expiry' ? 'passport_expiry_date' : column)) %></td>
+                  <td><%= master.send(column) %></td>
                 <% end %>
               </tr>
             <% end %>

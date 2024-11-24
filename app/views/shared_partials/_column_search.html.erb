@@ -1,0 +1,18 @@
+<%= form_tag path, method: :get, class: "mb-4" do %>
+<div class="row g-3 align-items-end">
+    <div class="col-md-4">
+    <%= select_tag :search_column, 
+        options_for_select(@column_groups.flatten, params[:search_column]), 
+        class: "form-select",
+        prompt: "Select Column to Search" %>
+    </div>
+    <div class="col-md-6">
+    <%= text_field_tag :search_term, params[:search_term], 
+        class: "form-control",
+        placeholder: "Enter search term..." %>
+    </div>
+    <div class="col-md-2">
+    <%= submit_tag "Search", class: "btn btn-primary w-100" %>
+    </div>
+</div>
+<% end %>
