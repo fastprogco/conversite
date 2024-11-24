@@ -1,4 +1,15 @@
-<%= form_with url: import_excel_masters_path, local: true, method: :post, multipart: true do |form| %>
-    <%= form.file_field :file %>
-    <%= form.submit 'Import Excel' %>
-<% end %>
+<div class="container my-5">
+  <div class="card">
+    <div class="card-header">
+      <h4>Import Excel File</h4>
+    </div>
+    <div class="card-body">
+      <%= form_with url: import_excel_masters_path, local: true, method: :post, multipart: true do |form| %>
+        <div class="mb-3">
+          <%= form.file_field :file, class: "form-control" %>
+        </div>
+        <%= form.submit 'Import Excel', class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+</div>
