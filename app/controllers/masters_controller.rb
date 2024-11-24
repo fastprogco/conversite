@@ -21,8 +21,9 @@ class MastersController < ApplicationController
      end
 
      def index
+      @page = params[:page] || 1
       @count = Master.count
-       @masters = Master.limit(100)
+      @masters = Master.limit(100).page(@page).per(10)
      end
 
 end

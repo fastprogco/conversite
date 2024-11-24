@@ -26,3 +26,10 @@ ar:
         name: "اسم المستخدم"
         password_confirmation: "تأكيد كلمة المرور"
         phone_number: "رقم الهاتف المحمول"
+  views:
+    pagination:
+      first: "الأولى"
+      last: "الأخيرة"
+      previous: "السابق"
+      next: "التالي"
+      truncate: "&hellip;"
