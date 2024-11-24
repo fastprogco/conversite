@@ -5,87 +5,39 @@
       <h5>COUNT <%= @count%> </h5>
     </div>
     <div class="card-body">
+             
+    <% @column_groups = [
+      ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
+      ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],
+      ['dm_sub_num', 'property_type', 'land_number', 'land_sub_num', 'phone', 'secondary_mobile', 'id_number', 'uae_id', 'passport_expiry'],
+      ['birthdate', 'unified_num', 'email', 'extra_info_1', 'extra_info_2', 'extra_info_3']
+    ] %>
+
+    <%= render 'shared_partials/column_select', path: masters_path %>
       <div class="table-responsive">
         <table class="table table-striped table-hover">
           <thead class="table-dark">
             <tr>
-              <th>File Name</th>
-              <th>Date</th>
-              <th>Name</th>
-              <th>Mobile</th>
-              <th>Nationality</th>
-              <th>Procedure</th>
-              <th>Procedure Name</th>
-              <th>Amount</th>
-              <th>Area Name</th>
-              <th>Combine</th>
-              <th>Master Project</th>
-              <th>Project</th>
-              <th>Plot Pre Reg Num</th>
-              <th>Building Num</th>
-              <th>Building Name</th>
-              <th>Size</th>
-              <th>Unit Number</th>
-              <th>DM Num</th>
-              <th>DM Sub Num</th>
-              <th>Property Type</th>
-              <th>Land Number</th>
-              <th>Land Sub Num</th>
-              <th>Phone</th>
-              <th>Secondary Mobile</th>
-              <th>ID Number</th>
-              <th>UAE ID</th>
-              <th>Passport Expiry</th>
-              <th>Birthdate</th>
-              <th>Unified Num</th>
-              <th>Email</th>
-              <th>Extra Info 1</th>
-              <th>Extra Info 2</th>
-              <th>Extra Info 3</th>
+              <% selected_columns = @column_groups.flatten.select { |column| params.dig(:columns, column) == '1' || params[:columns].nil? } %>
+              <% selected_columns.each do |column| %>
+                <th><%= column.titleize %></th>
+              <% end %>
             </tr>
           </thead>
           <tbody>
             <% @masters.each do |master| %>
               <tr>
-                <td><%= master.file_name %></td>
-                <td><%= master.date %></td>
-                <td><%= master.name %></td>
-                <td><%= master.mobile %></td>
-                <td><%= master.nationality %></td>
-                <td><%= master.procedure %></td>
-                <td><%= master.procedure_name %></td>
-                <td><%= master.amount %></td>
-                <td><%= master.area_name %></td>
-                <td><%= master.combine %></td>
-                <td><%= master.master_project %></td>
-                <td><%= master.project %></td>
-                <td><%= master.plot_pre_reg_num %></td>
-                <td><%= master.building_num %></td>
-                <td><%= master.building_name %></td>
-                <td><%= master.size %></td>
-                <td><%= master.unit_number %></td>
-                <td><%= master.dm_num %></td>
-                <td><%= master.dm_sub_num %></td>
-                <td><%= master.property_type %></td>
-                <td><%= master.land_number %></td>
-                <td><%= master.land_sub_num %></td>
-                <td><%= master.phone %></td>
-                <td><%= master.secondary_mobile_number %></td>
-                <td><%= master.id_number %></td>
-                <td><%= master.uae_id %></td>
-                <td><%= master.passport_expiry_date %></td>
-                <td><%= master.birthdate %></td>
-                <td><%= master.unified_num %></td>
-                <td><%= master.email %></td>
-                <td><%= master.extra_info_1 %></td>
-                <td><%= master.extra_info_2 %></td>
-                <td><%= master.extra_info_3 %></td>
+                <% selected_columns.each do |column| %>
+                  <td><%= master.send(column == 'secondary_mobile' ? 'secondary_mobile_number' : (column == 'passport_expiry' ? 'passport_expiry_date' : column)) %></td>
+                <% end %>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
-      <%= paginate @masters %>
+      <div class="d-flex justify-content-center mt-4">
+        <%= paginate @masters %>
+      </div>
     </div>
   </div>
 </div>

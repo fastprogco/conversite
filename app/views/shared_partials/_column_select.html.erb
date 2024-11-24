@@ -1,0 +1,24 @@
+  <%= form_tag path, method: :get, class: "mb-4" do %>
+        <div class="row g-3">
+          <div class="col-12">
+            <h5>Select Columns to Display:</h5>
+          </div>
+ 
+
+          <% @column_groups.each_with_index do |group, index| %>
+            <div class="col-md-3">
+              <% group.each do |column| %>
+                <div class="form-check">
+                  <%= check_box_tag "columns[#{column}]", '1', params.dig(:columns, column) || params[:columns].nil?, class: 'form-check-input' %>
+                  <%= label_tag "columns[#{column}]", column.titleize, class: 'form-check-label' %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="col-12">
+            <%= submit_tag 'Update View', class: 'btn btn-primary' %>
+            <%= link_to 'Reset', masters_path, class: 'btn btn-secondary ms-2' %>
+          </div>
+        </div>
+      <% end %>
