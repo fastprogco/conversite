@@ -71,3 +71,4 @@ ar:
   email_confirmed_login: "تم تأكيد البريد الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول"
   could_not_confirm_email: "لم نتمكن من تأكيد بريدك الإلكتروني"
   invalid_confirmation_token: "رمز التأكيد غير صالح"
+  you_are_not_authorized_to_access_this_page: "ليس لديك صلاحية للوصول إلى هذه الصفحة"

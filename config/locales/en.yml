@@ -70,3 +70,4 @@ en:
   email_confirmed_login: "Email confirmed successfully. You can now login"
   could_not_confirm_email: "Could not confirm your email"
   invalid_confirmation_token: "Invalid confirmation token"
+  you_are_not_authorized_to_access_this_page: "You are not authorized to access this page"

@@ -1,4 +1,3 @@
-# app/controllers/concerns/common/locale.rb  
 module Common
   module Locale
     extend ActiveSupport::Concern
