@@ -1,0 +1,46 @@
+<div class="card">
+  <div class="card-body">
+    <%= form_with(model: [@chatbot, @chatbot_step], local: true, class: "needs-validation") do |f| %>
+      <%= render "shared_partials/error", model: @chatbot_step %>
+
+      <div class="mb-3">
+        <%= f.label :header, class: "form-label" %> <span class="text-danger">Max 60 characters</span>
+        <%= f.text_field :header, class: "form-control", required: true, maxlength: 60 %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, class: "form-label" %> <span class="text-danger">Max 1024 characters</span>
+        <%= f.text_area :description, class: "form-control", rows: 5, required: true, maxlength: 1024 %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :footer, class: "form-label" %> <span class="text-danger">Max 60 characters</span>
+        <%= f.text_field :footer, class: "form-control", maxlength: 60 %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :list_button_caption, "List Button Caption", class: "form-label" %> <span class="text-danger">Max 20 characters</span>
+        <%= f.text_field :list_button_caption, class: "form-control", maxlength: 20 %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :previous_chatbot_step_id, "Previous Step", class: "form-label" %>
+        <%= f.collection_select :previous_chatbot_step_id, 
+                              @chatbot.chatbot_steps.where.not(id: @chatbot_step.id), 
+                              :id, 
+                              :header, 
+                              { include_blank: "Select Previous Step" }, 
+                              { class: "form-select" } %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.submit class: "btn btn-primary" %>
+        <% if request.path.include?('edit') %>
+          <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success" %>
+          <%= link_to "Add Reply Option", "#", class: "btn btn-info" %>
+          <%= link_to "Back", :back, class: "btn btn-secondary" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

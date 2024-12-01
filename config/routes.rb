@@ -26,6 +26,10 @@ Rails.application.routes.draw do
     get :index
   end
 
+  resources :chatbots, only: [:index, :new, :create, :edit, :update] do
+    resources :chatbot_steps, only: [:new, :create, :edit, :update, :destroy]
+  end
+
   root "users#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
