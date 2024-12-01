@@ -5,9 +5,10 @@
       <h5>COUNT <%= @count%> </h5>
     </div>
     <div class="card-body">
-             
-    <% @column_groups = [
-      ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
+      <%= button_to 'Export to Excel', export_masters_path(format: :xlsx), method: :get, params: { columns: params[:columns]&.to_unsafe_h }, class: 'btn btn-success mb-3' %>
+      <div class="table-responsive">
+        <% @column_groups = [
+          ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
       ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],
       ['dm_sub_num', 'property_type', 'land_number', 'land_sub_num', 'phone', 'secondary_mobile_number', 'id_number', 'uae_id', 'passport_expiry_date'],
       ['birthdate', 'unified_num', 'email', 'extra_info_1', 'extra_info_2', 'extra_info_3']

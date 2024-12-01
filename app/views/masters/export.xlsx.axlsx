@@ -1,0 +1,10 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Masters") do |sheet|
+  # Add header row
+  sheet.add_row @selected_columns.map(&:titleize)
+
+  # Add data rows
+  @masters.each do |master|
+    sheet.add_row @selected_columns.map { |column| master.send(column).to_s }
+  end
+end

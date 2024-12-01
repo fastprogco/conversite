@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     collection do
       get :excel_import_new
       post :import_excel
+      get :export
     end
     get :index
   end

@@ -19,6 +19,8 @@
           <div class="col-12">
             <%= submit_tag 'Update View', class: 'btn btn-primary' %>
             <%= link_to 'Reset', masters_path, class: 'btn btn-secondary ms-2' %>
+            <%= button_tag 'Deselect All', type: 'button', class: 'btn btn-outline-secondary ms-2', 
+                onclick: "document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);" %>
           </div>
         </div>
       <% end %>

@@ -35,4 +35,28 @@ class MastersController < ApplicationController
       @masters = @masters.limit(100).page(@page).per(10)
      end
 
+    def export
+      @masters = Master.all
+      @column_groups = [
+        ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
+        ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],
+        ['dm_sub_num', 'property_type', 'land_number', 'land_sub_num', 'phone', 'secondary_mobile_number', 'id_number', 'uae_id', 'passport_expiry_date'],
+        ['birthdate', 'unified_num', 'email', 'extra_info_1', 'extra_info_2', 'extra_info_3']
+      ]
+      @selected_columns = if params[:columns].present?
+        @column_groups.flatten.select { |column| params[:columns][column] == '1' }
+      else
+        @column_groups.flatten
+      end
+
+      puts @selected_columns;
+      puts "here here"
+      return;
+      respond_to do |format|
+        format.xlsx {
+          response.headers['Content-Disposition'] = 'attachment; filename=masters.xlsx'
+        }
+      end
+    end
+
 end
