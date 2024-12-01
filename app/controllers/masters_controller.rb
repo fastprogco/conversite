@@ -24,19 +24,13 @@ class MastersController < ApplicationController
      def index
       @page = params[:page] || 1
       @count = Master.count
-      search_column = params[:search_column]
-      search_term = params[:search_term]
-      
-      @masters = Master.all
-      if search_column.present? && search_term.present?
-        @masters = @masters.where("#{search_column} ILIKE ?", "%#{search_term}%")
-      end
-      
+   
+      get_masters
       @masters = @masters.limit(100).page(@page).per(10)
      end
 
     def export
-      @masters = Master.all
+      get_masters
       @column_groups = [
         ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
         ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],
@@ -59,4 +53,14 @@ class MastersController < ApplicationController
       end
     end
 
+    private 
+    def get_masters
+      search_column = params[:search_column]
+      search_term = params[:search_term]
+      
+      @masters = Master.all
+      if search_column.present? && search_term.present?
+        @masters = @masters.where("#{search_column} ILIKE ?", "%#{search_term}%")
+      end
+    end
 end

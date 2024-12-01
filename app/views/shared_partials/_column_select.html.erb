@@ -16,6 +16,9 @@
             </div>
           <% end %>
 
+          <%= hidden_field_tag :search_column, params[:search_column] %>
+          <%= hidden_field_tag :search_term, params[:search_term] %>
+
           <div class="col-12">
             <%= submit_tag 'Update View', class: 'btn btn-primary' %>
             <%= link_to 'Reset', masters_path, class: 'btn btn-secondary ms-2' %>
