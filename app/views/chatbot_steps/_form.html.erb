@@ -36,8 +36,8 @@
       <div class="mb-3">
         <%= f.submit class: "btn btn-primary" %>
         <% if request.path.include?('edit') %>
-          <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success" %>
           <%= link_to "Add Reply Option", "#", class: "btn btn-info" %>
+          <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success" %>
           <%= link_to "Back", :back, class: "btn btn-secondary" %>
         <% end %>
       </div>

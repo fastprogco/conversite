@@ -2,6 +2,10 @@ class ChatbotStepsController < ApplicationController
     before_action :set_chatbot
     before_action :set_chatbot_step, only: [:edit, :update, :destroy]
 
+    def index
+        @chatbot_steps = @chatbot.chatbot_steps
+    end
+
     def new
         @chatbot_step = @chatbot.chatbot_steps.build
     end

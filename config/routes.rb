@@ -27,7 +27,7 @@ Rails.application.routes.draw do
   end
 
   resources :chatbots, only: [:index, :new, :create, :edit, :update] do
-    resources :chatbot_steps, only: [:new, :create, :edit, :update, :destroy]
+    resources :chatbot_steps, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 
   root "users#new"
