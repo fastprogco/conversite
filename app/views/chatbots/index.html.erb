@@ -22,6 +22,12 @@
                   <td><%= chatbot.description %></td>
                   <td>
                     <%= link_to "Edit", edit_chatbot_path(chatbot), class: "btn btn-sm btn-warning" %>
+                    <% first_step = ChatbotStep.find_by(chatbot_id: chatbot.id, previous_chatbot_step_id: nil) %>
+                    <% if first_step.present? %>
+                      <%= link_to "Edit Steps", edit_chatbot_chatbot_step_path(chatbot, first_step.id), class: "btn btn-sm btn-warning" %>
+                    <% else %>
+                      <%= link_to "Add Step", new_chatbot_chatbot_step_path(chatbot), class: "btn btn-sm btn-success" %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

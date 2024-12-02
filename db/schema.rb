@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_01_224902) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_210053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "chatbot_button_replies", force: :cascade do |t|
+    t.bigint "chatbot_id", null: false
+    t.bigint "chatbot_step_id", null: false
+    t.integer "action_type_id"
+    t.integer "order"
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chatbot_id"], name: "index_chatbot_button_replies_on_chatbot_id"
+    t.index ["chatbot_step_id"], name: "index_chatbot_button_replies_on_chatbot_step_id"
+  end
 
   create_table "chatbot_steps", force: :cascade do |t|
     t.bigint "chatbot_id"
@@ -111,6 +123,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_01_224902) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
   end
 
+  add_foreign_key "chatbot_button_replies", "chatbot_steps"
+  add_foreign_key "chatbot_button_replies", "chatbots"
   add_foreign_key "chatbot_steps", "chatbot_steps", column: "previous_chatbot_step_id"
   add_foreign_key "chatbot_steps", "chatbots"
   add_foreign_key "chatbot_steps", "users", column: "created_by_id"
