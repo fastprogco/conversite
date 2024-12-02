@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_02_210053) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_211255) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,8 +22,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_210053) do
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "added_by_id"
+    t.datetime "added_on"
+    t.bigint "edited_by_id"
+    t.datetime "edited_on"
+    t.boolean "is_deleted", default: false
+    t.bigint "deleted_by_id"
+    t.index ["added_by_id"], name: "index_chatbot_button_replies_on_added_by_id"
     t.index ["chatbot_id"], name: "index_chatbot_button_replies_on_chatbot_id"
     t.index ["chatbot_step_id"], name: "index_chatbot_button_replies_on_chatbot_step_id"
+    t.index ["deleted_by_id"], name: "index_chatbot_button_replies_on_deleted_by_id"
+    t.index ["edited_by_id"], name: "index_chatbot_button_replies_on_edited_by_id"
   end
 
   create_table "chatbot_steps", force: :cascade do |t|
@@ -125,6 +134,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_210053) do
 
   add_foreign_key "chatbot_button_replies", "chatbot_steps"
   add_foreign_key "chatbot_button_replies", "chatbots"
+  add_foreign_key "chatbot_button_replies", "users", column: "added_by_id"
+  add_foreign_key "chatbot_button_replies", "users", column: "deleted_by_id"
+  add_foreign_key "chatbot_button_replies", "users", column: "edited_by_id"
   add_foreign_key "chatbot_steps", "chatbot_steps", column: "previous_chatbot_step_id"
   add_foreign_key "chatbot_steps", "chatbots"
   add_foreign_key "chatbot_steps", "users", column: "created_by_id"

@@ -5,6 +5,8 @@ class ChatbotStep < ApplicationRecord
     belongs_to :edited_by, class_name: "User", optional: true
     belongs_to :deleted_by, class_name: "User", optional: true
 
+    has_many :chatbot_button_replies
+
     validates :header, length: { maximum: 60 }
     validates :description, presence: true, length: { maximum: 1024 }
     validates :footer, length: { maximum: 60 }

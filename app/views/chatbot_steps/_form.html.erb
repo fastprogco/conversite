@@ -36,11 +36,51 @@
       <div class="mb-3">
         <%= f.submit class: "btn btn-primary" %>
         <% if request.path.include?('edit') %>
-          <%= link_to "Add Reply Option", "#", class: "btn btn-info" %>
+          <%= link_to "Add Reply Option", "#", class: "btn btn-info", data: { bs_toggle: "modal", bs_target: "#replyOptionModal" } %>
           <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success" %>
           <%= link_to "Back", :back, class: "btn btn-secondary" %>
+
+
+          <% if @chatbot_step.chatbot_button_replies.where(is_deleted: false).any? %>
+            <div class="table-responsive mt-3">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Order</th>
+                    <th>Action Type</th>
+                    <th>Added By</th>
+                    <th>Added On</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @chatbot_step.chatbot_button_replies.where(is_deleted: false).order(:order).each do |reply| %>
+                    <tr>
+                      <td><%= reply.title %></td>
+                      <td><%= reply.order %></td>
+                      <td><%= reply.action_type_id.to_s.humanize %></td>
+                      <td><%= reply.added_by&.email %></td>
+                      <td><%= reply.added_on&.strftime("%Y-%m-%d %H:%M") %></td>
+                      <td>
+                        <%= link_to "Edit", edit_chatbot_chatbot_step_chatbot_button_reply_path(@chatbot, @chatbot_step, reply),
+                            class: "btn btn-sm btn-warning" %>
+                        <%= link_to "Delete", chatbot_chatbot_step_chatbot_button_reply_path(@chatbot, @chatbot_step, reply), 
+                            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                            class: "btn btn-sm btn-danger" %>
+                      </td>
+                    </tr>
+
+
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
         <% end %>
       </div>
     <% end %>
   </div>
 </div>
+
+<%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>

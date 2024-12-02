@@ -1,0 +1,38 @@
+
+<!-- Reply Option Modal -->
+<div class="modal fade" id="<%= reply_modal_id %>" tabindex="-1" aria-labelledby="replyOptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="replyOptionModalLabel">Add Reply Option</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(model: [@chatbot, @chatbot_step, ChatbotButtonReply.new], local: true, id: "replyOptionForm") do |f| %>
+          <div class="mb-3">
+            <%= f.label :title, class: "form-label" %> <span class="text-danger">Max 24 characters</span>
+            <%= f.text_field :title, value: reply_title, class: "form-control", required: true, maxlength: 24 %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :order, "Display Order", class: "form-label" %>
+            <%= f.number_field :order, value: reply_order, class: "form-control", required: true, min: 1 %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :action_type_id, "Action Type", class: "form-label" %>
+            <%= f.select :action_type_id, 
+                        ChatbotButtonReply.action_type_ids.map { |k, v| [k.humanize, v, { selected: v == reply_action_type.to_i }] },
+                        { include_blank: "Select Action Type" },
+                        { class: "form-select", required: true } %>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <%= f.submit "Save Reply Option", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

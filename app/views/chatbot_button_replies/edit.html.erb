@@ -1,0 +1,33 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h2>Edit Reply Option</h2>
+
+      <%= form_with(model: [@chatbot, @chatbot_step, @chatbot_button_reply], local: true) do |f| %>
+        <%= render "shared_partials/error", model: @chatbot_button_reply %>
+        <div class="mb-3">
+          <%= f.label :title, class: "form-label" %> <span class="text-danger">Max 24 characters</span>
+          <%= f.text_field :title, class: "form-control", required: true, maxlength: 24 %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :order, "Display Order", class: "form-label" %>
+          <%= f.number_field :order, class: "form-control", required: true, min: 1 %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :action_type_id, "Action Type", class: "form-label" %>
+          <%= f.select :action_type_id,
+                      ChatbotButtonReply.action_type_ids.map { |k, v| [k.humanize, v, { selected: v == ChatbotButtonReply.action_type_ids[@chatbot_button_reply.action_type_id] }] },
+                      { include_blank: "Select Action Type" },
+                      { class: "form-select", required: true } %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.submit "Update Reply Option", class: "btn btn-primary" %>
+          <%= link_to "Back", edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

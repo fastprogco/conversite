@@ -1,5 +1,7 @@
 class Chatbot < ApplicationRecord
     has_many :chatbot_steps, dependent: :destroy
+    has_many :chatbot_button_replies
+
     validates :name, presence: true
     validates :description, presence: true
 
