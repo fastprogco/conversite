@@ -1,4 +1,4 @@
-<%= form_with(model: [@chatbot, @chatbot_step, chatbot_multimedia_reply.id.present? ? chatbot_multimedia_reply : ChatbotMultimediaReply.new], local: true) do |f| %>
+<%= form_with(url: chatbot_multimedia_reply.id.present? ? chatbot_chatbot_step_chatbot_multimedia_reply_path(@chatbot, @chatbot_step, chatbot_multimedia_reply) : chatbot_chatbot_step_chatbot_multimedia_replies_path(@chatbot, @chatbot_step), local: true) do |f| %>
         <%= render "shared_partials/error", model: chatbot_multimedia_reply %>
         <div class="modal-body">
           <div class="mb-3">

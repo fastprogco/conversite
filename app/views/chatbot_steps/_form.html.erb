@@ -161,29 +161,30 @@
 <% if @chatbot_step.id.present? %>
   <%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>
 <% end %>
-
-<div class="modal fade" id="multimediaReplyModal" tabindex="-1" aria-labelledby="multimediaReplyModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="multimediaReplyModalLabel">Add Multimedia Reply</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<% if @chatbot_step.id.present? %>
+  <div class="modal fade" id="multimediaReplyModal" tabindex="-1" aria-labelledby="multimediaReplyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="multimediaReplyModalLabel">Add Multimedia Reply</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <%= render "chatbot_multimedia_replies/form", chatbot_multimedia_reply: ChatbotMultimediaReply.new %>
       </div>
-      <%= render "chatbot_multimedia_replies/form", chatbot_multimedia_reply: ChatbotMultimediaReply.new %>
     </div>
   </div>
-</div>
 
-<div class="modal fade" id="locationReplyModal" tabindex="-1" aria-labelledby="locationReplyModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="locationReplyModalLabel">Add Location Reply</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal fade" id="locationReplyModal" tabindex="-1" aria-labelledby="locationReplyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="locationReplyModalLabel">Add Location Reply</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <%= render "chatbot_location_replies/form", chatbot_location_reply: ChatbotLocationReply.new %>
       </div>
-      <%= render "chatbot_location_replies/form", chatbot_location_reply: ChatbotLocationReply.new %>
     </div>
-  </div>
-</div>
+    </div>
+<% end %>
 
 
