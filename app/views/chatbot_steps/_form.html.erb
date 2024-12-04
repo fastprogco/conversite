@@ -1,45 +1,41 @@
 <div class="card">
   <div class="card-body">
-    <%= form_with(model: [@chatbot, @chatbot_step], local: true, class: "needs-validation") do |f| %>
-      <%= render "shared_partials/error", model: @chatbot_step %>
+    <%= form_with(url: @chatbot_step.id.present? ? chatbot_chatbot_step_path(@chatbot, @chatbot_step) : chatbot_chatbot_steps_path(@chatbot), local: true, class: "needs-validation") do |f| %>
+      <% if @chatbot_step.id.present? %>
+        <%= render "shared_partials/error", model: @chatbot_step %>
+      <% end %>
 
       <div class="mb-3">
         <%= f.label :header, class: "form-label" %> <span class="text-danger">Max 60 characters</span>
-        <%= f.text_field :header, class: "form-control", required: true, maxlength: 60 %>
+        <%= f.text_field :header, class: "form-control", required: true, maxlength: 60, value: @chatbot_step.header %>
       </div>
 
       <div class="mb-3">
         <%= f.label :description, class: "form-label" %> <span class="text-danger">Max 1024 characters</span>
-        <%= f.text_area :description, class: "form-control", rows: 5, required: true, maxlength: 1024 %>
+        <%= f.text_area :description, class: "form-control", rows: 5, required: true, maxlength: 1024, value: @chatbot_step.description %>
       </div>
 
       <div class="mb-3">
         <%= f.label :footer, class: "form-label" %> <span class="text-danger">Max 60 characters</span>
-        <%= f.text_field :footer, class: "form-control", maxlength: 60 %>
+        <%= f.text_field :footer, class: "form-control", maxlength: 60, value: @chatbot_step.footer %>
       </div>
 
       <div class="mb-3">
         <%= f.label :list_button_caption, "List Button Caption", class: "form-label" %> <span class="text-danger">Max 20 characters</span>
-        <%= f.text_field :list_button_caption, class: "form-control", maxlength: 20 %>
+        <%= f.text_field :list_button_caption, class: "form-control", maxlength: 20, value: @chatbot_step.list_button_caption %>
       </div>
 
-      <div class="mb-3">
-        <%= f.label :previous_chatbot_step_id, "Previous Step", class: "form-label" %>
-        <%= f.collection_select :previous_chatbot_step_id, 
-                              @chatbot.chatbot_steps.where.not(id: @chatbot_step.id), 
-                              :id, 
-                              :header, 
-                              { include_blank: "Select Previous Step" }, 
-                              { class: "form-select" } %>
-      </div>
+      <% if @previous_chatbot_step_id.present? %>
+        <%= f.hidden_field :previous_chatbot_step_id, value: @previous_chatbot_step_id %>
+        <%= f.hidden_field :chatbot_button_reply_id, value: @chatbot_button_reply_id %>
+      <% end %>
 
       <div class="mb-3">
         <%= f.submit class: "btn btn-primary" %>
         <% if request.path.include?('edit') %>
           <%= link_to "Add Reply Option", "#", class: "btn btn-info", data: { bs_toggle: "modal", bs_target: "#replyOptionModal" } %>
           <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success" %>
-          <%= link_to "Back", :back, class: "btn btn-secondary" %>
-
+          <%= link_to "Back", @previous_chatbot_step_id.present? ? edit_chatbot_chatbot_step_path(@chatbot, ChatbotStep.find(@previous_chatbot_step_id), params:{previous_chatbot_step_id: ChatbotStep.find(@previous_chatbot_step_id).previous_chatbot_step_id}) : chatbots_path, class: "btn btn-secondary" %>
 
           <% if @chatbot_step.chatbot_button_replies.where(is_deleted: false).any? %>
             <div class="table-responsive mt-3">
@@ -68,10 +64,10 @@
                         <%= link_to "Delete", chatbot_chatbot_step_chatbot_button_reply_path(@chatbot, @chatbot_step, reply), 
                             data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
                             class: "btn btn-sm btn-danger" %>
+                        <%= link_to "Next Step", ChatbotStep.find_by(chatbot_button_reply_id: reply.id).present? ? edit_chatbot_chatbot_step_path(@chatbot, ChatbotStep.find_by(chatbot_button_reply_id: reply.id), params:{previous_chatbot_step_id: @chatbot_step.id}) : new_chatbot_chatbot_step_path(@chatbot, params: { chatbot_button_reply_id: reply.id, previous_chatbot_step_id: @chatbot_step.id }),
+                            class: "btn btn-sm btn-success" %>
                       </td>
                     </tr>
-
-
                   <% end %>
                 </tbody>
               </table>
@@ -83,4 +79,6 @@
   </div>
 </div>
 
-<%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>
+<% if @chatbot_step.id.present? %>
+  <%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>
+<% end %>

@@ -3,17 +3,19 @@ class ChatbotStepsController < ApplicationController
     before_action :set_chatbot_step, only: [:edit, :update, :destroy]
 
     def index
-        @chatbot_steps = @chatbot.chatbot_steps
     end
 
     def new
-        @chatbot_step = @chatbot.chatbot_steps.build
+        @chatbot_step = ChatbotStep.new
+        @chatbot_button_reply_id = params[:chatbot_button_reply_id]
+        @previous_chatbot_step_id = params[:previous_chatbot_step_id]
     end
 
     def create
         @chatbot_step = @chatbot.chatbot_steps.build(chatbot_step_params)
         @chatbot_step.created_by = current_user
         @chatbot_step.previous_chatbot_step = ChatbotStep.find(params[:previous_chatbot_step_id]) if params[:previous_chatbot_step_id].present?
+        @chatbot_step.chatbot_button_reply_id = ChatbotButtonReply.find(params[:chatbot_button_reply_id]).id if params[:chatbot_button_reply_id].present?
         if @chatbot_step.save
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Chatbot step created successfully"
         else
@@ -23,6 +25,7 @@ class ChatbotStepsController < ApplicationController
 
     def edit
         @chatbot_step = ChatbotStep.find(params[:id])
+        @previous_chatbot_step_id = params[:previous_chatbot_step_id]
     end
 
     def update
@@ -54,6 +57,6 @@ class ChatbotStepsController < ApplicationController
     end
 
     def chatbot_step_params
-        params.require(:chatbot_step).permit(:header, :description, :footer, :list_button_caption, :previous_chatbot_step_id, :chatbot_id)
+        params.permit(:header, :description, :footer, :list_button_caption, :previous_chatbot_step_id, :chatbot_id, :chatbot_button_reply_id)
     end
 end
