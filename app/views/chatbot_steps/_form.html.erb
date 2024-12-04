@@ -34,7 +34,7 @@
         <%= f.submit class: "btn btn-primary" %>
         <% if request.path.include?('edit') %>
           <%= link_to "Add Reply Option", "#", class: "btn btn-info", data: { bs_toggle: "modal", bs_target: "#replyOptionModal" } %>
-          <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success" %>
+          <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success", data: { bs_toggle: "modal", bs_target: "#multimediaReplyModal" } %>
           <%= link_to "Back", @previous_chatbot_step_id.present? ? edit_chatbot_chatbot_step_path(@chatbot, ChatbotStep.find(@previous_chatbot_step_id), params:{previous_chatbot_step_id: ChatbotStep.find(@previous_chatbot_step_id).previous_chatbot_step_id}) : chatbots_path, class: "btn btn-secondary" %>
 
           <% if @chatbot_step.chatbot_button_replies.where(is_deleted: false).any? %>
@@ -82,3 +82,62 @@
 <% if @chatbot_step.id.present? %>
   <%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>
 <% end %>
+
+<div class="modal fade" id="multimediaReplyModal" tabindex="-1" aria-labelledby="multimediaReplyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="multimediaReplyModalLabel">Add Multimedia Reply</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <%= form_with(model: [@chatbot, @chatbot_step, ChatbotMultimediaReply.new], local: true) do |f| %>
+        <div class="modal-body">
+          <div class="mb-3">
+            <%= f.label :media_type_id, "Media Type", class: "form-label" %>
+            <%= f.select :media_type_id, ChatbotMultimediaReply.media_type_ids.map { |k, v| [k.humanize, v] }, {}, class: "form-select" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :order, "Order", class: "form-label" %>
+            <%= f.number_field :order, class: "form-control" %>
+          </div>
+
+          <div class="mb-3" id="textBodyField">
+            <%= f.label :text_body, "Text Body", class: "form-label" %>
+            <%= f.text_area :text_body, class: "form-control" %>
+          </div>
+
+          <div class="mb-3" id="fileCaptionField" style="display: none;">
+            <%= f.label :file_caption, "File Caption", class: "form-label" %>
+            <%= f.text_field :file_caption, class: "form-control" %>
+          </div>
+
+          <%= f.hidden_field :added_by_id, value: current_user.id %>
+          <%= f.hidden_field :added_on, value: Time.current %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <%= f.submit "Save", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const mediaTypeSelect = document.querySelector('#chatbot_multimedia_reply_media_type_id');
+  const textBodyField = document.querySelector('#textBodyField');
+  const fileCaptionField = document.querySelector('#fileCaptionField');
+
+  mediaTypeSelect.addEventListener('change', function() {
+    if (this.value === '1') { // Text type
+      textBodyField.style.display = 'block';
+      fileCaptionField.style.display = 'none';
+    } else {
+      textBodyField.style.display = 'none';
+      fileCaptionField.style.display = 'block';
+    }
+  });
+});
+</script>
