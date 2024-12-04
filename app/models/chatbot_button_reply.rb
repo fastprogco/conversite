@@ -2,9 +2,10 @@ class ChatbotButtonReply < ApplicationRecord
     belongs_to :chatbot
     belongs_to :chatbot_step
 
-    belongs_to :added_by, class_name: "User"
-    belongs_to :edited_by, class_name: "User"
-    belongs_to :deleted_by, class_name: "User"
+    belongs_to :added_by, class_name: "User", optional: true
+    belongs_to :edited_by, class_name: "User", optional: true
+    belongs_to :deleted_by, class_name: "User", optional: true
+
 
     validates :title, presence: true, length: { maximum: 24 }
     validates :order, presence: true, numericality: { greater_than: 0 }
