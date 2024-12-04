@@ -35,6 +35,7 @@
         <% if request.path.include?('edit') %>
           <%= link_to "Add Reply Option", "#", class: "btn btn-info", data: { bs_toggle: "modal", bs_target: "#replyOptionModal" } %>
           <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success", data: { bs_toggle: "modal", bs_target: "#multimediaReplyModal" } %>
+          <%= link_to 'Add Location Reply', "#", class: "btn btn-warning", data: { bs_toggle: "modal", bs_target: "#locationReplyModal" } %>
           <%= link_to "Back", @previous_chatbot_step_id.present? ? edit_chatbot_chatbot_step_path(@chatbot, ChatbotStep.find(@previous_chatbot_step_id), params:{previous_chatbot_step_id: ChatbotStep.find(@previous_chatbot_step_id).previous_chatbot_step_id}) : chatbots_path, class: "btn btn-secondary" %>
 
           <% if @chatbot_step.chatbot_button_replies.where(is_deleted: false).any? %>
@@ -116,6 +117,46 @@
   </div>
 <% end %>
 
+<% if @chatbot_step.chatbot_location_replies.where(is_deleted: false).any? %>
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Location Name</th>
+          <th>Address</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Order</th>
+          <th>Added By</th>
+          <th>Added On</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @chatbot_step.chatbot_location_replies.where(is_deleted: false).order(:order).each do |reply| %>
+          <tr>
+            <td><%= reply.location_name %></td>
+            <td><%= reply.location_address %></td>
+            <td><%= reply.location_latitude %></td>
+            <td><%= reply.location_longitude %></td>
+            <td><%= reply.order %></td>
+            <td><%= reply.added_by&.email %></td>
+            <td><%= reply.added_on&.strftime("%Y-%m-%d %H:%M") %></td>
+            <td>
+              <%= link_to "Edit", edit_chatbot_chatbot_step_chatbot_location_reply_path(@chatbot, @chatbot_step, reply),
+                  class: "btn btn-sm btn-warning" %>
+              <%= link_to "Delete", chatbot_chatbot_step_chatbot_location_reply_path(@chatbot, @chatbot_step, reply, params: {chatbot: @chatbot, chatbot_step: @chatbot_step}),
+                  data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                  class: "btn btn-sm btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+
 
 <% if @chatbot_step.id.present? %>
   <%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>
@@ -132,4 +173,17 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="locationReplyModal" tabindex="-1" aria-labelledby="locationReplyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="locationReplyModalLabel">Add Location Reply</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <%= render "chatbot_location_replies/form", chatbot_location_reply: ChatbotLocationReply.new %>
+    </div>
+  </div>
+</div>
+
 

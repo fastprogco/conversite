@@ -1,0 +1,34 @@
+<div class="m-3">
+  <%= form_with(url: chatbot_chatbot_step_chatbot_location_replies_path(@chatbot, @chatbot_step), local: true) do |form| %>
+    <%= render "shared_partials/error", model: chatbot_location_reply %>
+
+    <div class="mb-3">
+      <%= form.label :location_name, class: "form-label" %>
+      <%= form.text_field :location_name, class: "form-control", required: true, value: chatbot_location_reply.location_name %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :location_address, class: "form-label" %>
+      <%= form.text_field :location_address, class: "form-control", required: true, value: chatbot_location_reply.location_address %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :location_latitude, class: "form-label" %>
+      <%= form.text_field :location_latitude, class: "form-control", required: true, value: chatbot_location_reply.location_latitude %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :location_longitude, class: "form-label" %>
+      <%= form.text_field :location_longitude, class: "form-control", required: true, value: chatbot_location_reply.location_longitude %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :order, "Display Order", class: "form-label" %>
+      <%= form.number_field :order, class: "form-control", required: true, min: 1, value: chatbot_location_reply.order %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.submit "Save Location Reply", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

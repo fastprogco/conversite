@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_04_204648) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_04_225536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -61,6 +61,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_204648) do
     t.index ["chatbot_step_id"], name: "index_chatbot_button_replies_on_chatbot_step_id"
     t.index ["deleted_by_id"], name: "index_chatbot_button_replies_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_chatbot_button_replies_on_edited_by_id"
+  end
+
+  create_table "chatbot_location_replies", force: :cascade do |t|
+    t.string "location_name"
+    t.string "location_address"
+    t.decimal "location_latitude", precision: 10, scale: 6
+    t.decimal "location_longitude", precision: 10, scale: 6
+    t.bigint "chatbot_id"
+    t.bigint "chatbot_step_id"
+    t.integer "order"
+    t.bigint "added_by_id"
+    t.datetime "added_on"
+    t.bigint "edited_by_id"
+    t.datetime "edited_on"
+    t.bigint "deleted_by_id"
+    t.boolean "is_deleted", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["added_by_id"], name: "index_chatbot_location_replies_on_added_by_id"
+    t.index ["chatbot_id"], name: "index_chatbot_location_replies_on_chatbot_id"
+    t.index ["chatbot_step_id"], name: "index_chatbot_location_replies_on_chatbot_step_id"
+    t.index ["deleted_by_id"], name: "index_chatbot_location_replies_on_deleted_by_id"
+    t.index ["edited_by_id"], name: "index_chatbot_location_replies_on_edited_by_id"
   end
 
   create_table "chatbot_multimedia_replies", force: :cascade do |t|
@@ -191,6 +214,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_04_204648) do
   add_foreign_key "chatbot_button_replies", "users", column: "added_by_id"
   add_foreign_key "chatbot_button_replies", "users", column: "deleted_by_id"
   add_foreign_key "chatbot_button_replies", "users", column: "edited_by_id"
+  add_foreign_key "chatbot_location_replies", "chatbot_steps"
+  add_foreign_key "chatbot_location_replies", "chatbots"
+  add_foreign_key "chatbot_location_replies", "users", column: "added_by_id"
+  add_foreign_key "chatbot_location_replies", "users", column: "deleted_by_id"
+  add_foreign_key "chatbot_location_replies", "users", column: "edited_by_id"
   add_foreign_key "chatbot_multimedia_replies", "chatbot_steps"
   add_foreign_key "chatbot_multimedia_replies", "chatbots"
   add_foreign_key "chatbot_multimedia_replies", "users", column: "added_by_id"

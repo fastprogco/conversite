@@ -7,6 +7,8 @@ class ChatbotStep < ApplicationRecord
 
     has_many :chatbot_button_replies
     has_many :chatbot_multimedia_replies
+    has_many :chatbot_location_replies
+
     validates :header, length: { maximum: 60 }
     validates :description, presence: true, length: { maximum: 1024 }
     validates :footer, length: { maximum: 60 }
