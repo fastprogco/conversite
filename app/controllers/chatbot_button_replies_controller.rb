@@ -11,7 +11,7 @@ class ChatbotButtonRepliesController < ApplicationController
         @chatbot_button_reply.chatbot_step = @chatbot_step
         @chatbot_button_reply.chatbot = @chatbot
         @chatbot_button_reply.added_by_id = current_user.id
-        @chatbot_button_reply.added_on = DateTime.now
+        @chatbot_button_reply.added_on = DateTime.now.utc
         @chatbot_button_reply.action_type_id = chatbot_button_reply_params[:action_type_id].to_i
         if @chatbot_button_reply.save
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Reply option added successfully", status: :see_other
@@ -27,7 +27,7 @@ class ChatbotButtonRepliesController < ApplicationController
     def update
         @chatbot_button_reply = ChatbotButtonReply.find(params[:id])
         @chatbot_button_reply.edited_by = current_user
-        @chatbot_button_reply.edited_on = DateTime.now
+        @chatbot_button_reply.edited_on = DateTime.now.utc
         @chatbot_button_reply.action_type_id = chatbot_button_reply_params[:action_type_id].to_i
         if @chatbot_button_reply.update(chatbot_button_reply_params.except(:action_type_id))
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Reply option updated successfully", status: :see_other
@@ -39,7 +39,7 @@ class ChatbotButtonRepliesController < ApplicationController
     def destroy
         @chatbot_button_reply = ChatbotButtonReply.find(params[:id])
         @chatbot_button_reply.deleted_by = current_user
-        @chatbot_button_reply.deleted_on = DateTime.now
+        @chatbot_button_reply.deleted_on = DateTime.now.utc
         @chatbot_button_reply.is_deleted = true
         @chatbot_button_reply.save
         redirect_to chatbot_step_path(@chatbot, @chatbot_step), notice: "Reply option deleted successfully", status: :see_other

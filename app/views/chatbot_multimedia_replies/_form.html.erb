@@ -1,0 +1,68 @@
+<%= form_with(model: [@chatbot, @chatbot_step, chatbot_multimedia_reply.id.present? ? chatbot_multimedia_reply : ChatbotMultimediaReply.new], local: true) do |f| %>
+        <%= render "shared_partials/error", model: chatbot_multimedia_reply %>
+        <div class="modal-body">
+          <div class="mb-3">
+            <%= f.label :media_type_id, "Media Type", class: "form-label" %>
+            <%= f.select :media_type_id, 
+                        ChatbotMultimediaReply.media_type_ids.map { |k, v| [k.humanize, v, { selected: v == chatbot_multimedia_reply.media_type_id_before_type_cast }] },
+                        { include_blank: "Select Media Type" },
+                        { class: "form-select", required: true } %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :order, "Order", class: "form-label" %>
+            <%= f.number_field :order, class: "form-control", value: chatbot_multimedia_reply.order %>
+          </div>
+
+          <div class="mb-3" id="textBodyField">
+            <%= f.label :text_body, "Text Body", class: "form-label" %>
+            <%= f.text_area :text_body, class: "form-control", value: chatbot_multimedia_reply.text_body %>
+          </div>
+
+          <div class="mb-3" id="fileCaptionField" style="display: none;">
+            <%= f.label :file_caption, "File Caption", class: "form-label" %>
+            <%= f.text_field :file_caption, class: "form-control", value: chatbot_multimedia_reply.file_caption %>
+          </div>
+
+          <%= f.file_field :file, class: "form-control", style: "display: none;", id: "fileField", value: chatbot_multimedia_reply.file %>
+        </div>
+        <% if chatbot_multimedia_reply.id.present? %>
+          <div class="mb-3">
+            <% if chatbot_multimedia_reply.file.attached? %>
+              <%= link_to "Download Current File", rails_blob_path(chatbot_multimedia_reply.file, disposition: "attachment"), class: "btn btn-info" %>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="modal-footer">
+            <% if !chatbot_multimedia_reply.id.present? %>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <% end %>
+          <%= f.submit "Save", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+
+      
+<script >
+document.addEventListener('turbo:load', function() {
+  const mediaTypeSelect = document.querySelector('#chatbot_multimedia_reply_media_type_id') ;
+  const textBodyField = document.querySelector('#textBodyField');
+  const fileCaptionField = document.querySelector('#fileCaptionField');
+  const fileField = document.querySelector('#fileField');
+    
+  toggleFields();
+  mediaTypeSelect.addEventListener('change', toggleFields);
+
+  function toggleFields() {
+    if (mediaTypeSelect.value === '1') { // Text type
+      textBodyField.style.display = 'block';
+      fileCaptionField.style.display = 'none';
+      fileField.style.display = 'none';
+    } else {
+      textBodyField.style.display = 'none';
+      fileCaptionField.style.display = 'block';
+      fileField.style.display = 'block';
+    }   
+  }
+});
+</script>
