@@ -95,7 +95,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @chatbot_step.chatbot_multimedia_replies.where(is_deleted: false).order(:order).each do |reply| %>
+        <% @chatbot_step.chatbot_multimedia_replies.includes(:added_by).where(is_deleted: false).order(:order).each do |reply| %>
           <tr>
             <td><%= reply.media_type_id.to_s.humanize %></td>
             <td><%= reply.order %></td>
