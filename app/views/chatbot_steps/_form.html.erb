@@ -1,6 +1,12 @@
 <div class="card">
   <div class="card-body">
-    <%= form_with(url: @chatbot_step.id.present? ? chatbot_chatbot_step_path(@chatbot, @chatbot_step) : chatbot_chatbot_steps_path(@chatbot), local: true, class: "needs-validation") do |f| %>
+    <%= form_with(
+      url: @chatbot_step.id.present? ? chatbot_chatbot_step_path(@chatbot, @chatbot_step) : chatbot_chatbot_steps_path(@chatbot),
+      method: @chatbot_step.id.present? ? :patch : :post, 
+      local: true, 
+      class: "needs-validation"
+    ) do |f| %>
+
       <% if @chatbot_step.id.present? %>
         <%= render "shared_partials/error", model: @chatbot_step %>
       <% end %>
@@ -27,11 +33,14 @@
 
       <% if @previous_chatbot_step_id.present? %>
         <%= f.hidden_field :previous_chatbot_step_id, value: @previous_chatbot_step_id %>
+      <% end %>
+      <% if @chatbot_button_reply_id.present? %>
         <%= f.hidden_field :chatbot_button_reply_id, value: @chatbot_button_reply_id %>
       <% end %>
 
+      <%= f.submit class: "btn btn-primary my-3" %>
+
       <div class="mb-3">
-        <%= f.submit class: "btn btn-primary" %>
         <% if request.path.include?('edit') %>
           <%= link_to "Add Reply Option", "#", class: "btn btn-info", data: { bs_toggle: "modal", bs_target: "#replyOptionModal" } %>
           <%= link_to "Add Multimedia Reply", "#", class: "btn btn-success", data: { bs_toggle: "modal", bs_target: "#multimediaReplyModal" } %>

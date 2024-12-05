@@ -32,7 +32,7 @@ class ChatbotStepsController < ApplicationController
         @chatbot_step = ChatbotStep.find(params[:id])
         @chatbot_step.edited_by = current_user
         if @chatbot_step.update(chatbot_step_params)
-            redirect_to chatbots_path, notice: "Chatbot step updated successfully"
+            redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Chatbot step updated successfully"
         else
             render :edit, status: :unprocessable_entity
         end
