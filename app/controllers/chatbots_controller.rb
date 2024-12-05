@@ -42,7 +42,7 @@ class ChatbotsController < ApplicationController
 
     private
     def chatbot_params
-        params.require(:chatbot).permit(:name, :description)
+        params.require(:chatbot).permit(:name, :description, :master_segment_id)
     end
 
 end

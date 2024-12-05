@@ -1,6 +1,7 @@
 class Chatbot < ApplicationRecord
     has_many :chatbot_steps, dependent: :destroy
     has_many :chatbot_button_replies
+    belongs_to :master_segment, optional: true
 
     validates :name, presence: true
     validates :description, presence: true

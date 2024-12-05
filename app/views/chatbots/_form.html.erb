@@ -12,6 +12,11 @@
   </div>
 
   <div class="mb-3">
+    <%= f.label :master_segment_id, class: "form-label" %>
+    <%= f.select :master_segment_id, MasterSegment.where(table_type_id: :master).map { |segment| [segment.name, segment.id] }, { prompt: "Select a segment" }, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
     <%= f.submit class: "btn btn-primary" %>
   </div>
 <% end %>

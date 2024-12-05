@@ -54,11 +54,17 @@ class MastersController < ApplicationController
       get_masters
       name = params[:name]
       description = params[:description]
-      @masters.each do |master|
-        Segment.create(name: name, description: description, table_type_id: :master, table_id: master.id, added_by_id: current_user.id, added_on: DateTime.now.utc)
+      master_segment = MasterSegment.new(name: name, description: description, table_type_id: :master, added_by_id: current_user.id, added_on: DateTime.now.utc)
+      ActiveRecord::Base.transaction do
+        if master_segment.save
+          @masters.each do |master|
+            Segment.create!(master_segment_id: master_segment.id, table_id: master.id, added_by_id: current_user.id, added_on: DateTime.now.utc)
+          end
+          redirect_to masters_path, notice: t("segment_created_successfully")
+        else
+          redirect_to masters_path, alert: master_segment.errors.full_messages.join(", ")
+        end
       end
-
-      redirect_to masters_path, notice: t("segment_created_successfully")
     end
 
     private 

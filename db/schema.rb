@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_05_175227) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_05_185249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -139,9 +139,28 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_175227) do
     t.bigint "edited_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "master_segment_id"
     t.index ["created_by_id"], name: "index_chatbots_on_created_by_id"
     t.index ["deleted_by_id"], name: "index_chatbots_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_chatbots_on_edited_by_id"
+    t.index ["master_segment_id"], name: "index_chatbots_on_master_segment_id"
+  end
+
+  create_table "master_segments", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.bigint "added_by_id"
+    t.datetime "added_on"
+    t.bigint "edited_by_id"
+    t.datetime "edited_on"
+    t.boolean "is_deleted", default: false
+    t.bigint "deleted_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "table_type_id"
+    t.index ["added_by_id"], name: "index_master_segments_on_added_by_id"
+    t.index ["deleted_by_id"], name: "index_master_segments_on_deleted_by_id"
+    t.index ["edited_by_id"], name: "index_master_segments_on_edited_by_id"
   end
 
   create_table "masters", force: :cascade do |t|
@@ -184,10 +203,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_175227) do
   end
 
   create_table "segments", force: :cascade do |t|
-    t.integer "table_type_id", null: false
     t.integer "table_id", null: false
-    t.string "name", null: false
-    t.text "description", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "added_by_id"
@@ -196,9 +212,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_175227) do
     t.datetime "edited_on"
     t.boolean "is_deleted", default: false
     t.bigint "deleted_by_id"
+    t.bigint "master_segment_id", null: false
     t.index ["added_by_id"], name: "index_segments_on_added_by_id"
     t.index ["deleted_by_id"], name: "index_segments_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_segments_on_edited_by_id"
+    t.index ["master_segment_id"], name: "index_segments_on_master_segment_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -248,9 +266,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_175227) do
   add_foreign_key "chatbot_steps", "users", column: "created_by_id"
   add_foreign_key "chatbot_steps", "users", column: "deleted_by_id"
   add_foreign_key "chatbot_steps", "users", column: "edited_by_id"
+  add_foreign_key "chatbots", "master_segments"
   add_foreign_key "chatbots", "users", column: "created_by_id"
   add_foreign_key "chatbots", "users", column: "deleted_by_id"
   add_foreign_key "chatbots", "users", column: "edited_by_id"
+  add_foreign_key "master_segments", "users", column: "added_by_id"
+  add_foreign_key "master_segments", "users", column: "deleted_by_id"
+  add_foreign_key "master_segments", "users", column: "edited_by_id"
+  add_foreign_key "segments", "master_segments"
   add_foreign_key "segments", "users", column: "added_by_id"
   add_foreign_key "segments", "users", column: "deleted_by_id"
   add_foreign_key "segments", "users", column: "edited_by_id"
