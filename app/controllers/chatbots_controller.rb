@@ -1,7 +1,7 @@
 class ChatbotsController < ApplicationController
     def index
         @page = params[:page] || 1
-        @chatbots = Chatbot.order(created_at: :desc).page(@page).per(10)
+        @chatbots = Chatbot.includes(:master_segment).order(created_at: :desc).page(@page).per(10)
     end
 
     def new

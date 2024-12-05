@@ -2,7 +2,7 @@ require 'http'
 
 class WhatsappMessageService
   class << self
-    attr_accessor :business_account_id, :url, :access_token
+    attr_accessor :phone_number_id, :url, :access_token
 
     def send_interactive_message(to_phone_number, interactive_message_object)
 
@@ -274,10 +274,8 @@ class WhatsappMessageService
     end
   end
 
-  #self.business_account_id = "301936199680427"
-  #self.access_token = "EAAFJEwRiEhsBO9IZCZBAOBaBEh2nzOxvax3zFQIlA9B7dL7WA7ZBF3r3RALKy19CufMzbE7fS75DlFk5tFeZC7T2ZA1aP8D4CoJWX0rdbsalHDyMvMUsWiWpX4HZB0oqtb84061ceVwwV0U2XVAEoOuZAZCI45HAhiaIONx2BIDZCsL6gkLQjOekZCXClhJOb6bblExQZDZD"
-  self.business_account_id = "111633038467297"
-  self.url = "https://graph.facebook.com/v20.0/#{business_account_id}"
+  self.phone_number_id = "104550469185353"
+  self.url = "https://graph.facebook.com/v20.0/#{phone_number_id}"
   self.access_token = "EAAPDdDpQ0DwBO5ptclqW6YTJ0DOlJ6lvOnC3LkK7ANkFxMn4XdUU5BRC0f6p817g4pZCjtqU0ccV81VU0IPKb9XyHLcLZCtmTDnTvjPKZCD3ZAfdnRmZBpgKWhpNM0BZBdaoUUIOKtqGcHgEO0EhD8aN186ZAov1IXryC1zhZBntqtzmT9R0dSxaV8J4PrdZAwRchEUuVcW8jF1ZCBAgrS"
 
  
