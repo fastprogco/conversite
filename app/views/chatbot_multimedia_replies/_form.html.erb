@@ -6,7 +6,7 @@
             <%= f.select :media_type_id, 
                         ChatbotMultimediaReply.media_type_ids.map { |k, v| [k.humanize, v, { selected: v == chatbot_multimedia_reply.media_type_id_before_type_cast }] },
                         { include_blank: "Select Media Type" },
-                        { class: "form-select", required: true } %>
+                        { class: "form-select", required: true , id: "mediaTypeSelectField"}  %>
           </div>
 
           <div class="mb-3">
@@ -43,7 +43,7 @@
       
 <script >
 document.addEventListener('turbo:load', function() {
-  const mediaTypeSelect = document.querySelector('#chatbot_multimedia_reply_media_type_id') ;
+  const mediaTypeSelect = document.querySelector('#mediaTypeSelectField') ;
   const textBodyField = document.querySelector('#textBodyField');
   const fileCaptionField = document.querySelector('#fileCaptionField');
   const fileField = document.querySelector('#fileField');
