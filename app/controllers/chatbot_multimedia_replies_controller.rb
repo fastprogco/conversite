@@ -57,7 +57,7 @@ class ChatbotMultimediaRepliesController < ApplicationController
     end
 
     def chatbot_multimedia_reply_params
-        params.permit(:media_type_id, :text_body, :file_caption, :order, :file)
+        params.require(:chatbot_multimedia_reply).permit(:media_type_id, :text_body, :file_caption, :order, :file)
     end
 
 end
