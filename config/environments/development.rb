@@ -84,4 +84,6 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.action_mailer.default_url_options = {  :host => Rails.application.credentials.dig(:email, :domain), :port => 3000  }
+
+  config.hosts << "pfqq055g-3000.euw.devtunnels.ms"
 end

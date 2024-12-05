@@ -43,5 +43,8 @@ Rails.application.routes.draw do
   patch 'password_resets/:token', to: 'password_resets#update', as: 'update_password_reset'
   get 'confirm_email', to: 'users#confirm_email'
 
+  post '/webhook', to: 'webhook#receive'
+  get '/webhook', to: 'webhook#verify'
+
 
 end
