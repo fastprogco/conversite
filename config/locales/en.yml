@@ -71,3 +71,4 @@ en:
   could_not_confirm_email: "Could not confirm your email"
   invalid_confirmation_token: "Invalid confirmation token"
   you_are_not_authorized_to_access_this_page: "You are not authorized to access this page"
+  segment_created_successfully: "Segment created successfully"

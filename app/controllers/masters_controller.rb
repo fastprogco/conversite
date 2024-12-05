@@ -43,9 +43,6 @@ class MastersController < ApplicationController
         @column_groups.flatten
       end
 
-      puts @selected_columns;
-      puts "here here"
-      return;
       respond_to do |format|
         format.xlsx {
           response.headers['Content-Disposition'] = 'attachment; filename=masters.xlsx'
@@ -53,11 +50,22 @@ class MastersController < ApplicationController
       end
     end
 
+    def create_segment
+      get_masters
+      name = params[:name]
+      description = params[:description]
+      @masters.each do |master|
+        Segment.create(name: name, description: description, table_type_id: :master, table_id: master.id, added_by_id: current_user.id, added_on: DateTime.now.utc)
+      end
+
+      redirect_to masters_path, notice: t("segment_created_successfully")
+    end
+
     private 
     def get_masters
       search_column = params[:search_column]
       search_term = params[:search_term]
-      
+
       @masters = Master.all
       if search_column.present? && search_term.present?
         @masters = @masters.where("#{search_column} ILIKE ?", "%#{search_term}%")

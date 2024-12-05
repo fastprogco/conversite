@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       get :excel_import_new
       post :import_excel
       get :export
+      post :create_segment
     end
     get :index
   end

@@ -7,6 +7,7 @@ class WebhookController < ApplicationController
     to_phone_number = params.dig('entry', 0, 'changes', 0, 'value', 'contacts', 0, 'wa_id')
 
     puts "new whatsapp message status #{message_status}" 
+    puts "whatsapp payload headers: #{request.headers.to_h}"
 
     #only go for chatbot flow if the message status is nil
     #because if there is a status it means it is read, delivered or failed message and we are only interested in the new message

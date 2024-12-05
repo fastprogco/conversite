@@ -6,6 +6,14 @@
     </div>
     <div class="card-body">
       <%= button_to 'Export to Excel', export_masters_path(format: :xlsx), method: :get, params: { columns: params[:columns]&.to_unsafe_h, search_column: params[:search_column], search_term: params[:search_term] }, class: 'btn btn-success mb-3' %>
+      
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createSegmentModal">
+        Create Segment
+      </button>
+
+     
+
       <div class="table-responsive">
         <% @column_groups = [
           ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
@@ -39,6 +47,42 @@
       </div>
       <div class="d-flex justify-content-center mt-4">
         <%= paginate @masters %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+ <!-- create segment modal -->
+<div class="modal fade" id="createSegmentModal" tabindex="-1" aria-labelledby="createSegmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createSegmentModalLabel">Create New Segment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with url: create_segment_masters_path, local: true, method: :post do |f| %>
+          <%= hidden_field_tag 'columns', params[:columns]&.to_unsafe_h %>
+          <%= hidden_field_tag 'search_column', params[:search_column] %>
+          <%= hidden_field_tag 'search_term', params[:search_term] %>
+          <div class="mb-3">
+            <%= f.label :name, "Segment Name", class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", required: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :description, "Description", class: "form-label" %>
+            <%= f.text_area :description, class: "form-control", required: true %>
+          </div>
+          <%= f.hidden_field :table_type_id, value: 1 %>
+          <%= f.hidden_field :table_id, value: 1 %>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <%= f.submit "Create Segment", class: "btn btn-primary" %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
