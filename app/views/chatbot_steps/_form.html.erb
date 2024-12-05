@@ -38,7 +38,8 @@
           <%= link_to 'Add Location Reply', "#", class: "btn btn-warning", data: { bs_toggle: "modal", bs_target: "#locationReplyModal" } %>
           <%= link_to "Back", @previous_chatbot_step_id.present? ? edit_chatbot_chatbot_step_path(@chatbot, ChatbotStep.find(@previous_chatbot_step_id), params:{previous_chatbot_step_id: ChatbotStep.find(@previous_chatbot_step_id).previous_chatbot_step_id}) : chatbots_path, class: "btn btn-secondary" %>
 
-          <% if @chatbot_step.chatbot_button_replies.where(is_deleted: false).any? %>
+          <!-- Button Reply Table -->
+          <% if @chatbot_step.chatbot_button_replies.includes(:added_by).where(is_deleted: false).any? %>
             <div class="table-responsive mt-3">
               <table class="table table-bordered">
                 <thead>
@@ -79,7 +80,9 @@
     <% end %>
   </div>
 </div>
+<!-- Button Reply Table  END-->
 
+<!-- Multimedia Reply Table -->
 <% if @chatbot_step.chatbot_multimedia_replies.where(is_deleted: false).any? %>
   <div class="table-responsive mt-3">
     <table class="table table-bordered">
@@ -116,8 +119,10 @@
     </table>
   </div>
 <% end %>
+<!-- Multimedia Reply Table END-->
 
-<% if @chatbot_step.chatbot_location_replies.where(is_deleted: false).any? %>
+<!-- Location Reply Table -->
+<% if @chatbot_step.chatbot_location_replies.includes(:added_by).where(is_deleted: false).any? %>
   <div class="table-responsive mt-3">
     <table class="table table-bordered">
       <thead>
@@ -133,7 +138,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @chatbot_step.chatbot_location_replies.where(is_deleted: false).order(:order).each do |reply| %>
+        <% @chatbot_step.chatbot_location_replies.includes(:added_by).where(is_deleted: false).order(:order).each do |reply| %>
           <tr>
             <td><%= reply.location_name %></td>
             <td><%= reply.location_address %></td>
@@ -155,12 +160,13 @@
     </table>
   </div>
 <% end %>
+<!-- Location Reply Table END-->    
 
-
-
+<!-- Button Reply Modal -->
 <% if @chatbot_step.id.present? %>
   <%= render "chatbot_button_reply_modal", reply_title: "", reply_order: "", reply_action_type: "", reply_modal_id: "replyOptionModal", endpoint: nil %>
 <% end %>
+<!-- Multimedia Reply Modal -->
 <% if @chatbot_step.id.present? %>
   <div class="modal fade" id="multimediaReplyModal" tabindex="-1" aria-labelledby="multimediaReplyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -174,6 +180,7 @@
     </div>
   </div>
 
+<!-- Location Reply Modal -->
   <div class="modal fade" id="locationReplyModal" tabindex="-1" aria-labelledby="locationReplyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
