@@ -27,10 +27,8 @@ module ChatbotCode
           if (button_reply.present?)
             if (button_reply.action_type_id.to_sym == :forward)
               chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
-              puts "forwarding to chatbot_step: #{chatbot_step.id}"
             elsif (button_reply.action_type_id.to_sym == :go_back_to_main)
               chatbot_step = button_reply.chatbot_step.chatbot.chatbot_steps.where(chatbot_button_reply_id: nil).first
-              puts "going back to main chatbot_step: #{chatbot_step.id}"
             end
           end
         end
@@ -38,9 +36,11 @@ module ChatbotCode
         chatbot_step = find_chatbot_step(to_phone_number)
       end
 
-      send_message(to_phone_number, chatbot_step)
-      send_mutlimedia_messages(to_phone_number, chatbot_step)
-      send_location_messages(to_phone_number, chatbot_step)
+      if chatbot_step.present?
+        send_message(to_phone_number, chatbot_step)
+        send_mutlimedia_messages(to_phone_number, chatbot_step)
+        send_location_messages(to_phone_number, chatbot_step)
+      end
     end
 
 
