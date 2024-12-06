@@ -14,11 +14,6 @@ module ChatbotCode
       list_reply_id = payload&.dig(:list_reply_id) 
       message_response_body = payload&.dig(:message_response_body)
       
-      puts "Received payload: #{payload.inspect}"
-      puts "Button reply ID: #{button_reply_id}"
-      puts "List reply ID: #{list_reply_id}" 
-      puts "Message response body: #{message_response_body}"
-      
       reply_id = list_reply_id || button_reply_id
 
       puts "reply_id: #{reply_id}"
@@ -35,6 +30,8 @@ module ChatbotCode
       end
 
       send_message(to_phone_number, chatbot_step)
+      send_mutlimedia_messages(to_phone_number, chatbot_step)
+      send_location_messages(to_phone_number, chatbot_step)
     end
 
 
@@ -100,7 +97,7 @@ module ChatbotCode
             title: button.title,
           }
         end
-        
+
         if chatbot_step.previous_chatbot_step_id.present? && chatbot_step.chatbot_button_reply_id.present?
           rows.push({
             id: "BACK_#{chatbot_step.previous_chatbot_step_id}",
@@ -135,5 +132,43 @@ module ChatbotCode
      
       { button_reply_id: button_reply_id, message_response_body: message_response_body, list_reply_id: list_reply_id }
     end
+
+    def send_mutlimedia_messages(to_phone_number, chatbot_step)
+      mutlimedia_replies = chatbot_step.chatbot_multimedia_replies.order(:order)
+      mutlimedia_replies.each do |mutlimedia_reply|
+        case mutlimedia_reply.media_type_id.to_sym
+        when :image
+          send_image_message(to_phone_number, url_for(mutlimedia_reply.file), mutlimedia_reply.file_caption)
+        when :video, :document, :audio
+          send_document_message(to_phone_number, url_for(mutlimedia_reply.file), mutlimedia_reply.file_caption)
+        when :text
+          send_text_message(to_phone_number, mutlimedia_reply.text_body)
+        end
+      end
+    end
+
+    def send_location_messages(to_phone_number, chatbot_step)
+      location_replies = chatbot_step.chatbot_location_replies.order(:order)
+      location_replies.each do |location_reply|
+        send_location_message(to_phone_number, location_reply.location_latitude, location_reply.location_longitude, location_reply.location_name, location_reply.location_address)
+      end
+    end
+
+    def send_image_message(to_phone_number, image_url, file_caption)
+      WhatsappMessageService.send_image_message(to_phone_number, image_url, file_caption) if image_url.present?
+    end
+
+    def send_document_message(to_phone_number, document_url, file_caption)
+      WhatsappMessageService.send_document_link(to_phone_number, document_url, file_caption) if document_url.present?
+    end
+
+    def send_location_message(to_phone_number, latitude, longitude, location_name, location_description)
+      WhatsappMessageService.send_location_message(to_phone_number, latitude, longitude, location_name, location_description) if latitude.present? && longitude.present?
+    end
+
+    def send_text_message(to_phone_number, text)
+      WhatsappMessageService.send_text_message(to_phone_number, text) if text.present?
+    end
+
   end
 end
