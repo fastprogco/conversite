@@ -3,6 +3,8 @@ class ChatbotLocationRepliesController < ApplicationController
     before_action :set_chatbot_step, only: [:new, :edit, :update, :create, :destroy]
     before_action :set_chatbot_location_reply, only: [:edit, :update, :destroy]
 
+    before_action :authorize_super_admin, only: [:new, :create, :edit, :update, :destroy]
+
     def new
         @chatbot_location_reply = ChatbotLocationReply.new
     end

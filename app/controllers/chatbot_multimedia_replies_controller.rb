@@ -3,6 +3,9 @@ class ChatbotMultimediaRepliesController < ApplicationController
     before_action :set_chatbot, only: [:new, :edit, :update, :create, :destroy]
     before_action :set_chatbot_step, only: [:new, :edit, :update, :create, :destroy]
     before_action :set_chatbot_multimedia_reply, only: [:edit, :update, :destroy]
+
+    before_action :authorize_super_admin, only: [:new, :create, :edit, :update, :destroy]
+
     def new
         @chatbot_multimedia_reply = ChatbotMultimediaReply.new
     end

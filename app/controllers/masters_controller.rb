@@ -1,5 +1,5 @@
 class MastersController < ApplicationController
-     before_action :authorize_super_admin, only: [:excel_import_new, :import_excel, :index]
+     before_action :authorize_super_admin, only: [:excel_import_new, :import_excel, :index, :export, :create_segment]
 
      def excel_import_new
      end

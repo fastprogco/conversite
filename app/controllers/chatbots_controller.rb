@@ -1,4 +1,6 @@
 class ChatbotsController < ApplicationController
+    before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy]
+
     def index
         @page = params[:page] || 1
         @chatbots = Chatbot.includes(:master_segment).order(created_at: :desc).page(@page).per(10)

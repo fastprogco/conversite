@@ -1,6 +1,7 @@
 class ChatbotStepsController < ApplicationController
     before_action :set_chatbot
     before_action :set_chatbot_step, only: [:edit, :update, :destroy]
+    before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy]
 
     def index
     end

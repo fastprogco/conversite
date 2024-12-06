@@ -1,6 +1,8 @@
 class ChatbotButtonRepliesController < ApplicationController
     before_action :set_chatbot, only: [:new, :edit, :update, :create]
     before_action :set_chatbot_step, only: [:new, :edit, :update, :create]
+    
+    before_action :authorize_super_admin, only: [:new, :create, :edit, :update, :destroy]
 
     def new
         @chatbot_button_reply = ChatbotButtonReply.new
