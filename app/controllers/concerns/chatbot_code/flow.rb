@@ -23,7 +23,16 @@ module ChatbotCode
         if is_back_button
           chatbot_step = ChatbotStep.find(reply_id.split("_").last)
         else
-          chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
+          button_reply = ChatbotButtonReply.find(reply_id)
+          if (button_reply.present?)
+            if (button_reply.action_type_id.to_sym == :forward)
+              chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
+              puts "forwarding to chatbot_step: #{chatbot_step.id}"
+            elsif (button_reply.action_type_id.to_sym == :go_back_to_main)
+              chatbot_step = button_reply.chatbot_step.chatbot.chatbot_steps.where(chatbot_button_reply_id: nil).first
+              puts "going back to main chatbot_step: #{chatbot_step.id}"
+            end
+          end
         end
       else
         chatbot_step = find_chatbot_step(to_phone_number)
