@@ -2,7 +2,8 @@
   <div class="card">
     <div class="card-header bg-primary text-white">
       <h3 class="mb-0">Masters Data</h3>
-      <h5>COUNT <%= @count%> </h5>
+      <h5>Total Count <%= @count%> </h5>
+      <h5>Currently Selected Count <%= @masters.count%> </h5>
     </div>
     <div class="card-body">
       <%= button_to 'Export to Excel', export_masters_path(format: :xlsx), method: :get, params: { columns: params[:columns]&.to_unsafe_h, search_column: params[:search_column], search_term: params[:search_term] }, class: 'btn btn-success mb-3' %>
