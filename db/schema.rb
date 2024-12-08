@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_172036) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_181630) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -219,6 +219,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_172036) do
     t.index ["master_segment_id"], name: "index_segments_on_master_segment_id"
   end
 
+  create_table "templates", force: :cascade do |t|
+    t.string "name"
+    t.string "meta_template_name"
+    t.string "language"
+    t.string "component"
+    t.bigint "added_by_id"
+    t.bigint "edited_by_id"
+    t.boolean "is_deleted", default: false
+    t.bigint "deleted_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["added_by_id"], name: "index_templates_on_added_by_id"
+    t.index ["deleted_by_id"], name: "index_templates_on_deleted_by_id"
+    t.index ["edited_by_id"], name: "index_templates_on_edited_by_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "role", default: "user"
@@ -296,6 +312,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_172036) do
   add_foreign_key "segments", "users", column: "added_by_id"
   add_foreign_key "segments", "users", column: "deleted_by_id"
   add_foreign_key "segments", "users", column: "edited_by_id"
+  add_foreign_key "templates", "users", column: "added_by_id"
+  add_foreign_key "templates", "users", column: "deleted_by_id"
+  add_foreign_key "templates", "users", column: "edited_by_id"
   add_foreign_key "whatsapp_accounts", "users", column: "added_by_id"
   add_foreign_key "whatsapp_accounts", "users", column: "deleted_by_id"
   add_foreign_key "whatsapp_accounts", "users", column: "edited_by_id"

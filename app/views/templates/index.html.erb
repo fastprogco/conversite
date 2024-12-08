@@ -1,0 +1,43 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2>Templates</h2>
+          <%= link_to "Add New Template", new_template_path, class: "btn btn-primary float-end" %>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Template Name</th>
+                <th>Meta Template Name</th>
+                <th>Language</th>
+                <th>Component</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @templates.each do |template| %>
+                <tr>
+                  <td><%= template.name %></td>
+                  <td><%= template.meta_template_name %></td>
+                  <td><%= template.language %></td>
+                  <td><%= template.component %></td>
+                  <td>
+                    <%= link_to "Edit", edit_template_path(template), class: "btn btn-sm btn-primary" %>
+                    <%= link_to "Delete", template_path(template), 
+                        data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @templates %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
