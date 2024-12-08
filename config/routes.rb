@@ -39,6 +39,8 @@ Rails.application.routes.draw do
     resources :segments, only: [:index, :edit, :update, :destroy]
   end
 
+  resources :whatsapp_accounts, only: [:index, :new, :create, :edit, :update, :destroy]
+
   root "users#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'

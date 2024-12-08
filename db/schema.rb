@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_05_185249) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_172036) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -243,6 +243,25 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_185249) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
   end
 
+  create_table "whatsapp_accounts", force: :cascade do |t|
+    t.string "name"
+    t.string "whatsapp_mobile_number"
+    t.string "app_id"
+    t.string "phone_number_id"
+    t.string "whatsapp_business_account_id"
+    t.string "token"
+    t.string "webhook_version"
+    t.bigint "added_by_id"
+    t.bigint "edited_by_id"
+    t.boolean "is_deleted", default: false
+    t.bigint "deleted_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["added_by_id"], name: "index_whatsapp_accounts_on_added_by_id"
+    t.index ["deleted_by_id"], name: "index_whatsapp_accounts_on_deleted_by_id"
+    t.index ["edited_by_id"], name: "index_whatsapp_accounts_on_edited_by_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "chatbot_button_replies", "chatbot_steps"
@@ -277,4 +296,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_185249) do
   add_foreign_key "segments", "users", column: "added_by_id"
   add_foreign_key "segments", "users", column: "deleted_by_id"
   add_foreign_key "segments", "users", column: "edited_by_id"
+  add_foreign_key "whatsapp_accounts", "users", column: "added_by_id"
+  add_foreign_key "whatsapp_accounts", "users", column: "deleted_by_id"
+  add_foreign_key "whatsapp_accounts", "users", column: "edited_by_id"
 end

@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2><%= whatsapp_account.new_record? ? "New WhatsApp Account" : "Edit WhatsApp Account" %></h2>
+        </div>
+        <div class="card-body">
+          <%= form_with(model: whatsapp_account, local: true) do |f| %>
+            <%= render "shared_partials/error", model: whatsapp_account %>
+
+            <div class="mb-3">
+              <%= f.label :name, class: "form-label" %>
+              <%= f.text_field :name, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :whatsapp_mobile_number, class: "form-label" %>
+              <%= f.text_field :whatsapp_mobile_number, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :app_id, "App ID", class: "form-label" %>
+              <%= f.text_field :app_id, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :phone_number_id, "Phone Number ID", class: "form-label" %>
+              <%= f.text_field :phone_number_id, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :whatsapp_business_account_id, "WhatsApp Business Account ID", class: "form-label" %>
+              <%= f.text_field :whatsapp_business_account_id, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :token, class: "form-label" %>
+              <%= f.text_field :token, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :webhook_version, class: "form-label" %>
+              <%= f.text_field :webhook_version, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.submit class: "btn btn-primary" %>
+              <%= link_to "Cancel", whatsapp_accounts_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
