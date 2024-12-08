@@ -1,6 +1,6 @@
 class ChatbotButtonRepliesController < ApplicationController
-    before_action :set_chatbot, only: [:new, :edit, :update, :create]
-    before_action :set_chatbot_step, only: [:new, :edit, :update, :create]
+    before_action :set_chatbot, only: [:new, :edit, :update, :create, :destroy]
+    before_action :set_chatbot_step, only: [:new, :edit, :update, :create, :destroy]
     
     before_action :authorize_super_admin, only: [:new, :create, :edit, :update, :destroy]
 
@@ -41,10 +41,9 @@ class ChatbotButtonRepliesController < ApplicationController
     def destroy
         @chatbot_button_reply = ChatbotButtonReply.find(params[:id])
         @chatbot_button_reply.deleted_by = current_user
-        @chatbot_button_reply.deleted_on = DateTime.now.utc
         @chatbot_button_reply.is_deleted = true
         @chatbot_button_reply.save
-        redirect_to chatbot_step_path(@chatbot, @chatbot_step), notice: "Reply option deleted successfully", status: :see_other
+        redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Reply option deleted successfully", status: :see_other
     end
 
     private

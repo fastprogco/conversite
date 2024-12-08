@@ -35,6 +35,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :master_segments, only: [:index, :new, :create, :edit, :update] do
+    resources :segments, only: [:index, :edit, :update, :destroy]
+  end
+
   root "users#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'

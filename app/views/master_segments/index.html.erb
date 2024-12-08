@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2>Master Segments</h2>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @master_segments.each do |master_segment| %>
+                <tr>
+                  <td><%= master_segment.name %></td>
+                  <td><%= master_segment.description %></td>
+                  <td>
+                    <%= link_to "Show Segments", master_segment_segments_path(master_segment), class: "btn btn-sm btn-warning" %>
+                    <%= link_to "Delete", master_segment_path(master_segment), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @master_segments %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

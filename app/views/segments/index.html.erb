@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <%= @table_type = @master_segment.table_type_id %>
+          <h2>Segments for <%= @master_segment.name %></h2>
+          <h4>Table type: <%= @table_type.to_s.humanize %></h4>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Persons Name</th>
+                <th>Mobile</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @segments.each do |segment| %>
+                <tr>
+                  <td><%= segment.name %></td>
+                  <td><%= segment.mobile %></td>
+                  <td>
+                    <%= link_to "Delete", master_segment_segment_path(@master_segment, segment.segment_id), 
+                        data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @segments %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
