@@ -46,15 +46,17 @@ module ChatbotCode
 
     def find_chatbot_step(to_phone_number)
         result = Segment.joins("JOIN master_segments ON segments.master_segment_id = master_segments.id")
-          .joins("JOIN chatbots ON chatbots.master_segment_id = master_segments.id")
-          .order("chatbots.created_at DESC")
-          .where("segments.mobile = ?", to_phone_number)
-          .select("chatbots.id AS chatbot_id, chatbots.created_at AS chatbot_created_at")
-          .first
+                        .joins("JOIN chatbots_master_segments ON master_segments.id = chatbots_master_segments.master_segment_id")
+                        .joins("JOIN chatbots ON chatbots.id = chatbots_master_segments.chatbot_id")
+                        .order("chatbots.created_at DESC")
+                        .where("segments.mobile = ? AND chatbots.is_deleted = false", to_phone_number)
+                        .select("chatbots.id AS chatbot_id, chatbots.created_at AS chatbot_created_at")
+                        .first
 
 
-      chatbot = result.chatbot_id ? Chatbot.find(result.chatbot_id) : Chatbot.find_by(master_segment_id: nil)
-      chatbot_step = chatbot.chatbot_steps.where(chatbot_button_reply_id: nil).first
+      chatbot = result&.chatbot_id ? Chatbot.find(result.chatbot_id) : Chatbot.joins("LEFT JOIN chatbots_master_segments ON chatbots.id = chatbots_master_segments.chatbot_id")
+                                       .where("chatbots_master_segments.master_segment_id IS NULL AND chatbots.is_deleted = false").first
+      chatbot_step = chatbot.chatbot_steps.where(chatbot_button_reply_id: nil, is_deleted: false).first
       return chatbot_step
     end
 
@@ -65,14 +67,14 @@ module ChatbotCode
         return
       end
 
-      buttons_count = chatbot_step.chatbot_button_replies.count
+      buttons_count = chatbot_step.chatbot_button_replies.where(is_deleted: false).count
 
       if buttons_count > 2
         send_message_as_interactive_list(to_phone_number, chatbot_step)
         return;
       end
 
-      buttons = chatbot_step.chatbot_button_replies.map { |button| { type: "reply", reply: { id: button.id, title: button.title } } }
+      buttons = chatbot_step.chatbot_button_replies.where(is_deleted: false).map { |button| { type: "reply", reply: { id: button.id, title: button.title } } }
       buttons.push({ type: "reply", reply: { id: "BACK_#{chatbot_step.previous_chatbot_step_id}", title: "back" } }) if chatbot_step.previous_chatbot_step_id.present?
       header = chatbot_step.header
       body = chatbot_step.description
@@ -99,7 +101,7 @@ module ChatbotCode
 
     def send_message_as_interactive_list(to_phone_number, chatbot_step)
       
-        rows = chatbot_step.chatbot_button_replies.map do |button|
+        rows = chatbot_step.chatbot_button_replies.where(is_deleted: false).map do |button|
           {
             id: button.id,
             title: button.title,
@@ -142,7 +144,7 @@ module ChatbotCode
     end
 
     def send_mutlimedia_messages(to_phone_number, chatbot_step)
-      mutlimedia_replies = chatbot_step.chatbot_multimedia_replies.order(:order)
+      mutlimedia_replies = chatbot_step.chatbot_multimedia_replies.where(is_deleted: false).order(:order)
       mutlimedia_replies.each do |mutlimedia_reply|
         case mutlimedia_reply.media_type_id.to_sym
         when :image
@@ -156,7 +158,7 @@ module ChatbotCode
     end
 
     def send_location_messages(to_phone_number, chatbot_step)
-      location_replies = chatbot_step.chatbot_location_replies.order(:order)
+      location_replies = chatbot_step.chatbot_location_replies.where(is_deleted: false).order(:order)
       location_replies.each do |location_reply|
         send_location_message(to_phone_number, location_reply.location_latitude, location_reply.location_longitude, location_reply.location_name, location_reply.location_address)
       end

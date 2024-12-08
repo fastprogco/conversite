@@ -15,8 +15,9 @@ class Chatbot < ApplicationRecord
     private
 
     def only_one_default_chatbot
-        if master_segments.empty? && Chatbot.where(master_segments: []).exists?
-            errors.add(:chatbot, "can only have one default chatbot without a segment")
+        if master_segments.empty? && Chatbot.where.not(id: id).joins("LEFT JOIN chatbots_master_segments ON chatbots.id = chatbots_master_segments.chatbot_id")
+                                       .where("chatbots_master_segments.master_segment_id IS NULL").exists?
+            errors.add(:base, "Only one default chatbot (without a segment) is allowed.")
         end
     end
 end
