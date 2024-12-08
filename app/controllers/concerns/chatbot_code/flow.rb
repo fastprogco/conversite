@@ -47,9 +47,8 @@ module ChatbotCode
     def find_chatbot_step(to_phone_number)
         result = Segment.joins("JOIN master_segments ON segments.master_segment_id = master_segments.id")
           .joins("JOIN chatbots ON chatbots.master_segment_id = master_segments.id")
-          .joins("LEFT JOIN masters ON masters.id = segments.table_id")
           .order("chatbots.created_at DESC")
-          .where("masters.mobile = ?", to_phone_number)
+          .where("segments.mobile = ?", to_phone_number)
           .select("chatbots.id AS chatbot_id, chatbots.created_at AS chatbot_created_at")
           .first
 

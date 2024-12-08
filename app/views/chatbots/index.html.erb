@@ -12,7 +12,7 @@
               <tr>
                 <th>Name</th>
                 <th>Description</th>
-                <th>Master Segment</th>
+                <th>Master Segments</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -21,7 +21,7 @@
                 <tr>
                   <td><%= chatbot.name %></td>
                   <td><%= chatbot.description %></td>
-                  <td><%= chatbot.master_segment&.name || 'Default' %></td>
+                  <td><%= chatbot.master_segments.pluck(:name).join(', ') %></td>
                   <td>
                     <%= link_to "Edit", edit_chatbot_path(chatbot), class: "btn btn-sm btn-warning" %>
                     <% first_step = ChatbotStep.find_by(chatbot_id: chatbot.id, previous_chatbot_step_id: nil) %>

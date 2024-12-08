@@ -21,7 +21,7 @@
                   <td><%= master_segment.description %></td>
                   <td>
                     <%= link_to "Show Segments", master_segment_segments_path(master_segment), class: "btn btn-sm btn-warning" %>
-                    <%= link_to "Delete", master_segment_path(master_segment), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
+                    <%= link_to "Delete", master_segment_path(master_segment), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
                   </td>
                 </tr>
               <% end %>

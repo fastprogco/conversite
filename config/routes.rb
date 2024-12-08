@@ -35,7 +35,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :master_segments, only: [:index, :new, :create, :edit, :update] do
+  resources :master_segments, only: [:index, :new, :create, :edit, :update, :destroy] do
     resources :segments, only: [:index, :edit, :update, :destroy]
   end
 

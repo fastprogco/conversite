@@ -8,7 +8,8 @@ class MasterSegmentCreator
   def call
     ActiveRecord::Base.transaction do
       @master_ids.each do |master_id|
-        Segment.create!(master_segment_id: @master_segment_id, table_id: master_id, added_by_id: @user_id, added_on: DateTime.now.utc)
+        master = Master.find(master_id)
+        Segment.create!(master_segment_id: @master_segment_id, mobile: master.mobile, person_name: master.name, person_email: master.email, added_by_id: @user_id, added_on: DateTime.now.utc)
       end
     end
   end

@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <%= @table_type = @master_segment.table_type_id %>
+          <% @table_type = @master_segment.table_type_id %>
           <h2>Segments for <%= @master_segment.name %></h2>
           <h4>Table type: <%= @table_type.to_s.humanize %></h4>
         </div>
@@ -13,16 +13,18 @@
               <tr>
                 <th>Persons Name</th>
                 <th>Mobile</th>
+                <th>Email</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <% @segments.each do |segment| %>
                 <tr>
-                  <td><%= segment.name %></td>
+                  <td><%= segment.person_name %></td>
                   <td><%= segment.mobile %></td>
+                  <td><%= segment.person_email %></td>
                   <td>
-                    <%= link_to "Delete", master_segment_segment_path(@master_segment, segment.segment_id), 
+                    <%= link_to "Delete", master_segment_segment_path(@master_segment, segment.id), 
                         data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
                   </td>
                 </tr>
