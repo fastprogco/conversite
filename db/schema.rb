@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_193605) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_205948) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,26 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_193605) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "broadcasts", force: :cascade do |t|
+    t.string "name"
+    t.bigint "whatsapp_account_id"
+    t.bigint "template_id"
+    t.bigint "master_segment_id"
+    t.integer "timing", null: false
+    t.bigint "added_by_id"
+    t.bigint "edited_by_id"
+    t.boolean "is_deleted", default: false
+    t.bigint "deleted_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["added_by_id"], name: "index_broadcasts_on_added_by_id"
+    t.index ["deleted_by_id"], name: "index_broadcasts_on_deleted_by_id"
+    t.index ["edited_by_id"], name: "index_broadcasts_on_edited_by_id"
+    t.index ["master_segment_id"], name: "index_broadcasts_on_master_segment_id"
+    t.index ["template_id"], name: "index_broadcasts_on_template_id"
+    t.index ["whatsapp_account_id"], name: "index_broadcasts_on_whatsapp_account_id"
   end
 
   create_table "chatbot_button_replies", force: :cascade do |t|
@@ -288,6 +308,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_193605) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "broadcasts", "master_segments"
+  add_foreign_key "broadcasts", "templates"
+  add_foreign_key "broadcasts", "users", column: "added_by_id"
+  add_foreign_key "broadcasts", "users", column: "deleted_by_id"
+  add_foreign_key "broadcasts", "users", column: "edited_by_id"
+  add_foreign_key "broadcasts", "whatsapp_accounts"
   add_foreign_key "chatbot_button_replies", "chatbot_steps"
   add_foreign_key "chatbot_button_replies", "chatbots"
   add_foreign_key "chatbot_button_replies", "users", column: "added_by_id"

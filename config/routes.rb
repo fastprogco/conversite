@@ -41,6 +41,7 @@ Rails.application.routes.draw do
 
   resources :whatsapp_accounts, only: [:index, :new, :create, :edit, :update, :destroy]
   resources :templates, only: [:index, :new, :create, :edit, :update, :destroy]
+  resources :broadcasts, only: [:index, :new, :create, :edit, :update, :destroy]
 
   root "users#new"
   post 'login', to: 'sessions#create'

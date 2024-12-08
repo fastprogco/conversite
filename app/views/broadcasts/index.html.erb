@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2>Broadcasts</h2>
+          <%= link_to "Add New Broadcast", new_broadcast_path, class: "btn btn-primary float-end" %>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Broadcast Name</th>
+                <th>WhatsApp Account</th>
+                <th>Template</th>
+                <th>Segment</th>
+                <th>Timing</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @broadcasts.each do |broadcast| %>
+                <tr>
+                  <td><%= broadcast.name %></td>
+                  <td><%= broadcast.whatsapp_account&.name %></td>
+                  <td><%= broadcast.template&.name %></td>
+                  <td><%= broadcast.master_segment&.name %></td>
+                  <td><%= broadcast.timing %></td>
+                  <td>
+                    <%= link_to "Edit", edit_broadcast_path(broadcast), class: "btn btn-sm btn-primary" %>
+                    <%= link_to "Delete", broadcast_path(broadcast), 
+                        data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @broadcasts %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
