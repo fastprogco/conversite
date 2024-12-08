@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_205948) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_231740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_205948) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "broadcast_reports", force: :cascade do |t|
+    t.bigint "broadcast_id"
+    t.string "broadcast_name"
+    t.string "mobile"
+    t.string "nationality"
+    t.datetime "sent_on"
+    t.datetime "delivered_on"
+    t.datetime "seen_on"
+    t.integer "message_status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "whatsapp_message_id"
+    t.string "reason_for_failure"
+    t.index ["broadcast_id"], name: "index_broadcast_reports_on_broadcast_id"
   end
 
   create_table "broadcasts", force: :cascade do |t|
@@ -241,6 +257,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_205948) do
     t.string "mobile"
     t.string "person_name"
     t.string "person_email"
+    t.string "nationality"
     t.index ["added_by_id"], name: "index_segments_on_added_by_id"
     t.index ["deleted_by_id"], name: "index_segments_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_segments_on_edited_by_id"
@@ -308,6 +325,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_205948) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "broadcast_reports", "broadcasts"
   add_foreign_key "broadcasts", "master_segments"
   add_foreign_key "broadcasts", "templates"
   add_foreign_key "broadcasts", "users", column: "added_by_id"

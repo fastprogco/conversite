@@ -27,10 +27,28 @@ class BroadcastJob < ApplicationJob
               puts "Error Type: #{error_body['error']['type']}" 
               puts "Error Code: #{error_body['error']['code']}"
               puts "FB Trace ID: #{error_body['error']['fbtrace_id']}"
+              puts "whatsapp_message_id: #{error_body['error']['whatsapp_message_id']}"
+
+              BroadcastReport.create(
+                broadcast: broadcast,
+                broadcast_name: broadcast.name,
+                mobile: segment.mobile,
+                nationality: segment.nationality,
+                message_status: :failed,
+                reason_for_failure: error_body['error']['message']
+              )
             end
           end
         else
-          puts "Message sent successfully"
+          BroadcastReport.create(
+            broadcast: broadcast,
+            broadcast_name: broadcast.name,
+            mobile: segment.mobile,
+            nationality: segment.nationality,
+            message_status: :sent,
+            sent_on: Time.now.utc,
+            whatsapp_message_id: response.is_a?(HTTP::Response) ? JSON.parse(response.body)['messages'].first['id'] : response['messages'].first['id']
+          )
         end
       end
     else
