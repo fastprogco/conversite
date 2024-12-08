@@ -14,7 +14,7 @@ class Broadcast < ApplicationRecord
     validates :added_by, presence: true
 
     enum timing: {
-        send_now: 0,
-        schedule: 1
+        send_now: 1,
+        schedule: 2
     }
 end

@@ -42,8 +42,8 @@
               <%= f.label :timing, class: "form-label" %>
               <%= f.select :timing,
                   options_for_select([
-                    ['Send Now', 'send_now'],
-                    ['Schedule', 'schedule']
+                    ['Send Now', 1],
+                    ['Schedule', 2]
                   ]),
                   { prompt: 'Select Timing' },
                   { class: "form-select" }

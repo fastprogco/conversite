@@ -2,7 +2,7 @@ require 'http'
 
 class WhatsappMessageService
   class << self
-    attr_accessor :phone_number_id, :url, :access_token
+    attr_accessor :phone_number_id, :url, :access_token, :url_without_phone_number_id
 
     def send_interactive_message(to_phone_number, interactive_message_object)
 
@@ -233,6 +233,27 @@ class WhatsappMessageService
       { error: e.message }
     end
 
+    def send_text_message_template_with_phone_number_id(to_phone_number, template_name, language_code, parameters, phone_number_id, token)
+      message = {
+        messaging_product: "whatsapp",
+        to: to_phone_number,
+        type: "template",
+        template: {
+          name: template_name,
+          language: {
+            code: language_code
+          },
+          components: parameters
+        }
+      }
+
+      response = HTTP.auth("Bearer #{token}").post("#{url_without_phone_number_id}#{phone_number_id}/messages", json: message)
+
+      handle_response(response)
+    rescue HTTP::Error => e
+      { error: e.message }
+    end
+
     def send_location_message(to_phone_number, latitude, longitude, location_name = nil, location_description = nil)
       message = {
         messaging_product: "whatsapp",
@@ -260,7 +281,7 @@ class WhatsappMessageService
         if response.content_type.mime_type == 'application/json'
           response.parse
         else
-          { error: "Unexpected MIME type: #{response.content_type.mime_type}" }
+         response
         end
       else
         error_details = {
@@ -276,6 +297,7 @@ class WhatsappMessageService
 
   self.phone_number_id = "104550469185353"
   self.url = "https://graph.facebook.com/v20.0/#{phone_number_id}"
+  self.url_without_phone_number_id = "https://graph.facebook.com/v20.0/"
   self.access_token = "EAAPDdDpQ0DwBO5ptclqW6YTJ0DOlJ6lvOnC3LkK7ANkFxMn4XdUU5BRC0f6p817g4pZCjtqU0ccV81VU0IPKb9XyHLcLZCtmTDnTvjPKZCD3ZAfdnRmZBpgKWhpNM0BZBdaoUUIOKtqGcHgEO0EhD8aN186ZAov1IXryC1zhZBntqtzmT9R0dSxaV8J4PrdZAwRchEUuVcW8jF1ZCBAgrS"
 
  
