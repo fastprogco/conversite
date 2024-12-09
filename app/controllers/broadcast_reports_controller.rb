@@ -1,4 +1,6 @@
 class BroadcastReportsController < ApplicationController
+  before_action :authorize_super_admin, only: [:index]
+
   def index
     @page = params[:page] || 1
     @broadcast = Broadcast.find(params[:broadcast_id])

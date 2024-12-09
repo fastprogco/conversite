@@ -4,6 +4,8 @@ class BroadcastsController < ApplicationController
   before_action :set_templates, only: [:new, :edit, :create, :update]
   before_action :set_master_segments, only: [:new, :edit, :create, :update]
 
+  before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy, :send_now]
+
   def index
     @page = params[:page] || 1
     @broadcasts = Broadcast.includes(:whatsapp_account, :template, :master_segment).where(is_deleted: false).order(created_at: :desc).page(@page).per(10)

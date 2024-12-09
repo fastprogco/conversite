@@ -1,4 +1,6 @@
 class MasterSegmentsController < ApplicationController
+  before_action :authorize_super_admin, only: [:index, :destroy]
+
   def index
     @page = params[:page] || 1
     @master_segments = MasterSegment.where(is_deleted: false).page(@page).per(10)

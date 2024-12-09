@@ -1,5 +1,6 @@
 class WhatsappAccountsController < ApplicationController
     before_action :set_whatsapp_account, only: [:edit, :update, :destroy]
+    before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy]
 
     def index
         @page = params[:page] || 1

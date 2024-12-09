@@ -1,4 +1,6 @@
 class SegmentsController < ApplicationController
+  before_action :authorize_super_admin, only: [:destroy]
+
   def index
     @master_segment = MasterSegment.find(params[:master_segment_id])
     case @master_segment.table_type_id.to_sym
