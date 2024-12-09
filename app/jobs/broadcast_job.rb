@@ -33,6 +33,7 @@ class BroadcastJob < ApplicationJob
                 broadcast: broadcast,
                 broadcast_name: broadcast.name,
                 mobile: segment.mobile,
+                name: segment.person_name,
                 nationality: segment.nationality,
                 message_status: :failed,
                 reason_for_failure: error_body['error']['message']
@@ -44,6 +45,7 @@ class BroadcastJob < ApplicationJob
             broadcast: broadcast,
             broadcast_name: broadcast.name,
             mobile: segment.mobile,
+            name: segment.person_name,
             nationality: segment.nationality,
             message_status: :sent,
             sent_on: Time.now.utc,

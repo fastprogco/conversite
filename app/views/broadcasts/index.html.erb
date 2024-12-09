@@ -30,7 +30,8 @@
                     <%= link_to "Edit", edit_broadcast_path(broadcast), class: "btn btn-sm btn-primary" %>
                     <%= link_to "Delete", broadcast_path(broadcast), 
                         data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-                    <%= link_to "Send Now", send_now_broadcast_path(broadcast), data: { turbo_method: :post }, class: "btn btn-sm btn-success" %>
+                    <%= link_to "Send Again", send_now_broadcast_path(broadcast), data: { turbo_method: :post }, class: "btn btn-sm btn-success" %>
+                    <%= link_to "Reports", broadcast_broadcast_reports_path(broadcast), class: "btn btn-sm btn-info" %>
                   </td>
                 </tr>
               <% end %>

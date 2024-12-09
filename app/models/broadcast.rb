@@ -5,7 +5,8 @@ class Broadcast < ApplicationRecord
     belongs_to :added_by, class_name: "User"
     belongs_to :edited_by, class_name: "User", optional: true
     belongs_to :deleted_by, class_name: "User", optional: true
-
+    has_many :broadcast_reports
+    
     validates :name, presence: true
     validates :timing, presence: true
     validates :whatsapp_account, presence: true

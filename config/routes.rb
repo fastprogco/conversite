@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     member do
       post :send_now
     end
+    resources :broadcast_reports, only: [:index]
   end
 
   root "users#new"

@@ -6,7 +6,7 @@ class BroadcastsController < ApplicationController
 
   def index
     @page = params[:page] || 1
-    @broadcasts = Broadcast.where(is_deleted: false).page(@page).per(10)
+    @broadcasts = Broadcast.includes(:whatsapp_account, :template, :master_segment).where(is_deleted: false).order(created_at: :desc).page(@page).per(10)
   end
 
   def new
