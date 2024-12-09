@@ -6,6 +6,5 @@ class Segment < ApplicationRecord
 
     validates :mobile, presence: true
     validates :person_name, presence: true
-    validates :person_email, presence: true
     validates :master_segment_id, presence: true
 end

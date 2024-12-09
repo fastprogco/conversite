@@ -1,0 +1,36 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2><%= master_segment.new_record? ? "New Master Segment" : "Edit Master Segment" %></h2>
+        </div>
+        <div class="card-body">
+          <%= form_with(model: master_segment, local: true) do |f| %>
+            <%= render "shared_partials/error", model: master_segment %>
+
+            <div class="mb-3">
+              <%= f.label :name, class: "form-label" %>
+              <%= f.text_field :name, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :description, class: "form-label" %>
+              <%= f.text_area :description, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :excel_file, class: "form-label" %>
+              <%= f.file_field :excel_file, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.submit class: "btn btn-primary" %>
+              <%= link_to "Cancel", master_segments_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

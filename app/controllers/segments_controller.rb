@@ -3,10 +3,7 @@ class SegmentsController < ApplicationController
 
   def index
     @master_segment = MasterSegment.find(params[:master_segment_id])
-    case @master_segment.table_type_id.to_sym
-    when :master
-      @segments = @master_segment.segments.where(segments: {is_deleted: false}).page(params[:page]).per(10)
-    end
+    @segments = @master_segment.segments.where(segments: {is_deleted: false}).page(params[:page]).per(10)
   end
 
   def destroy

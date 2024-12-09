@@ -3,7 +3,7 @@ class MasterSegment < ApplicationRecord
     has_many :segments
     has_and_belongs_to_many :chatbots
 
-    validates :name, :description, :table_type_id, presence: true
+    validates :name, :description,presence: true
     validates :name, uniqueness: true
 
     enum table_type_id: { master: 1 }

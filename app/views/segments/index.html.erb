@@ -5,7 +5,7 @@
         <div class="card-header">
           <% @table_type = @master_segment.table_type_id %>
           <h2>Segments for <%= @master_segment.name %></h2>
-          <h4>Table type: <%= @table_type.to_s.humanize %></h4>
+          <h4>Table type: <%= @table_type.to_s.humanize if @table_type.present? %></h4>
         </div>
         <div class="card-body">
           <table class="table table-striped">
@@ -14,6 +14,7 @@
                 <th>Persons Name</th>
                 <th>Mobile</th>
                 <th>Email</th>
+                <th>Nationality</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -23,6 +24,7 @@
                   <td><%= segment.person_name %></td>
                   <td><%= segment.mobile %></td>
                   <td><%= segment.person_email %></td>
+                  <td><%= segment.nationality %></td>
                   <td>
                     <%= link_to "Delete", master_segment_segment_path(@master_segment, segment.id), 
                         data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
