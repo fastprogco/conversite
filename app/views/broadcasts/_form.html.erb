@@ -46,8 +46,15 @@
                     ['Schedule', 2]
                   ]),
                   { prompt: 'Select Timing' },
-                  { class: "form-select" }
+                    { class: "form-select",
+                    onchange: "if(this.value=='2'){document.querySelector('[data-broadcast-target=\"scheduledAtField\"]').style.display='block'}else{document.querySelector('[data-broadcast-target=\"scheduledAtField\"]').style.display='none'}"
+                  }
               %>
+            </div>
+
+            <div class="mb-3" data-broadcast-target="scheduledAtField" style="display: none;">
+              <%= f.label :scheduled_at, "Schedule Time", class: "form-label" %>
+              <%= f.datetime_field :scheduled_at, class: "form-control" %>
             </div>
 
             <div class="mb-3">

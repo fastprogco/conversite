@@ -20,7 +20,11 @@ class BroadcastsController < ApplicationController
     @broadcast.timing = broadcast_params[:timing].to_i
     @broadcast.added_by = current_user
     if @broadcast.save
-      BroadcastJob.perform_later(@broadcast)
+      if @broadcast.timing.to_sym == :schedule  
+        BroadcastJob.set(wait_until: @broadcast.scheduled_at - SITE_TIME_OFFSET.hours).perform_later(@broadcast)
+      else
+        BroadcastJob.perform_later(@broadcast)
+      end
       redirect_to broadcasts_path, notice: 'Broadcast was successfully created.'
     else
       render :new, status: :unprocessable_entity
@@ -64,7 +68,7 @@ class BroadcastsController < ApplicationController
   end
 
   def broadcast_params
-    params.require(:broadcast).permit(:name, :whatsapp_account_id, :template_id, :master_segment_id, :timing)
+    params.require(:broadcast).permit(:name, :whatsapp_account_id, :template_id, :master_segment_id, :timing, :scheduled_at)
   end
 
   def set_whatsapp_accounts
