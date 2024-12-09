@@ -10,11 +10,13 @@ class BroadcastJob < ApplicationJob
     if timing == :send_now
       broadcast.master_segment.segments.each do |segment|
         puts "Sending message to #{segment.mobile}"
-        response = WhatsappMessageService.send_text_message_template(
+        response = WhatsappMessageService.send_text_message_template_with_phone_number_id(
           segment.mobile,
           template.meta_template_name,
           template.language,
-          template.component.present? ? JSON.parse(template.component) : {}
+          template.component.present? ? JSON.parse(template.component) : {},
+          whatsapp_account.phone_number_id,
+          whatsapp_account.token
         )
         puts "Response FROM WHATSAPP: #{response}"
 
