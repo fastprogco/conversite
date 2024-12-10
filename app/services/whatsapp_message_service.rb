@@ -295,10 +295,12 @@ class WhatsappMessageService
     end
   end
 
-  self.phone_number_id = "104550469185353"
+ # self.phone_number_id = "104550469185353"
+  self.phone_number_id = "465726443298163"
   self.url = "https://graph.facebook.com/v20.0/#{phone_number_id}"
   self.url_without_phone_number_id = "https://graph.facebook.com/v20.0/"
-  self.access_token = "EAAPDdDpQ0DwBO5ptclqW6YTJ0DOlJ6lvOnC3LkK7ANkFxMn4XdUU5BRC0f6p817g4pZCjtqU0ccV81VU0IPKb9XyHLcLZCtmTDnTvjPKZCD3ZAfdnRmZBpgKWhpNM0BZBdaoUUIOKtqGcHgEO0EhD8aN186ZAov1IXryC1zhZBntqtzmT9R0dSxaV8J4PrdZAwRchEUuVcW8jF1ZCBAgrS"
+  #self.access_token = "EAAPDdDpQ0DwBO5ptclqW6YTJ0DOlJ6lvOnC3LkK7ANkFxMn4XdUU5BRC0f6p817g4pZCjtqU0ccV81VU0IPKb9XyHLcLZCtmTDnTvjPKZCD3ZAfdnRmZBpgKWhpNM0BZBdaoUUIOKtqGcHgEO0EhD8aN186ZAov1IXryC1zhZBntqtzmT9R0dSxaV8J4PrdZAwRchEUuVcW8jF1ZCBAgrS"
+  self.access_token = "EAAIS68btaNwBOZBMzMjyfJrCaSfrUbwCyxYZAA9ZCZAyqbaeLucVp6OZCuCBKeGT98lCeySGqFVxSqhlcb1AEZCXzrg0VsfqX98HZBUGGXcDMtlVRQXZA2BagCbVzLbkQq3lFIj6Imb4gZAsaq3q1slBIy3pWUVozjDHMwZAbjxMlwH4TVsNYJHt2rXCcFZC1aNSCiYDwZDZD"
 
  
 end
