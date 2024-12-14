@@ -48,6 +48,13 @@ Rails.application.routes.draw do
     resources :broadcast_reports, only: [:index]
   end
 
+  resources :conversations, only: [:index] do 
+    collection do
+      get :conversations_by_phone_number
+      post :respond
+    end
+  end
+
   root "users#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'

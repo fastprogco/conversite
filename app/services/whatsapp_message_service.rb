@@ -295,12 +295,15 @@ class WhatsappMessageService
     end
   end
 
- # self.phone_number_id = "104550469185353"
-  self.phone_number_id = "465726443298163"
+  self.phone_number_id = Rails.env.development? ? "429210470286934" : "465726443298163"
+  self.access_token = Rails.env.development? ? "EAAV3mOP1vYoBO9UA65kWxgO3NzuICcn7TiyXc8cXhCZAKFm4b1nMUtw3AQ6zwknf4w5FEZB3eZCvhqH0sv52EEJ27tm8t9qwwO2B1ieBcPA5WUw69BF5Iz45eEQ121NS7qahEu7lPV3bWS2MFxFokRDJozcvT0nTXHNd6o6nVflRK02ZCnu8uhaVuyHl9WZBv9gZDZD" : "EAAIS68btaNwBOZBMzMjyfJrCaSfrUbwCyxYZAA9ZCZAyqbaeLucVp6OZCuCBKeGT98lCeySGqFVxSqhlcb1AEZCXzrg0VsfqX98HZBUGGXcDMtlVRQXZA2BagCbVzLbkQq3lFIj6Imb4gZAsaq3q1slBIy3pWUVozjDHMwZAbjxMlwH4TVsNYJHt2rXCcFZC1aNSCiYDwZDZD"
+
   self.url = "https://graph.facebook.com/v20.0/#{phone_number_id}"
   self.url_without_phone_number_id = "https://graph.facebook.com/v20.0/"
-  #self.access_token = "EAAPDdDpQ0DwBO5ptclqW6YTJ0DOlJ6lvOnC3LkK7ANkFxMn4XdUU5BRC0f6p817g4pZCjtqU0ccV81VU0IPKb9XyHLcLZCtmTDnTvjPKZCD3ZAfdnRmZBpgKWhpNM0BZBdaoUUIOKtqGcHgEO0EhD8aN186ZAov1IXryC1zhZBntqtzmT9R0dSxaV8J4PrdZAwRchEUuVcW8jF1ZCBAgrS"
-  self.access_token = "EAAIS68btaNwBOZBMzMjyfJrCaSfrUbwCyxYZAA9ZCZAyqbaeLucVp6OZCuCBKeGT98lCeySGqFVxSqhlcb1AEZCXzrg0VsfqX98HZBUGGXcDMtlVRQXZA2BagCbVzLbkQq3lFIj6Imb4gZAsaq3q1slBIy3pWUVozjDHMwZAbjxMlwH4TVsNYJHt2rXCcFZC1aNSCiYDwZDZD"
+  # GLOBEX TEST
+  #GLOBEX
+  #self.phone_number_id = "465726443298163"
+  #self.access_token = "EAAIS68btaNwBOZBMzMjyfJrCaSfrUbwCyxYZAA9ZCZAyqbaeLucVp6OZCuCBKeGT98lCeySGqFVxSqhlcb1AEZCXzrg0VsfqX98HZBUGGXcDMtlVRQXZA2BagCbVzLbkQq3lFIj6Imb4gZAsaq3q1slBIy3pWUVozjDHMwZAbjxMlwH4TVsNYJHt2rXCcFZC1aNSCiYDwZDZD"
 
  
 end

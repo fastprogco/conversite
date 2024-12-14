@@ -42,6 +42,10 @@ module ChatbotCode
       list_reply_id = payload&.dig(:list_reply_id) 
       message_response_body = payload&.dig(:message_response_body)
       
+      if message_response_body.present?
+        create_conversation(to_phone_number, { text: { content: message_response_body } }, false)
+      end
+
       reply_id = list_reply_id || button_reply_id
 
       puts "reply_id: #{reply_id}"
@@ -50,8 +54,10 @@ module ChatbotCode
         is_back_button = reply_id.include?("BACK_")
         if is_back_button
           chatbot_step = ChatbotStep.find(reply_id.split("_").last)
+          create_conversation(to_phone_number, { text: { buttons: "back" } }, false) if reply_id.present?
         else
           button_reply = ChatbotButtonReply.find(reply_id)
+          create_conversation(to_phone_number, { text: { buttons: button_reply.title } }, false) if reply_id.present?
           if (button_reply.present?)
             if (button_reply.action_type_id.to_sym == :forward)
               chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
@@ -69,6 +75,8 @@ module ChatbotCode
         send_mutlimedia_messages(to_phone_number, chatbot_step)
         send_location_messages(to_phone_number, chatbot_step)
       end
+
+
     end
 
 
@@ -125,6 +133,16 @@ module ChatbotCode
           }
         }
       response = WhatsappMessageService.send_interactive_message(to_phone_number, interactive_payload  )
+
+      conversation_details = {
+        text: {
+          header: chatbot_step.header,
+          body: chatbot_step.description,
+          footer: chatbot_step.footer,
+          buttons: buttons.map { |button| button[:reply][:title] }.join("\n")
+        },
+      }
+      create_conversation(to_phone_number, conversation_details, true)
     end
 
     def send_message_as_interactive_list(to_phone_number, chatbot_step)
@@ -159,6 +177,15 @@ module ChatbotCode
           }
         }
         WhatsappMessageService.send_interactive_list_message(to_phone_number, interactive_list_message_object)
+
+
+      conversation_details = {
+        text: {
+          body: chatbot_step.description,
+          buttons: rows.map { |button| button[:title] }.join("\n")
+        }
+      } 
+      create_conversation(to_phone_number, conversation_details, true)
     end
 
     def get_message_back_payload(recieved_params)
@@ -193,20 +220,46 @@ module ChatbotCode
     end
 
     def send_image_message(to_phone_number, image_url, file_caption)
-      WhatsappMessageService.send_image_message(to_phone_number, image_url, file_caption) if image_url.present?
+      if (image_url.present?)
+        WhatsappMessageService.send_image_message(to_phone_number, image_url, file_caption)
+        create_conversation(to_phone_number, { image_url: image_url, file_caption: file_caption }, true)
+      end
     end
 
     def send_document_message(to_phone_number, document_url, file_caption)
-      WhatsappMessageService.send_document_link(to_phone_number, document_url, file_caption) if document_url.present?
+      if (document_url.present?)
+        WhatsappMessageService.send_document_link(to_phone_number, document_url, file_caption)
+        create_conversation(to_phone_number, { document_url: document_url, file_caption: file_caption }, true)
+      end
     end
 
     def send_location_message(to_phone_number, latitude, longitude, location_name, location_description)
-      WhatsappMessageService.send_location_message(to_phone_number, latitude, longitude, location_name, location_description) if latitude.present? && longitude.present?
+      if (latitude.present? && longitude.present?)
+        WhatsappMessageService.send_location_message(to_phone_number, latitude, longitude, location_name, location_description)
+        create_conversation(to_phone_number, { latitude: latitude, longitude: longitude, location_name: location_name, location_description: location_description }, true)
+      end
     end
 
     def send_text_message(to_phone_number, text)
-      WhatsappMessageService.send_text_message(to_phone_number, text) if text.present?
+      if (text.present?)
+        WhatsappMessageService.send_text_message(to_phone_number, text)
+        create_conversation(to_phone_number, { text: { content: text } }, true)
+      end
     end
 
+    def create_conversation(to_phone_number, details, is_from_chat_bot)
+      Conversation.create(
+        mobile_number: to_phone_number,
+        text: details[:text] || "",
+        image_url: details[:image_url] || "",
+        document_url: details[:document_url] || "", 
+        file_caption: details[:file_caption] || "",
+        latitude: details[:latitude] || "",
+        longitude: details[:longitude] || "",
+        location_name: details[:location_name] || "",
+        location_description: details[:location_description] || "",
+        is_from_chat_bot: is_from_chat_bot
+      )
+    end
   end
 end

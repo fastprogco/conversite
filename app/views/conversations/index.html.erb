@@ -1,0 +1,143 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    <!-- Phone Numbers List -->
+    <div class="col-md-3 border-right" style="height: 100vh; overflow-y: auto;">
+      <div class="list-group">
+        <% @phone_numbers.each do |phone| %>
+          <a href="#" class="list-group-item list-group-item-action phone-number" data-phone="<%= phone.mobile_number %>">
+            <%= phone.mobile_number %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Conversation Area -->
+    <div class="col-md-9">
+      <div id="conversation-container" style="height: 100vh; overflow-y: auto; display: flex; flex-direction: column-reverse;">
+        <div id="messages">
+          <!-- Messages will be loaded here -->
+        </div>
+      </div>
+      <div class="message-input-container p-3 border-top">
+        <%= form_with(url: respond_conversations_path, local: true, class: "d-flex flex-column gap-2", id: "message-form") do |f| %>
+          <div class="form-group">
+            <%= f.text_area :message, class: "form-control", rows: 3, placeholder: "Type your message..." %>
+          </div>
+          <div class="form-group text-danger">
+            Only image and pdf are supported
+          </div>
+          <div class="form-group">
+            <%= f.file_field :file, class: "form-control", accept: "image/png,image/jpeg,application/pdf" %>
+          </div>
+          <%= hidden_field_tag :phone_number, @phone_number %>
+          <div class="d-flex justify-content-end">
+            <%= f.submit "Send", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('turbo:load', function() {
+  const messageContainer = document.getElementById('messages');
+  const messageForm = document.getElementById('message-form');
+  let page = 1;
+  let currentPhone = null;
+  let loading = false;
+
+  // Handle phone number selection
+  document.querySelectorAll('.phone-number').forEach(phone => {
+    phone.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.phone-number').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      currentPhone = this.dataset.phone;
+      messageForm.querySelector('input[name="phone_number"]').value = currentPhone;
+      page = 1;
+      messageContainer.innerHTML = '';
+      loadMessages();
+    });
+  });
+
+  // Infinite scroll
+  document.getElementById('conversation-container').addEventListener('scroll', function(e) {
+    const container = e.target;
+    if(container.scrollTop === 0 && !loading && currentPhone) {
+      page++;
+      loadMessages();
+    }
+  });
+
+  function loadMessages() {
+    if(!currentPhone || loading) return;
+    
+    loading = true;
+    fetch(`/conversations/conversations_by_phone_number?page=${page}&per_page=20&mobile_number=${currentPhone}`)
+      .then(response => response.json())
+      .then(data => {
+        data.reverse().forEach(conversation => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `message ${conversation.is_from_chat_bot ? 'text-right' : 'text-left'} mb-2`;
+          
+          let content = '';
+          const details = conversation
+
+          if(details.text) {
+            content = `
+              ${details.text.content ? `<p>content : ${details.text.content}</p>` : ''}
+              ${details.text.header ? `<p>header : ${details.text.header}</p>` : ''}
+              ${details.text.body ? `<p>body : ${details.text.body}</p>` : ''}
+              ${details.text.footer ? `<p>footer : ${details.text.footer}</p>` : ''}
+              ${details.text.buttons ? `<p>buttons : ${details.text.buttons}</p>` : ''}
+            `;
+          } else if(details.image_url) {
+            content = `<img src="${details.image_url}" class="img-fluid" alt="${details.file_caption || ''}" />
+                      <p>${details.file_caption || ''}</p>`;
+          } else if(details.document_url) {
+            content = `<a href="${details.document_url}" target="_blank" class="text-danger">View Document</a>
+                      <p>${details.file_caption || ''}</p>`;
+          } else if(details.latitude && details.longitude) {
+            content = `<p>Location: ${details.location_name || ''}</p>
+                      <p>${details.location_description || ''}</p>
+                      <a href="https://maps.google.com/?q=${details.latitude},${details.longitude}" target="_blank" class="text-danger">View on Map</a>`;
+          }
+
+          messageDiv.innerHTML = `
+            <div class="card ${conversation.is_from_chat_bot ? 'bg-primary text-white float-right' : 'bg-light float-left'}" style="max-width: 70%;">
+              <div class="card-body">
+                ${content}
+                <small class="d-block ${conversation.is_from_chat_bot ? 'text-light' : 'text-muted'} ">${new Date(conversation.created_at).toLocaleString()}</small>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          `;
+          
+          messageContainer.appendChild(messageDiv);
+        });
+        loading = false;
+      })
+      .catch(error => {
+        console.error('Error loading messages:', error);
+        loading = false;
+      });
+  }
+});
+</script>
+
+<style>
+.message {
+  margin: 10px;
+}
+.card {
+  border-radius: 15px;
+}
+.border-right {
+  border-right: 1px solid #dee2e6;
+}
+.list-group-item.active {
+  background-color: #007bff;
+  color: white;
+}
+</style>

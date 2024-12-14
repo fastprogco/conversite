@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_09_123232) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_13_215741) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -187,6 +187,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_09_123232) do
     t.bigint "master_segment_id", null: false
     t.index ["chatbot_id"], name: "index_chatbots_master_segments_on_chatbot_id"
     t.index ["master_segment_id"], name: "index_chatbots_master_segments_on_master_segment_id"
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.string "mobile_number"
+    t.boolean "is_from_chat_bot"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "image_url"
+    t.string "document_url"
+    t.string "file_caption"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.string "location_name"
+    t.string "location_description"
+    t.jsonb "text"
   end
 
   create_table "master_segments", force: :cascade do |t|
