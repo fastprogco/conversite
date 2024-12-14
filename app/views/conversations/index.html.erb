@@ -13,8 +13,8 @@
 
     <!-- Conversation Area -->
     <div class="col-md-9">
-      <div id="conversation-container" style="height: 100vh; overflow-y: auto; display: flex; flex-direction: column-reverse;">
-        <div id="messages">
+      <div id="conversation-container" style="height: 70vh; overflow-y: auto; display: flex; ; width: 100%;">
+        <div id="messages" style="width: 100%;"> 
           <!-- Messages will be loaded here -->
         </div>
       </div>
@@ -43,6 +43,8 @@
 document.addEventListener('turbo:load', function() {
   const messageContainer = document.getElementById('messages');
   const messageForm = document.getElementById('message-form');
+  const conversationContainer = document.getElementById('conversation-container');
+
   let page = 1;
   let currentPhone = null;
   let loading = false;
@@ -73,11 +75,14 @@ document.addEventListener('turbo:load', function() {
   function loadMessages() {
     if(!currentPhone || loading) return;
     
+    console.log(page)
+
     loading = true;
     fetch(`/conversations/conversations_by_phone_number?page=${page}&per_page=20&mobile_number=${currentPhone}`)
       .then(response => response.json())
       .then(data => {
-        data.reverse().forEach(conversation => {
+        let firstNewMessage = null;
+        data.forEach(conversation => {
           const messageDiv = document.createElement('div');
           messageDiv.className = `message ${conversation.is_from_chat_bot ? 'text-right' : 'text-left'} mb-2`;
           
@@ -86,11 +91,11 @@ document.addEventListener('turbo:load', function() {
 
           if(details.text) {
             content = `
-              ${details.text.content ? `<p>content : ${details.text.content}</p>` : ''}
-              ${details.text.header ? `<p>header : ${details.text.header}</p>` : ''}
-              ${details.text.body ? `<p>body : ${details.text.body}</p>` : ''}
-              ${details.text.footer ? `<p>footer : ${details.text.footer}</p>` : ''}
-              ${details.text.buttons ? `<p>buttons : ${details.text.buttons}</p>` : ''}
+              ${details.text.content ? `<p class="width-100">content : ${details.text.content}</p>` : ''}
+              ${details.text.header ? `<p class="width-100">header : ${details.text.header}</p>` : ''}
+              ${details.text.body ? `<p class="width-100">body : ${details.text.body}</p>` : ''}
+              ${details.text.footer ? `<p class="width-100">footer : ${details.text.footer}</p>` : ''}
+              ${details.text.buttons ? `<p class="width-100">buttons : ${details.text.buttons}</p>` : ''}
             `;
           } else if(details.image_url) {
             content = `<img src="${details.image_url}" class="img-fluid" alt="${details.file_caption || ''}" />
@@ -114,14 +119,25 @@ document.addEventListener('turbo:load', function() {
             <div class="clearfix"></div>
           `;
           
-          messageContainer.appendChild(messageDiv);
+          messageContainer.insertBefore(messageDiv, messageContainer.firstChild);
+          if (!firstNewMessage) {
+            firstNewMessage = messageDiv;
+          }
         });
         loading = false;
+        console.log(data.length)
+        console.log(messageContainer.children.length)
+        if(data.length > 0 && firstNewMessage) {
+          setTimeout(() => {
+            firstNewMessage.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
       })
       .catch(error => {
         console.error('Error loading messages:', error);
         loading = false;
       });
+
   }
 });
 </script>
