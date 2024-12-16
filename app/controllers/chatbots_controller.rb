@@ -46,7 +46,7 @@ class ChatbotsController < ApplicationController
 
     private
     def chatbot_params
-        params.require(:chatbot).permit(:name, :description, master_segment_ids: [])
+        params.require(:chatbot).permit(:name, :description, :select_valid_option, master_segment_ids: [])
     end
 
     def associate_master_segments(chatbot, is_update = false)

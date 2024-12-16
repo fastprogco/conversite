@@ -108,7 +108,7 @@ module ChatbotCode
 
 
       if user_chatbot_interaction.present?
-
+        chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
 
         puts "saved step id: #{user_chatbot_interaction.chatbot_step_id}"
         puts "incoming clicked button id: #{incoming_clicked_button_id}"
@@ -140,7 +140,7 @@ module ChatbotCode
           puts "incoming id #{incoming_clicked_button_id}"
           puts "chabot_button_reply_id #{ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_reply_id}"
           if(!ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_reply_id))
-            send_please_select_valid_option_message(to_phone_number)
+            send_please_select_valid_option_message(to_phone_number, chatbot)
             return true
           end
         end
@@ -148,7 +148,7 @@ module ChatbotCode
         #you want to check  if the previous step id of the saved step is equal to the incoming step id
         if(is_incoming_clicked_button_back_button && !is_saved_clicked_button_back_button)
           if(incoming_clicked_button_id.split("_").last.to_i != ChatbotStep.find(user_chatbot_interaction.chatbot_step_id).previous_chatbot_step_id)
-            send_please_select_valid_option_message(to_phone_number)
+            send_please_select_valid_option_message(to_phone_number, chatbot)
             return true
           end
         end
@@ -159,7 +159,7 @@ module ChatbotCode
           puts "ids #{ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
           puts "incoming id #{incoming_clicked_button_id}"
           if(!ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
-            send_please_select_valid_option_message(to_phone_number)
+            send_please_select_valid_option_message(to_phone_number, chatbot)
             return true
           end
         end
@@ -171,7 +171,7 @@ module ChatbotCode
 
           if saved_chabot_step.present?
             if(!saved_chabot_step.chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
-              send_please_select_valid_option_message(to_phone_number)
+              send_please_select_valid_option_message(to_phone_number, chatbot)
               return true
             end
           end
@@ -364,9 +364,9 @@ module ChatbotCode
       )
     end
 
-    def send_please_select_valid_option_message(to_phone_number)
-      WhatsappMessageService.send_text_message(to_phone_number, "Please select a valid option")
-      create_conversation(to_phone_number, { text: { content: "Please select a valid option" } }, true)
+    def send_please_select_valid_option_message(to_phone_number, chatbot)
+      WhatsappMessageService.send_text_message(to_phone_number, chatbot.select_valid_option)
+      create_conversation(to_phone_number, { text: { content: chatbot.select_valid_option } }, true)
     end
   end
 end

@@ -12,6 +12,11 @@
   </div>
 
   <div class="mb-3">
+    <%= f.label :select_valid_option, class: "form-label" %>
+    <%= f.text_area :select_valid_option, class: "form-control", rows: 5, required: true %>
+  </div>
+
+  <div class="mb-3">
     <%= f.label :master_segment_ids, class: "form-label" %>
     <div class="form-check d-flex flex-wrap gap-3">
       <%= f.collection_check_boxes :master_segment_ids, MasterSegment.where(is_deleted: false), :id, :name do |b| %>
