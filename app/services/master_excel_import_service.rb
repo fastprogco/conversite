@@ -9,15 +9,8 @@ class MasterExcelImportService
     end
 
     def safe_parse_date(value)
-        return nil if value.nil?
-        begin
-          date = Date.new(1899, 12, 30) + value.to_i
-          return date if date.year.between?(1900, 9999) # Validate year range
-          nil
-        rescue
-          nil
-        end
-      end
+      return value
+    end
 
      def import
        # Download file from S3

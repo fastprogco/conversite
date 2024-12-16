@@ -55,9 +55,15 @@ module ChatbotCode
         if is_back_button
           chatbot_step = ChatbotStep.find(reply_id.split("_").last)
           create_conversation(to_phone_number, { text: { buttons: "back" } }, false) if reply_id.present?
+          if lock_user_in_chatbot_step(to_phone_number, reply_id)
+            return
+          end
         else
           button_reply = ChatbotButtonReply.find(reply_id)
           create_conversation(to_phone_number, { text: { buttons: button_reply.title } }, false) if reply_id.present?
+          if lock_user_in_chatbot_step(to_phone_number, reply_id)
+            return
+          end
           if (button_reply.present?)
             if (button_reply.action_type_id.to_sym == :forward)
               chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
@@ -66,6 +72,7 @@ module ChatbotCode
             end
           end
         end
+        save_user_chatbot_interaction(to_phone_number, chatbot_step, reply_id)
       else
         chatbot_step = find_chatbot_step(to_phone_number)
       end
@@ -77,6 +84,78 @@ module ChatbotCode
       end
 
 
+    end
+
+    def save_user_chatbot_interaction(to_phone_number, chatbot_step, clicked_button_id)
+      existing_interaction = get_user_chatbot_interaction(to_phone_number);
+      if existing_interaction.present?
+        existing_interaction.update(chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id)
+      else
+        UserChatbotInteraction.create(mobile_number: to_phone_number, chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id)
+      end
+    end
+
+    def get_user_chatbot_interaction(to_phone_number)
+      UserChatbotInteraction.find_by(mobile_number: to_phone_number)
+    end
+
+    def lock_user_in_chatbot_step(to_phone_number, incoming_clicked_button_id)
+      user_chatbot_interaction = get_user_chatbot_interaction(to_phone_number)
+
+
+      if user_chatbot_interaction.present?
+        puts "saved step id: #{user_chatbot_interaction.chatbot_step_id}"
+        puts "incoming clicked button id: #{incoming_clicked_button_id}"
+        is_incoming_clicked_button_back_button = incoming_clicked_button_id.include?("BACK_")
+        is_saved_clicked_button_back_button = user_chatbot_interaction.clicked_button_id.include?("BACK_")
+
+        # if both are back buttons
+        #you want to check if the incoming steps button_reply_ids includees saved chatbot_button_reply_id
+        if(is_incoming_clicked_button_back_button && is_saved_clicked_button_back_button)
+          puts "HERE WE ARE IN THE BOTH SBACK BUTTON"
+          puts "ids #{ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
+          puts "incoming id #{incoming_clicked_button_id}"
+          puts "chabot_button_reply_id #{ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_reply_id}"
+          if(!ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_reply_id))
+            send_please_select_valid_option_message(to_phone_number)
+            return true
+          end
+        end
+        # if incoming is back button and saved is not back button
+        #you want to check  if the previous step id of the saved step is equal to the incoming step id
+        if(is_incoming_clicked_button_back_button && !is_saved_clicked_button_back_button)
+          if(incoming_clicked_button_id.split("_").last.to_i != ChatbotStep.find(user_chatbot_interaction.chatbot_step_id).previous_chatbot_step_id)
+            send_please_select_valid_option_message(to_phone_number)
+            return true
+          end
+        end
+        # if incoming is not back button and saved is back button
+        #you want to check if the saved step button reply ids include the incoming step id
+        if(!is_incoming_clicked_button_back_button && is_saved_clicked_button_back_button)
+          puts "HERE WE ARE IN THE SAVED BACK BUTTON"
+          puts "ids #{ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
+          puts "incoming id #{incoming_clicked_button_id}"
+          if(!ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
+            send_please_select_valid_option_message(to_phone_number)
+            return true
+          end
+        end
+
+        #if  both are not back buttons
+        #you want to check if the chatbot_step of saved step bnutton replies includes the incoming step id
+        if(!is_incoming_clicked_button_back_button && !is_saved_clicked_button_back_button)
+          saved_chabot_step = ChatbotStep.find_by(chatbot_button_reply_id: user_chatbot_interaction.clicked_button_id);
+
+          if saved_chabot_step.present?
+            if(!saved_chabot_step.chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
+              send_please_select_valid_option_message(to_phone_number)
+              return true
+            end
+          end
+        end
+      end
+      
+      return false
     end
 
 
@@ -260,6 +339,11 @@ module ChatbotCode
         location_description: details[:location_description] || "",
         is_from_chat_bot: is_from_chat_bot
       )
+    end
+
+    def send_please_select_valid_option_message(to_phone_number)
+      WhatsappMessageService.send_text_message(to_phone_number, "Please select a valid option")
+      create_conversation(to_phone_number, { text: { content: "Please select a valid option" } }, true)
     end
   end
 end

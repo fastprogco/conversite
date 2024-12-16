@@ -26,7 +26,7 @@ class MastersController < ApplicationController
       @count = Master.count
    
       get_masters
-      @masters = @masters.limit(100).page(@page).per(10)
+      @masters = @masters.limit(100).page(@page).order(created_at: :desc).per(10)
      end
 
     def export
