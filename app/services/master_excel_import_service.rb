@@ -9,7 +9,14 @@ class MasterExcelImportService
     end
 
     def safe_parse_date(value)
-      return value
+      return nil if value.nil?
+      begin
+        date = Date.parse(value.to_s)
+        return date if date.year.between?(1900, 9999) # Validate reasonable year range
+        nil
+      rescue
+        nil
+      end
     end
 
      def import
