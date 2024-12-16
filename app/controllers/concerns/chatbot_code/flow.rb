@@ -3,6 +3,14 @@ module ChatbotCode
     extend ActiveSupport::Concern
 
 
+
+    def start(to_phone_number, params)
+      puts "starting flow"
+
+      decide_next_step(to_phone_number, params)
+    end
+
+    
     def check_broadcast_reports(to_phone_number, params)
       message_status = params.dig("entry", 0, "changes", 0, "value", "statuses", 0,  "status")
       timestamp = params.dig("entry", 0, "changes", 0, "value", "statuses", 0, "timestamp")
@@ -28,12 +36,6 @@ module ChatbotCode
           broadcast_report.update(message_status: message_status, reason_for_failure: error_details.to_s)
         end
       end
-    end
-
-    def start(to_phone_number, params)
-      puts "starting flow"
-
-      decide_next_step(to_phone_number, params)
     end
 
     def decide_next_step(to_phone_number, recieved_params)
@@ -72,7 +74,9 @@ module ChatbotCode
             end
           end
         end
-        save_user_chatbot_interaction(to_phone_number, chatbot_step, reply_id)
+        if chatbot_step.present?
+          save_user_chatbot_interaction(to_phone_number, chatbot_step, reply_id)
+        end
       else
         chatbot_step = find_chatbot_step(to_phone_number)
       end
@@ -89,9 +93,9 @@ module ChatbotCode
     def save_user_chatbot_interaction(to_phone_number, chatbot_step, clicked_button_id)
       existing_interaction = get_user_chatbot_interaction(to_phone_number);
       if existing_interaction.present?
-        existing_interaction.update(chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id)
+        existing_interaction.update(chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id, chatbot_id: chatbot_step.chatbot_id)
       else
-        UserChatbotInteraction.create(mobile_number: to_phone_number, chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id)
+        UserChatbotInteraction.create(mobile_number: to_phone_number, chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id, chatbot_id: chatbot_step.chatbot_id)
       end
     end
 
@@ -104,10 +108,29 @@ module ChatbotCode
 
 
       if user_chatbot_interaction.present?
+
+
         puts "saved step id: #{user_chatbot_interaction.chatbot_step_id}"
         puts "incoming clicked button id: #{incoming_clicked_button_id}"
         is_incoming_clicked_button_back_button = incoming_clicked_button_id.include?("BACK_")
         is_saved_clicked_button_back_button = user_chatbot_interaction.clicked_button_id.include?("BACK_")
+
+        #check if the saved interaction is go back to main 
+        #if it is go back to main then check if the incoming clicked button is in the button reply ids of the current chatbot step
+        #if it is not in the button reply ids block the flow
+        if !is_saved_clicked_button_back_button
+          is_current_save_interaction_go_back_to_main = ChatbotButtonReply.find(user_chatbot_interaction.clicked_button_id).action_type_id.to_sym == :go_back_to_main
+          if is_current_save_interaction_go_back_to_main
+            chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
+            chatbot_first_step  = chatbot.chatbot_steps.where(chatbot_button_reply_id: nil).first
+            if chatbot_first_step.present?
+              button_reply_ids = chatbot_first_step.chatbot_button_replies.pluck(:id)
+              if(!button_reply_ids.include?(incoming_clicked_button_id.to_i))
+                return true
+              end
+            end
+          end
+        end
 
         # if both are back buttons
         #you want to check if the incoming steps button_reply_ids includees saved chatbot_button_reply_id
@@ -164,7 +187,7 @@ module ChatbotCode
                         .joins("JOIN chatbots_master_segments ON master_segments.id = chatbots_master_segments.master_segment_id")
                         .joins("JOIN chatbots ON chatbots.id = chatbots_master_segments.chatbot_id")
                         .order("chatbots.created_at DESC")
-                        .where("segments.mobile = ? AND chatbots.is_deleted = false", to_phone_number)
+                        .where("segments.mobile = ? AND chatbots.is_deleted = false AND master_segments.is_deleted = false AND segments.is_deleted = false", to_phone_number)
                         .select("chatbots.id AS chatbot_id, chatbots.created_at AS chatbot_created_at")
                         .first
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_15_051229) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_16_225533) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -303,6 +303,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_15_051229) do
     t.string "mobile_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "chatbot_id", null: false
+    t.index ["chatbot_id"], name: "index_user_chatbot_interactions_on_chatbot_id"
     t.index ["chatbot_step_id"], name: "index_user_chatbot_interactions_on_chatbot_step_id"
   end
 
@@ -393,6 +395,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_15_051229) do
   add_foreign_key "templates", "users", column: "deleted_by_id"
   add_foreign_key "templates", "users", column: "edited_by_id"
   add_foreign_key "user_chatbot_interactions", "chatbot_steps"
+  add_foreign_key "user_chatbot_interactions", "chatbots"
   add_foreign_key "whatsapp_accounts", "users", column: "added_by_id"
   add_foreign_key "whatsapp_accounts", "users", column: "deleted_by_id"
   add_foreign_key "whatsapp_accounts", "users", column: "edited_by_id"

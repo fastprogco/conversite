@@ -38,7 +38,7 @@ class ConversationsController < ApplicationController
           error_message = response.dig(:body) || "Failed to send image message"
           return redirect_to conversations_path, alert: error_message
         else
-          Conversation.create(mobile_number: @to_phone_number, text:{content: @message}, is_from_chat_bot: true, text:{content: "Image message sent successfully"})
+          Conversation.create(mobile_number: @to_phone_number, text:{content: @message}, is_from_chat_bot: true)
           return redirect_to conversations_path, notice: "Image message sent successfully"
         end
       else
