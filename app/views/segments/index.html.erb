@@ -3,9 +3,8 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <% @table_type = @master_segment.table_type_id %>
           <h2>Segments for <%= @master_segment.name %></h2>
-          <h4>Table type: <%= @table_type.to_s.humanize if @table_type.present? %></h4>
+          <%= link_to "New Segment", new_master_segment_segment_path(@master_segment), class: "btn btn-primary" %>
         </div>
         <div class="card-body">
           <table class="table table-striped">
@@ -26,6 +25,7 @@
                   <td><%= segment.person_email %></td>
                   <td><%= segment.nationality %></td>
                   <td>
+                    <%= link_to "Edit", edit_master_segment_segment_path(@master_segment, segment.id), class: "btn btn-sm btn-primary" %>
                     <%= link_to "Delete", master_segment_segment_path(@master_segment, segment.id), 
                         data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
                   </td>

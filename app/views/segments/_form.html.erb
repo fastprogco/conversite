@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2><%= segment.new_record? ? "New Segment" : "Edit Segment" %></h2>
+        </div>
+        <div class="card-body">
+          <%= form_with(model: [@master_segment, segment], local: true) do |f| %>
+            <%= render "shared_partials/error", model: segment %>
+
+            <div class="mb-3">
+              <%= f.label :person_name, class: "form-label" %>
+              <%= f.text_field :person_name, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :mobile, class: "form-label" %>
+              <%= f.text_field :mobile, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :person_email, class: "form-label" %>
+              <%= f.email_field :person_email, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :nationality, class: "form-label" %>
+              <%= f.text_field :nationality, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.submit class: "btn btn-primary" %>
+              <%= link_to "Cancel", master_segment_segments_path(@master_segment), class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
