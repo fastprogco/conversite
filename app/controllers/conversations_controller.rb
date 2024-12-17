@@ -1,4 +1,5 @@
 class ConversationsController < ApplicationController
+  before_action :authorize_super_admin, only: [:index, :conversations_by_phone_number, :respond]
   def index
     @phone_numbers = Conversation.select(:mobile_number).distinct
   end

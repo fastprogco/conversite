@@ -27,7 +27,7 @@ Rails.application.routes.draw do
     get :index
   end
 
-  resources :chatbots, only: [:index, :new, :create, :edit, :update] do
+  resources :chatbots, only: [:index, :new, :create, :edit, :update, :destroy] do
     resources :chatbot_steps, only: [:index, :new, :create, :edit, :update, :destroy] do
       resources :chatbot_button_replies, only: [:new, :create, :edit, :update, :destroy]
       resources :chatbot_multimedia_replies, only: [:new, :create, :edit, :update, :destroy]

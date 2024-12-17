@@ -3,7 +3,7 @@ class ChatbotsController < ApplicationController
 
     def index
         @page = params[:page] || 1
-        @chatbots = Chatbot.order(created_at: :desc).page(@page).per(10)
+        @chatbots = Chatbot.where(is_deleted: false).order(created_at: :desc).page(@page).per(10)
     end
 
     def new
@@ -37,9 +37,9 @@ class ChatbotsController < ApplicationController
 
     def destroy
         @chatbot = Chatbot.find(params[:id])
-        @chatbot.deleted_by = current_user
+        @chatbot.deleted_by_id = current_user.id
         @chatbot.is_deleted = true
-        @chatbot.chatbot_steps.update_all(deleted_by: current_user, is_deleted: true)
+        @chatbot.chatbot_steps.update_all(deleted_by_id: current_user.id, is_deleted: true)
         @chatbot.save
         redirect_to chatbots_path, notice: 'Chatbot with all steps was successfully deleted.'
     end
