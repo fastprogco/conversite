@@ -52,7 +52,22 @@ module ChatbotCode
 
       puts "reply_id: #{reply_id}"
 
+      #finds the latest chatbot the user is int
+      lastest_user_chatbot_step = find_chatbot_step(to_phone_number)
+
       if reply_id.present?
+
+        #if the user is in a different chatbot then send all the messages of the latest chatbot first step
+        interaction = get_user_chatbot_interaction(to_phone_number)
+        if interaction.present?
+          puts "interaction chatbot id: #{interaction.chatbot_id}"
+          puts "lastest user chatbot step chatbot id: #{lastest_user_chatbot_step.chatbot.id}"
+          if interaction.chatbot_id != lastest_user_chatbot_step.chatbot.id
+            send_all_messages(to_phone_number, lastest_user_chatbot_step)
+            return;
+          end
+        end
+
         is_back_button = reply_id.include?("BACK_")
         if is_back_button
           chatbot_step = ChatbotStep.find(reply_id.split("_").last)
@@ -63,31 +78,41 @@ module ChatbotCode
         else
           button_reply = ChatbotButtonReply.find(reply_id)
           create_conversation(to_phone_number, { text: { buttons: button_reply.title } }, false) if reply_id.present?
-          if lock_user_in_chatbot_step(to_phone_number, reply_id)
-            return
-          end
+       
           if (button_reply.present?)
+            puts "button reply present"
             if (button_reply.action_type_id.to_sym == :forward)
               chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
             elsif (button_reply.action_type_id.to_sym == :go_back_to_main)
-              chatbot_step = button_reply.chatbot_step.chatbot.chatbot_steps.where(chatbot_button_reply_id: nil).first
+              chatbot_step = lastest_user_chatbot_step
             end
+          end
+
+          puts "reply id not present"
+
+          if lock_user_in_chatbot_step(to_phone_number, reply_id)
+            return
           end
         end
         if chatbot_step.present?
           save_user_chatbot_interaction(to_phone_number, chatbot_step, reply_id)
         end
-      else
-        chatbot_step = find_chatbot_step(to_phone_number)
+      else        
+        if lock_user_in_chatbot_step(to_phone_number, nil, lastest_user_chatbot_step)
+          return
+        end
+        chatbot_step = lastest_user_chatbot_step
       end
 
-      if chatbot_step.present?
+      send_all_messages(to_phone_number, chatbot_step)
+    end
+
+    def send_all_messages(to_phone_number, chatbot_step)
+    if chatbot_step.present?
         send_message(to_phone_number, chatbot_step)
         send_mutlimedia_messages(to_phone_number, chatbot_step)
         send_location_messages(to_phone_number, chatbot_step)
       end
-
-
     end
 
     def save_user_chatbot_interaction(to_phone_number, chatbot_step, clicked_button_id)
@@ -103,12 +128,23 @@ module ChatbotCode
       UserChatbotInteraction.find_by(mobile_number: to_phone_number)
     end
 
-    def lock_user_in_chatbot_step(to_phone_number, incoming_clicked_button_id)
+    def lock_user_in_chatbot_step(to_phone_number, incoming_clicked_button_id, latest_user_chatbot_step = nil)
       user_chatbot_interaction = get_user_chatbot_interaction(to_phone_number)
 
-
       if user_chatbot_interaction.present?
+
+        #if there is no incoming click , meaning it is another type of message
+        #check if the users saved chatbot step is in the same chatbot as the latest chatbot step
+        #if it , then don't allow him to futther because he clicked on a different button than the allowed flow
+        if latest_user_chatbot_step.present? && incoming_clicked_button_id == nil
+          if(latest_user_chatbot_step.chatbot.id == user_chatbot_interaction.chatbot_id)
+            send_please_select_valid_option_message(to_phone_number, latest_user_chatbot_step.chatbot.select_valid_option)
+            return true
+          end
+        end
+        
         chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
+        
 
         puts "saved step id: #{user_chatbot_interaction.chatbot_step_id}"
         puts "incoming clicked button id: #{incoming_clicked_button_id}"
@@ -140,7 +176,7 @@ module ChatbotCode
           puts "incoming id #{incoming_clicked_button_id}"
           puts "chabot_button_reply_id #{ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_reply_id}"
           if(!ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_reply_id))
-            send_please_select_valid_option_message(to_phone_number, chatbot)
+            send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
             return true
           end
         end
@@ -148,7 +184,7 @@ module ChatbotCode
         #you want to check  if the previous step id of the saved step is equal to the incoming step id
         if(is_incoming_clicked_button_back_button && !is_saved_clicked_button_back_button)
           if(incoming_clicked_button_id.split("_").last.to_i != ChatbotStep.find(user_chatbot_interaction.chatbot_step_id).previous_chatbot_step_id)
-            send_please_select_valid_option_message(to_phone_number, chatbot)
+            send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
             return true
           end
         end
@@ -159,7 +195,7 @@ module ChatbotCode
           puts "ids #{ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
           puts "incoming id #{incoming_clicked_button_id}"
           if(!ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
-            send_please_select_valid_option_message(to_phone_number, chatbot)
+            send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
             return true
           end
         end
@@ -171,7 +207,7 @@ module ChatbotCode
 
           if saved_chabot_step.present?
             if(!saved_chabot_step.chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
-              send_please_select_valid_option_message(to_phone_number, chatbot)
+              send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
               return true
             end
           end
@@ -364,9 +400,9 @@ module ChatbotCode
       )
     end
 
-    def send_please_select_valid_option_message(to_phone_number, chatbot)
-      WhatsappMessageService.send_text_message(to_phone_number, chatbot.select_valid_option)
-      create_conversation(to_phone_number, { text: { content: chatbot.select_valid_option } }, true)
+    def send_please_select_valid_option_message(to_phone_number, message)
+      WhatsappMessageService.send_text_message(to_phone_number, message)
+      create_conversation(to_phone_number, { text: { content: message } }, true)
     end
   end
 end
