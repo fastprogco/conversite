@@ -39,9 +39,12 @@ class ChatbotsController < ApplicationController
         @chatbot = Chatbot.find(params[:id])
         @chatbot.deleted_by_id = current_user.id
         @chatbot.is_deleted = true
-        @chatbot.chatbot_steps.update_all(deleted_by_id: current_user.id, is_deleted: true)
-        @chatbot.save
-        redirect_to chatbots_path, notice: 'Chatbot with all steps was successfully deleted.'
+        if @chatbot.save
+            @chatbot.chatbot_steps.update_all(deleted_by_id: current_user.id, is_deleted: true)
+            redirect_to chatbots_path, notice: 'Chatbot with all steps was successfully deleted.'
+        else
+           redirect_to chatbots_path, alert: @chatbot.errors.full_messages.join(', ')
+        end
     end
 
     private
