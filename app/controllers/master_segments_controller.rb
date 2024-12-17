@@ -8,9 +8,17 @@ class MasterSegmentsController < ApplicationController
 
   def destroy
     @master_segment = MasterSegment.find(params[:id])
+    chatbot_with_current_master_segment_exists = Chatbot.joins(:chatbots_master_segments).where(chatbots_master_segments: { master_segment_id: @master_segment.id }).where(chatbots: { is_deleted: false }).exists?
+    if chatbot_with_current_master_segment_exists
+      redirect_to master_segments_path, alert: 'Cannot delete master segment because it is being used by a chatbot. please delete the chatbot first.'
+      return
+    end
     @master_segment.is_deleted = true
-    @master_segment.save
-    redirect_to master_segments_path, notice: 'Master segment was successfully deleted.'
+    if @master_segment.save
+      redirect_to master_segments_path, notice: 'Master segment was successfully deleted.'
+    else
+      redirect_to master_segments_path, alert: @master_segment.errors.full_messages.join(', ')
+    end
   end
 
   def new
