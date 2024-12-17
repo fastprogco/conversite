@@ -10,7 +10,7 @@ class Chatbot < ApplicationRecord
     belongs_to :edited_by, class_name: 'User', optional: true
     belongs_to :deleted_by, class_name: 'User', optional: true
 
-    validate :only_one_default_chatbot, on: :create
+    validate :only_one_default_chatbot
 
     private
 
