@@ -55,7 +55,7 @@ Rails.application.routes.draw do
     end
   end
 
-  root "users#new"
+  root "sessions#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
   get 'login/user', to: 'sessions#new', as: 'login_user'
