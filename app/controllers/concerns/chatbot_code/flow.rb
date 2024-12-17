@@ -57,15 +57,8 @@ module ChatbotCode
 
       if reply_id.present?
 
-        #if the user is in a different chatbot then send all the messages of the latest chatbot first step
-        interaction = get_user_chatbot_interaction(to_phone_number)
-        if interaction.present?
-          puts "interaction chatbot id: #{interaction.chatbot_id}"
-          puts "lastest user chatbot step chatbot id: #{lastest_user_chatbot_step.chatbot.id}"
-          if interaction.chatbot_id != lastest_user_chatbot_step.chatbot.id
-            send_all_messages(to_phone_number, lastest_user_chatbot_step)
-            return;
-          end
+        if return_if_send_all_message_to_switched_chatbot_user(to_phone_number, lastest_user_chatbot_step, reply_id)
+          return
         end
 
         is_back_button = reply_id.include?("BACK_")
@@ -87,8 +80,6 @@ module ChatbotCode
               chatbot_step = lastest_user_chatbot_step
             end
           end
-
-          puts "reply id not present"
 
           if lock_user_in_chatbot_step(to_phone_number, reply_id)
             return
@@ -140,11 +131,12 @@ module ChatbotCode
           if(latest_user_chatbot_step.chatbot.id == user_chatbot_interaction.chatbot_id)
             send_please_select_valid_option_message(to_phone_number, latest_user_chatbot_step.chatbot.select_valid_option)
             return true
+          else
+            return false
           end
         end
         
         chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
-        
 
         puts "saved step id: #{user_chatbot_interaction.chatbot_step_id}"
         puts "incoming clicked button id: #{incoming_clicked_button_id}"
@@ -404,5 +396,34 @@ module ChatbotCode
       WhatsappMessageService.send_text_message(to_phone_number, message)
       create_conversation(to_phone_number, { text: { content: message } }, true)
     end
+
+    #check if the user is in a different chatbot from the saved interaction chatbot
+    #and  the clicked button is in the same chatbot as the saved interaction chatbot
+    #if it is then send all the messages of the latest chatbot first step
+    def return_if_send_all_message_to_switched_chatbot_user(to_phone_number, latest_chatbot_step, incoming_reply_id)
+      interaction = get_user_chatbot_interaction(to_phone_number)
+      #if user in a different latest chatbot from the saved interaction chatbot
+      #then send all the messages of the latest chatbot first step
+      if interaction.present?
+        if interaction.chatbot_id != latest_chatbot_step.chatbot.id
+          is_incoming_clicked_button_back_button = incoming_reply_id.include?("BACK_")
+          if is_incoming_clicked_button_back_button
+            chatbot_step_of_incoming_clicked_button = ChatbotStep.find(incoming_reply_id.split("_").last.to_i)
+          else
+            chatbot_step_of_incoming_clicked_button = ChatbotButtonReply.find(incoming_reply_id).chatbot_step
+          end
+          if chatbot_step_of_incoming_clicked_button.chatbot_id == interaction.chatbot_id
+            send_all_messages(to_phone_number, latest_chatbot_step)
+            return true;
+          else
+            interaction.delete
+          end
+        end
+      end
+      return false
+   end
+
+
   end
 end
+
