@@ -7,7 +7,9 @@ module ChatbotCode
     def start(to_phone_number, params)
       puts "starting flow"
 
-      puts "webhook sender url #{request.headers["HTTP_REFERER"]}"
+      puts "webhook sender url  referer#{request.referer}"
+      puts "webhook sender url2 original url #{request.original_url}"
+      puts "webhook sender url3 url #{request.url}"
       decide_next_step(to_phone_number, params)
     end
 
