@@ -7,6 +7,7 @@ module ChatbotCode
     def start(to_phone_number, params)
       puts "starting flow"
 
+      puts "request url #{request.url}"
       decide_next_step(to_phone_number, params)
     end
 
@@ -21,12 +22,9 @@ module ChatbotCode
         details: params.dig("entry", 0, "changes", 0, "value", "statuses", 0, "errors", 0, "error_data", "details")
       }
 
-      puts "whatsapp message id: #{whatsapp_message_id}"
       puts "message status: #{message_status}"
-      puts "timestamp: #{timestamp}"
 
       broadcast_report = BroadcastReport.where(whatsapp_message_id: whatsapp_message_id).first
-      puts "broadcast report: #{broadcast_report.inspect}"
       if broadcast_report.present?
         if message_status == "delivered"
           broadcast_report.update(message_status: message_status, delivered_on: Time.at(timestamp.to_i).utc)
@@ -71,7 +69,10 @@ module ChatbotCode
         else
           button_reply = ChatbotButtonReply.find(reply_id)
           create_conversation(to_phone_number, { text: { buttons: button_reply.title } }, false) if reply_id.present?
-       
+
+          save_segment_if_is_trigger(to_phone_number, button_reply)
+
+
           if (button_reply.present?)
             puts "button reply present"
             if (button_reply.action_type_id.to_sym == :forward)
@@ -423,6 +424,18 @@ module ChatbotCode
       return false
    end
 
+   def save_segment_if_is_trigger(to_phone_number, button_reply)
+    if (button_reply.is_trigger)
+      master_segment = MasterSegment.find_by(name: button_reply.trigger_keyword, is_deleted: false)
+      if master_segment.present?
+        existing_segment = Segment.find_by(mobile: to_phone_number, master_segment_id: master_segment.id, is_deleted: false)
+        if existing_segment.present?
+          return
+        end
+        master_segment.segments.create(mobile: to_phone_number)
+      end
+    end
+   end
 
   end
 end
