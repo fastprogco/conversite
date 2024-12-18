@@ -1,8 +1,8 @@
  <%= form_with(model: [@chatbot, @chatbot_step, chatbot_button_reply], local: true) do |f| %>
     <%= render "shared_partials/error", model: chatbot_button_reply %>
     <div class="mb-3">
-        <%= f.label :title, class: "form-label" %> <span class="text-danger">Max 24 characters</span>
-        <%= f.text_field :title, class: "form-control", required: true, maxlength: 24 %>
+        <%= f.label :title, class: "form-label" %> <span class="text-danger">Max 20 characters</span>
+        <%= f.text_field :title, class: "form-control", required: true, maxlength: 20 %>
     </div>
 
     <div class="mb-3">
