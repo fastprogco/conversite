@@ -41,7 +41,9 @@ module ChatbotCode
       button_reply_id = payload&.dig(:button_reply_id)
       list_reply_id = payload&.dig(:list_reply_id) 
       message_response_body = payload&.dig(:message_response_body)
-      
+      user_name = payload&.dig(:user_name)
+      button_payload = payload&.dig(:button_payload)
+
       if message_response_body.present?
         create_conversation(to_phone_number, { text: { content: message_response_body } }, false)
       end
@@ -70,7 +72,7 @@ module ChatbotCode
           button_reply = ChatbotButtonReply.find(reply_id)
           create_conversation(to_phone_number, { text: { buttons: button_reply.title } }, false) if reply_id.present?
 
-          save_segment_if_is_trigger(to_phone_number, button_reply)
+          save_segment_if_is_trigger(to_phone_number, button_reply, user_name)
 
 
           if (button_reply.present?)
@@ -89,9 +91,16 @@ module ChatbotCode
         if chatbot_step.present?
           save_user_chatbot_interaction(to_phone_number, chatbot_step, reply_id)
         end
-      else        
-        if lock_user_in_chatbot_step(to_phone_number, nil, lastest_user_chatbot_step)
-          return
+      else
+        #if no button payload it means it si not a template button click
+        # if it is a template button click then  send the latest chatbot step messages
+        if !button_payload.present?
+          if lock_user_in_chatbot_step(to_phone_number, nil, lastest_user_chatbot_step)
+            return
+          end
+        else
+          interaction = get_user_chatbot_interaction(to_phone_number)
+          interaction.update(is_first_step_after_template_button_click: true)
         end
         chatbot_step = lastest_user_chatbot_step
       end
@@ -187,6 +196,12 @@ module ChatbotCode
           puts "HERE WE ARE IN THE SAVED BACK BUTTON"
           puts "ids #{ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
           puts "incoming id #{incoming_clicked_button_id}"
+
+          #if it is a frst step after template button click then allow next step
+          if user_chatbot_interaction.is_first_step_after_template_button_click
+            user_chatbot_interaction.update(is_first_step_after_template_button_click: false)
+            return false;
+          end
           if(!ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i))
             send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
             return true
@@ -196,6 +211,13 @@ module ChatbotCode
         #if  both are not back buttons
         #you want to check if the chatbot_step of saved step bnutton replies includes the incoming step id
         if(!is_incoming_clicked_button_back_button && !is_saved_clicked_button_back_button)
+
+          #if it is a frst step after template button click then allow next step
+          if user_chatbot_interaction.is_first_step_after_template_button_click
+            user_chatbot_interaction.update(is_first_step_after_template_button_click: false)
+            return false;
+          end
+
           saved_chabot_step = ChatbotStep.find_by(chatbot_button_reply_id: user_chatbot_interaction.clicked_button_id);
 
           if saved_chabot_step.present?
@@ -325,8 +347,12 @@ module ChatbotCode
       message_response_body = recieved_params.dig('entry', 0, 'changes', 0, 'value', 'messages', 0, 'text', 'body')
 
       list_reply_id = recieved_params.dig("entry", 0, "changes", 0, "value", "messages", 0, "interactive", "list_reply", "id")
+
+      user_name = recieved_params.dig('entry', 0, 'changes', 0, 'value', 'contacts', 0, 'profile', 'name')
+
+      button_payload = recieved_params.dig('entry', 0, 'changes', 0, 'value', 'messages', 0, 'button', 'payload')
      
-      { button_reply_id: button_reply_id, message_response_body: message_response_body, list_reply_id: list_reply_id }
+      { button_reply_id: button_reply_id, message_response_body: message_response_body, list_reply_id: list_reply_id, user_name: user_name, button_payload: button_payload }
     end
 
     def send_mutlimedia_messages(to_phone_number, chatbot_step)
@@ -424,7 +450,7 @@ module ChatbotCode
       return false
    end
 
-   def save_segment_if_is_trigger(to_phone_number, button_reply)
+   def save_segment_if_is_trigger(to_phone_number, button_reply, user_name)
     if (button_reply.is_trigger)
       master_segment = MasterSegment.find_by(name: button_reply.trigger_keyword, is_deleted: false)
       if master_segment.present?
@@ -432,7 +458,7 @@ module ChatbotCode
         if existing_segment.present?
           return
         end
-        master_segment.segments.create(mobile: to_phone_number)
+        master_segment.segments.create(mobile: to_phone_number, person_name: user_name)
       end
     end
    end
