@@ -452,6 +452,7 @@ module ChatbotCode
     puts "button_reply.is_trigger: #{button_reply.is_trigger}"
     if (button_reply.is_trigger)
       master_segment = MasterSegment.find_by(name: button_reply.trigger_keyword, is_deleted: false)
+      puts "button_reply.trigger_keyword: #{button_reply.trigger_keyword}"
       puts "master_segment present: #{master_segment.present?}"
       if master_segment.present?
         existing_segment = Segment.find_by(mobile: to_phone_number, master_segment_id: master_segment.id, is_deleted: false)
