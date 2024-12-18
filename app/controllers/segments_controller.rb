@@ -1,6 +1,6 @@
 class SegmentsController < ApplicationController
   before_action :authorize_super_admin, only: [:destroy]
-  before_action :set_master_segment, only: [:index, :new, :create, :edit, :update]
+  before_action :set_master_segment, only: [:index, :new, :create, :edit, :update, :destroy]
 
   def index
     @segments = @master_segment.segments.where(segments: {is_deleted: false}).page(params[:page]).per(10)
