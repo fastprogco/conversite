@@ -449,10 +449,12 @@ module ChatbotCode
    end
 
    def save_segment_if_is_trigger(to_phone_number, button_reply, user_name)
+    puts "button_reply.is_trigger: #{button_reply.is_trigger}"
     if (button_reply.is_trigger)
       master_segment = MasterSegment.find_by(name: button_reply.trigger_keyword, is_deleted: false)
       if master_segment.present?
         existing_segment = Segment.find_by(mobile: to_phone_number, master_segment_id: master_segment.id, is_deleted: false)
+        puts "existing_segment: #{existing_segment}"
         if existing_segment.present?
           return
         end
