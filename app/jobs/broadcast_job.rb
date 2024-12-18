@@ -7,8 +7,12 @@ class BroadcastJob < ApplicationJob
     timing = broadcast.timing.to_sym
 
     puts "Starting Broadcast Job"
-    broadcast.master_segment.segments.select('DISTINCT ON (mobile) *').each do |segment|
+    broadcast.master_segment.segments.where(is_deleted: false).select('DISTINCT ON (mobile) *').each do |segment|
       puts "Sending message to #{segment.mobile}"
+      if !segment.mobile.present? || segment.mobile == "0" || segment.mobile == "null"
+        next
+      end
+
       response = WhatsappMessageService.send_text_message_template_with_phone_number_id(
         segment.mobile,
         template.meta_template_name,
