@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_16_232106) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_17_223926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,6 +94,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_16_232106) do
     t.datetime "edited_on"
     t.boolean "is_deleted", default: false
     t.bigint "deleted_by_id"
+    t.boolean "is_trigger", default: false, null: false
+    t.string "trigger_keyword"
     t.index ["added_by_id"], name: "index_chatbot_button_replies_on_added_by_id"
     t.index ["chatbot_id"], name: "index_chatbot_button_replies_on_chatbot_id"
     t.index ["chatbot_step_id"], name: "index_chatbot_button_replies_on_chatbot_step_id"
