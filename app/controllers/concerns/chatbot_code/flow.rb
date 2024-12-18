@@ -6,10 +6,6 @@ module ChatbotCode
 
     def start(to_phone_number, params)
       puts "starting flow"
-
-      puts "webhook sender url  referer#{request.referer}"
-      puts "webhook sender url2 original url #{request.original_url}"
-      puts "webhook sender url3 url #{request.url}"
       decide_next_step(to_phone_number, params)
     end
 
@@ -260,7 +256,7 @@ module ChatbotCode
 
       buttons_count = chatbot_step.chatbot_button_replies.where(is_deleted: false).count
 
-      if buttons_count > 2
+      if buttons_count > 2 && chatbot_step.chatbot_button_reply_id.present?
         send_message_as_interactive_list(to_phone_number, chatbot_step)
         return;
       end
