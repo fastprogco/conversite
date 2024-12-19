@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'tempfile'
+require 'creek'
 
 class MasterSegmentExcelImportService
   BATCH_SIZE = 1000
@@ -12,9 +13,10 @@ class MasterSegmentExcelImportService
 
   def safe_parse_date(value)
     return nil if value.nil?
+
     begin
-      date = Date.new(1899, 12, 30) + value.to_i
-      return date if date.year.between?(1900, 9999) # Validate year range
+      date = Date.parse(value.to_s)
+      return date if date.year.between?(1900, 9999) # Validate reasonable year range
       nil
     rescue
       nil
@@ -24,8 +26,6 @@ class MasterSegmentExcelImportService
   def import
     # Download file from S3
     temp_file = Tempfile.new(["excel_import_#{Time.now.to_i}_#{SecureRandom.hex(8)}", '.xlsx'])
-
-    puts "Downloading file from S3: #{@file_url}"
     begin
       temp_file.binmode
       URI.open(@file_url) do |file|
@@ -34,27 +34,37 @@ class MasterSegmentExcelImportService
       temp_file.rewind
 
       # Process the downloaded file
-      xlsx = Roo::Spreadsheet.open(temp_file.path)
-      sheet = xlsx.sheet(0)
+      xlsx = Creek::Book.new(temp_file.path)
+      sheet = xlsx.sheets[0]
 
       records = []
-      # Skip header row and only process rows with actual data
-      ((sheet.first_row + 1)..sheet.last_row).each do |row_num|
-        row = sheet.row(row_num)
+      skip_header = true # Flag to skip the header row
+
+      sheet.rows.each do |row|
+        # Skip the header row
+        if skip_header
+          skip_header = false
+          next
+        end
+
+        # Normalize keys by removing the row number suffix
+        normalized_row = row.transform_keys { |key| key.gsub(/\d+$/, '') }
+
         # Skip empty rows
-        next if row.compact.empty?
+        next if normalized_row.values.compact.empty?
 
         # Log the row being processed
-        puts "Processing row #{row_num}: #{row.inspect}"
+        puts "Processing row: #{normalized_row.inspect}"
 
-        #mobile = row[3]&.to_s&.gsub('-', '')
-        
+        # Access normalized keys (e.g., "A", "B", "C" instead of "A2", "B2", "C2")
+        mobile = normalized_row["B"]&.gsub('-', '')
+
         records << {
           master_segment_id: @master_segment_id,
-          person_name: row[0]&.to_s || '',
-          mobile: row[1]&.to_s || '',
-          nationality: row[2]&.to_s || '',
-          person_email: row[3]&.to_s || '',
+          person_name: normalized_row["A"] || '',
+          mobile: mobile || '',
+          nationality: normalized_row["C"] || '',
+          person_email: normalized_row["D"] || '',
           added_by_id: @added_by_id,
           added_on: DateTime.now.utc,
         }
