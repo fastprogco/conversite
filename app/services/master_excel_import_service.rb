@@ -2,7 +2,7 @@ require 'open-uri'
 require 'tempfile'
   
 class MasterExcelImportService
-     BATCH_SIZE = 1000
+     BATCH_SIZE = 100
 
     def initialize(file_url)
        @file_url = file_url
