@@ -9,10 +9,15 @@
                 class: "form-select",
                 prompt: "Select Column to Search" %>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <%= text_field_tag "search_term[]", params[:search_term][index], 
                 class: "form-control",
                 placeholder: "Enter search term..." %>
+          </div>
+          <div class="col-md-3">
+            <%= text_field_tag "exclude_term[]", params[:exclude_term]&.[](index), 
+                class: "form-control",
+                placeholder: "Enter exclude term..." %>
           </div>
           <div class="col-md-2">
             <% if index == 0 %>
@@ -35,10 +40,15 @@
               class: "form-select",
               prompt: "Select Column to Search" %>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
           <%= text_field_tag "search_term[]", params[:search_term]&.first, 
               class: "form-control",
               placeholder: "Enter search term..." %>
+        </div>
+        <div class="col-md-3">
+          <%= text_field_tag "exclude_term[]", params[:exclude_term]&.first, 
+              class: "form-control",
+              placeholder: "Enter exclude term..." %>
         </div>
         <div class="col-md-2">
           <button type="button" class="btn btn-secondary w-100" onclick="addSearchField()">
@@ -67,8 +77,11 @@ function addSearchField() {
         <%= @column_groups.flatten.map { |col| "<option value='#{col}'>#{col}</option>" }.join.html_safe %>
       </select>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
       <input type="text" name="search_term[]" class="form-control" placeholder="Enter search term...">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="exclude_term[]" class="form-control" placeholder="Enter exclude term...">
     </div>
     <div class="col-md-2">
       <button type="button" class="btn btn-danger w-100" onclick="this.closest('.row').remove()">

@@ -72,12 +72,20 @@ class MastersController < ApplicationController
     def get_masters
       search_column = params[:search_column]
       search_term = params[:search_term]
+      exclude_term = params[:exclude_term]
 
       @masters = Master.all
       if search_column.present? && search_term.present?
         search_column.each_with_index do |column, index|
-          next if column.blank? || search_term[index].blank?
-          @masters = @masters.where("#{column} ILIKE ?", "%#{search_term[index]}%")
+          next if column.blank? 
+
+          if search_column.present? && search_term[index].present?
+            @masters = @masters.where("#{column} ILIKE ?", "%#{search_term[index]}%")
+          end
+          
+          if exclude_term.present? && exclude_term[index].present?
+            @masters = @masters.where.not("#{column} ILIKE ?", "%#{exclude_term[index]}%")
+          end
         end
         @masters = @masters.order(created_at: :desc)
       end
