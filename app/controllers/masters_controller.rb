@@ -55,17 +55,52 @@ class MastersController < ApplicationController
       get_masters
       name = params[:name]
       description = params[:description]
-      master_segment = MasterSegment.new(name: name, description: description, table_type_id: :master, added_by_id: current_user.id, added_on: DateTime.now.utc)
-      if master_segment.save
-        MasterSegmentCreationJob.perform_later(
-          master_segment.id,
-          @masters.pluck(:id),
-          current_user.id
-        )
-        redirect_to masters_path, notice: t("segment_creation_in_progress") 
-      else
-        redirect_to masters_path, alert: master_segment.errors.full_messages.join(", ")
+      split_entries = params[:split_entries].to_i
+      
+      master_ids = @masters.pluck(:id)
+      entries_per_segment = (master_ids.size.to_f / split_entries).ceil
+      
+      # Check if any of the segment names already exist
+      exists = false
+      split_entries.times do |i|
+        segment_name = "#{name.strip.downcase} part_#{i + 1}"
+        if MasterSegment.exists?(name: segment_name)
+          exists = true
+          return redirect_to masters_path, alert: "Segment name '#{segment_name}' already exists"
+        end
+        break if exists
       end
+
+      split_entries.times do |i|
+        segment_name = "#{name.strip.downcase} part_#{i + 1}"
+        segment_description = "#{description}"
+        
+        start_idx = i * entries_per_segment
+        end_idx = [start_idx + entries_per_segment, master_ids.size].min
+        segment_master_ids = master_ids[start_idx...end_idx]
+        
+        puts "segment_master_ids: #{segment_master_ids}"
+
+        master_segment = MasterSegment.new(
+          name: segment_name,
+          description: segment_description,
+          table_type_id: :master,
+          added_by_id: current_user.id,
+          added_on: DateTime.now.utc
+        )
+        
+        if master_segment.save
+          MasterSegmentCreationJob.perform_later(
+            master_segment.id,
+            segment_master_ids,
+            current_user.id
+          )
+        else
+          return redirect_to masters_path, alert: master_segment.errors.full_messages.join(", ")
+        end
+      end
+      
+      redirect_to masters_path, notice: t("segment_creation_in_progress")
     end
 
     private 

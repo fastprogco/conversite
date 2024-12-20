@@ -54,8 +54,6 @@
 </div>
 
 
-
-
  <!-- create segment modal -->
 <div class="modal fade" id="createSegmentModal" tabindex="-1" aria-labelledby="createSegmentModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -67,8 +65,18 @@
       <div class="modal-body">
         <%= form_with url: create_segment_masters_path, local: true, method: :post do |f| %>
           <%= hidden_field_tag 'columns', params[:columns]&.to_unsafe_h %>
-          <%= hidden_field_tag 'search_column', params[:search_column] %>
-          <%= hidden_field_tag 'search_term', params[:search_term] %>
+          <% if params[:search_column].present? %>
+            <% params[:search_column].each_with_index do |column, index| %>
+              <%= hidden_field_tag 'search_column[]', column %>
+              <%= hidden_field_tag 'search_term[]', params[:search_term][index] if params[:search_term][index].present? %>
+              <% if params[:exclude_term].present? %>
+                <%= hidden_field_tag 'exclude_term[]', params[:exclude_term][index] %>
+              <% end %>
+              <% if params[:exclude_empty].present? %>
+                <%= hidden_field_tag 'exclude_empty[]', params[:exclude_empty][index] %>
+              <% end %>
+            <% end %>
+          <% end %>
           <div class="mb-3">
             <%= f.label :name, "Segment Name", class: "form-label" %>
             <%= f.text_field :name, class: "form-control", required: true %>
@@ -76,6 +84,10 @@
           <div class="mb-3">
             <%= f.label :description, "Description", class: "form-label" %>
             <%= f.text_area :description, class: "form-control", required: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :split_entries, "Split Entries Into", class: "form-label" %>
+            <%= f.number_field :split_entries, class: "form-control", min: 1, required: true %>
           </div>
           <%= f.hidden_field :table_type_id, value: 1 %>
           <%= f.hidden_field :table_id, value: 1 %>
