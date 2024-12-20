@@ -75,7 +75,11 @@ class MastersController < ApplicationController
 
       @masters = Master.all
       if search_column.present? && search_term.present?
-        @masters = @masters.where("#{search_column} ILIKE ?", "%#{search_term}%").order(created_at: :desc)
+        search_column.each_with_index do |column, index|
+          next if column.blank? || search_term[index].blank?
+          @masters = @masters.where("#{column} ILIKE ?", "%#{search_term[index]}%")
+        end
+        @masters = @masters.order(created_at: :desc)
       end
     end
 end
