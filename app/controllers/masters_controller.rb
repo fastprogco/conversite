@@ -73,6 +73,7 @@ class MastersController < ApplicationController
       search_column = params[:search_column]
       search_term = params[:search_term]
       exclude_term = params[:exclude_term]
+      exclude_empty = params[:exclude_empty]
 
       @masters = Master.all
       if search_column.present? && search_term.present?
@@ -85,6 +86,10 @@ class MastersController < ApplicationController
           
           if exclude_term.present? && exclude_term[index].present?
             @masters = @masters.where.not("#{column} ILIKE ?", "%#{exclude_term[index]}%")
+          end
+
+          if exclude_empty.present? && exclude_empty[index].present?
+            @masters = @masters.where.not("#{column}": "")
           end
         end
         @masters = @masters.order(created_at: :desc)
