@@ -1,23 +1,52 @@
 <%= form_tag path, method: :get, class: "mb-4" do %>
   <div id="search-fields">
-    <div class="row g-3 align-items-end mb-3">
-      <div class="col-md-4">
-        <%= select_tag "search_column[]", 
-            options_for_select(@column_groups.flatten, params[:search_column]&.first), 
-            class: "form-select",
-            prompt: "Select Column to Search" %>
+    <% if params[:search_column].present? %>
+      <% params[:search_column].each_with_index do |column, index| %>
+        <div class="row g-3 align-items-end mb-3">
+          <div class="col-md-4">
+            <%= select_tag "search_column[]", 
+                options_for_select(@column_groups.flatten, column), 
+                class: "form-select",
+                prompt: "Select Column to Search" %>
+          </div>
+          <div class="col-md-6">
+            <%= text_field_tag "search_term[]", params[:search_term][index], 
+                class: "form-control",
+                placeholder: "Enter search term..." %>
+          </div>
+          <div class="col-md-2">
+            <% if index == 0 %>
+              <button type="button" class="btn btn-secondary w-100" onclick="addSearchField()">
+                Add Field
+              </button>
+            <% else %>
+              <button type="button" class="btn btn-danger w-100" onclick="this.closest('.row').remove()">
+                Remove
+              </button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="row g-3 align-items-end mb-3">
+        <div class="col-md-4">
+          <%= select_tag "search_column[]", 
+              options_for_select(@column_groups.flatten, params[:search_column]&.first), 
+              class: "form-select",
+              prompt: "Select Column to Search" %>
+        </div>
+        <div class="col-md-6">
+          <%= text_field_tag "search_term[]", params[:search_term]&.first, 
+              class: "form-control",
+              placeholder: "Enter search term..." %>
+        </div>
+        <div class="col-md-2">
+          <button type="button" class="btn btn-secondary w-100" onclick="addSearchField()">
+            Add Field
+          </button>
+        </div>
       </div>
-      <div class="col-md-6">
-        <%= text_field_tag "search_term[]", params[:search_term]&.first, 
-            class: "form-control",
-            placeholder: "Enter search term..." %>
-      </div>
-      <div class="col-md-2">
-        <button type="button" class="btn btn-secondary w-100" onclick="addSearchField()">
-          Add Field
-        </button>
-      </div>
-    </div>
+    <% end %>
   </div>
   <div class="row">
     <div class="col-12">
