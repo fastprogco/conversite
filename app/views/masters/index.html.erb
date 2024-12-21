@@ -6,7 +6,25 @@
       <h5>Currently Selected Count <%= @selected_masters_count%> </h5>
     </div>
     <div class="card-body">
-      <%= button_to 'Export to Excel', export_masters_path(format: :xlsx), method: :get, params: { columns: params[:columns]&.to_unsafe_h, search_column: params[:search_column], search_term: params[:search_term] }, class: 'btn btn-success mb-3' %>
+
+      <%= form_tag export_masters_path(format: :xlsx), method: :get do %>
+        <% if @columns.present? %>
+          <% @columns.each do |column, value| %>
+            <%= hidden_field_tag "columns[#{column}]", value %>
+          <% end %>
+        <% end %>
+        
+        <% if @search_column.present? %>
+          <% @search_column.each_with_index do |column, index| %>
+            <%= hidden_field_tag "search_column[]", column %>
+            <%= hidden_field_tag "search_term[]", @search_term[index] %>
+            <%= hidden_field_tag "exclude_term[]", @exclude_term[index] %>
+            <%= hidden_field_tag "exclude_empty[]", @exclude_empty[index] %>
+          <% end %>
+        <% end %>
+        
+        <%= submit_tag 'Export to Excel', class: 'btn btn-success mb-3' %>
+      <% end %>
       
       <!-- Button trigger modal -->
       <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createSegmentModal">

@@ -28,10 +28,20 @@ class MastersController < ApplicationController
       get_masters
       @selected_masters_count = @masters.count
       @masters = @masters.page(@page).order(created_at: :desc).per(10)
+
+
+      @columns = params[:columns]&.to_unsafe_h
+      @search_column = params[:search_column]
+      @search_term = params[:search_term]
+      @exclude_term = params[:exclude_term]
+      @exclude_empty = params[:exclude_empty]
      end
 
     def export
       get_masters
+
+      puts "this is the count of masters: #{@masters.count}"
+
       @column_groups = [
         ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
         ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],
@@ -105,21 +115,27 @@ class MastersController < ApplicationController
 
     private 
     def get_masters
-      search_column = params[:search_column]
-      search_term = params[:search_term]
-      exclude_term = params[:exclude_term]
-      exclude_empty = params[:exclude_empty]
+      # Convert params arrays to arrays to preserve order
+      search_column = params[:search_column].to_a 
+      search_term = params[:search_term].to_a
+      exclude_term = params[:exclude_term].to_a 
+      exclude_empty = params[:exclude_empty].to_a
 
+      puts "search columns: #{search_column}"
+      puts "search term: #{search_term}"
+      puts "exclude term: #{exclude_term}"
+      puts "exclude empty: #{exclude_empty}"
       @masters = Master.all
       if search_column.present? && search_term.present?
         search_column.each_with_index do |column, index|
           next if column.blank? 
 
-          if search_column.present? && search_term[index].present?
+          if search_term.present? && search_term[index].present?
             @masters = @masters.where("#{column} ILIKE ?", "%#{search_term[index]}%")
           end
           
           if exclude_term.present? && exclude_term[index].present?
+            puts "this is the exclude term: #{exclude_term[index]}"
             @masters = @masters.where.not("#{column} ILIKE ?", "%#{exclude_term[index]}%")
           end
 
