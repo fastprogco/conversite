@@ -1,6 +1,8 @@
 class ChatbotStep < ApplicationRecord
     belongs_to :chatbot
     belongs_to :previous_chatbot_step, class_name: "ChatbotStep", optional: true
+    belongs_to :chatbot_button_reply, class_name: "ChatbotButtonReply", optional: true
+    
     belongs_to :created_by, class_name: "User"
     belongs_to :edited_by, class_name: "User", optional: true
     belongs_to :deleted_by, class_name: "User", optional: true

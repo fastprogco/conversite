@@ -11,12 +11,21 @@ class ChatbotButtonRepliesController < ApplicationController
     def create
         @chatbot_button_reply = ChatbotButtonReply.new(chatbot_button_reply_params.except(:action_type_id))
         
+        
+        previous_linked_chatbot_button_reply = @chatbot_step.chatbot_button_reply
+        if previous_linked_chatbot_button_reply.present?
+            @chatbot_button_reply.chain_of_steps = previous_linked_chatbot_button_reply.chain_of_steps + " _ #{@chatbot_button_reply.title}"
+        else
+            @chatbot_button_reply.chain_of_steps = @chatbot_button_reply.title
+        end
+
+
         if chatbot_button_reply_params[:is_trigger] == "1"
             existing_master_segment = MasterSegment.find_by(name:@chatbot_button_reply.trigger_keyword.downcase, is_deleted: false)
             if existing_master_segment.present?
                 redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Trigger keyword already exists", status: :see_other
             else
-                @master_segment = MasterSegment.new(name:@chatbot_button_reply.trigger_keyword.downcase, added_by_id: current_user.id)
+                @master_segment = MasterSegment.new(name:@chatbot_button_reply.trigger_keyword.downcase, added_by_id: current_user.id, chain_of_steps: @chatbot_button_reply.chain_of_steps)
                 if @master_segment.save
                    save_button_reply
                 else
@@ -77,11 +86,11 @@ class ChatbotButtonRepliesController < ApplicationController
     private
 
     def set_chatbot
-        @chatbot = Chatbot.find(params[:chatbot_id])
+        @chatbot = Chatbot.find_by(id: params[:chatbot_id], is_deleted: false)
     end
 
     def set_chatbot_step
-        @chatbot_step = ChatbotStep.find(params[:chatbot_step_id])
+        @chatbot_step = ChatbotStep.find_by(id: params[:chatbot_step_id], is_deleted: false)
     end
 
     def chatbot_button_reply_params

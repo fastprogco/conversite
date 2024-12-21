@@ -12,6 +12,7 @@
               <tr>
                 <th>Name</th>
                 <th>Description</th>
+                <th>Chain of Steps</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -20,6 +21,7 @@
                 <tr>
                   <td><%= master_segment.name %></td>
                   <td><%= master_segment.description %></td>
+                  <td><%= master_segment.chain_of_steps %></td>
                   <td>
                     <%= link_to "Show Segments", master_segment_segments_path(master_segment), class: "btn btn-sm btn-warning" %>
                     <%= link_to "Delete", master_segment_path(master_segment), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
