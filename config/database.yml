@@ -84,3 +84,11 @@ production:
   username: <%= ENV["GLOBEX_DATABASE_USERNAME"] %>
   password: <%= ENV["GLOBEX_DATABASE_PASSWORD"] %>
   port: <%= ENV["GLOBEX_DATABASE_PORT"] %>
+
+staging:
+  <<: *default
+  host: <%= ENV["GLOBEX_DATABASE_HOST"] %>
+  database: <%= ENV["GLOBEX_DATABASE_NAME"] %>
+  username: <%= ENV["GLOBEX_DATABASE_USERNAME"] %>
+  password: <%= ENV["GLOBEX_DATABASE_PASSWORD"] %>
+  port: <%= ENV["GLOBEX_DATABASE_PORT"] %>
