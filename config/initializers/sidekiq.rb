@@ -8,7 +8,7 @@ if Rails.env.development?
     end
 end
 
-if Rails.env.production?
+if Rails.env.production? || Rails.env.staging?
     Sidekiq.configure_server do |config|
     config.redis = { url: ENV['REDIS_URL'], ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE } }
     end
