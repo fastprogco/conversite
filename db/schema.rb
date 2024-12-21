@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_21_173148) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_21_183506) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -163,6 +163,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_21_173148) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "chatbot_button_reply_id"
+    t.boolean "end_chabot", default: false
+    t.string "end_chabot_reply"
+    t.boolean "has_go_back_to_main", default: false
+    t.string "go_back_to_main_button_title"
     t.index ["chatbot_button_reply_id"], name: "index_chatbot_steps_on_chatbot_button_reply_id"
     t.index ["chatbot_id"], name: "index_chatbot_steps_on_chatbot_id"
     t.index ["created_by_id"], name: "index_chatbot_steps_on_created_by_id"
@@ -280,6 +284,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_21_173148) do
     t.string "person_name"
     t.string "person_email"
     t.string "nationality"
+    t.text "user_response"
     t.index ["added_by_id"], name: "index_segments_on_added_by_id"
     t.index ["deleted_by_id"], name: "index_segments_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_segments_on_edited_by_id"

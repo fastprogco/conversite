@@ -14,6 +14,7 @@
                 <th>Mobile</th>
                 <th>Email</th>
                 <th>Nationality</th>
+                <th>User Response</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -24,6 +25,7 @@
                   <td><%= segment.mobile %></td>
                   <td><%= segment.person_email %></td>
                   <td><%= segment.nationality %></td>
+                  <td><%= segment.user_response %></td>
                   <td>
                     <%= link_to "Edit", edit_master_segment_segment_path(@master_segment, segment.id), class: "btn btn-sm btn-primary" %>
                     <%= link_to "Delete", master_segment_segment_path(@master_segment, segment.id), 

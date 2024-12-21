@@ -58,6 +58,6 @@ class ChatbotStepsController < ApplicationController
     end
 
     def chatbot_step_params
-        params.permit(:header, :description, :footer, :list_button_caption, :previous_chatbot_step_id, :chatbot_id, :chatbot_button_reply_id)
+        params.permit(:header, :description, :footer, :list_button_caption, :previous_chatbot_step_id, :chatbot_id, :chatbot_button_reply_id, :end_chabot, :end_chabot_reply, :has_go_back_to_main, :go_back_to_main_button_title)
     end
 end

@@ -67,6 +67,11 @@ module ChatbotCode
             return
           end
         else
+
+          if check_go_back_to_main_from_end_step(to_phone_number, reply_id, lastest_user_chatbot_step)
+            return
+          end
+
           button_reply = ChatbotButtonReply.find(reply_id)
           create_conversation(to_phone_number, { text: { buttons: button_reply.title } }, false) if reply_id.present?
 
@@ -74,7 +79,6 @@ module ChatbotCode
 
 
           if (button_reply.present?)
-            puts "button reply present"
             if (button_reply.action_type_id.to_sym == :forward)
               chatbot_step = ChatbotStep.find_by(chatbot_button_reply_id: reply_id)
             elsif (button_reply.action_type_id.to_sym == :go_back_to_main)
@@ -100,7 +104,12 @@ module ChatbotCode
           interaction = get_user_chatbot_interaction(to_phone_number)
           interaction.update(is_first_step_after_template_button_click: true)
         end
+
         chatbot_step = lastest_user_chatbot_step
+
+        if check_chatbot_end_step(to_phone_number, message_response_body)
+          return
+        end
       end
 
       send_all_messages(to_phone_number, chatbot_step)
@@ -131,6 +140,13 @@ module ChatbotCode
       user_chatbot_interaction = get_user_chatbot_interaction(to_phone_number)
 
       if user_chatbot_interaction.present?
+
+        if !incoming_clicked_button_id.present?
+          probable_end_step = ChatbotStep.find_by(chatbot_button_reply_id: user_chatbot_interaction.clicked_button_id)
+          if probable_end_step.present? && probable_end_step.end_chabot
+            return false
+          end
+        end
 
         #if there is no incoming click , meaning it is another type of message
         #check if the users saved chatbot step is in the same chatbot as the latest chatbot step
@@ -459,6 +475,63 @@ module ChatbotCode
         master_segment.segments.create(mobile: to_phone_number, person_name: user_name)
       end
     end
+   end
+
+   def check_chatbot_end_step(to_phone_number, message_response_body)
+    interaction = get_user_chatbot_interaction(to_phone_number)
+      if interaction.present?
+        probable_end_step = ChatbotStep.find_by(chatbot_button_reply_id: interaction.clicked_button_id)
+        if probable_end_step.present? && probable_end_step.end_chabot
+          if message_response_body.present?
+            previous_button_reply = ChatbotButtonReply.find(interaction.clicked_button_id)
+            if previous_button_reply.present? && previous_button_reply.is_trigger
+              trigger_master_segment = MasterSegment.find_by(name: previous_button_reply.trigger_keyword)
+              if trigger_master_segment.present?
+                trigger_master_segment.segments.where(mobile: to_phone_number).update(user_response: message_response_body)
+              end
+            end
+          end
+          if probable_end_step.has_go_back_to_main
+            send_text_message_with_go_back_to_main(to_phone_number, probable_end_step.end_chabot_reply, probable_end_step.go_back_to_main_button_title)
+          else
+            send_text_message(to_phone_number, probable_end_step.end_chabot_reply)
+          end
+
+          return true;
+        end
+      end
+      return false;
+   end
+
+   def send_text_message_with_go_back_to_main(to_phone_number, reply_title, button_title)
+    interactive_payload =  {
+          type: 'button',
+          body: {
+            text: reply_title
+          },
+          action: {
+            buttons: [{ type: "reply", reply: { id: "go_back_to_main_from_end_step", title: button_title} }]
+          }
+        }
+      response = WhatsappMessageService.send_interactive_message(to_phone_number, interactive_payload  )
+
+      conversation_details = {
+        text: {
+          body: reply_title,
+          buttons: button_title
+        },
+      }
+      create_conversation(to_phone_number, conversation_details, true)
+   end
+
+   def check_go_back_to_main_from_end_step(to_phone_number, reply_id, lastest_user_chatbot_step)
+    if reply_id.include?("go_back_to_main_from_end_step")
+      send_all_messages(to_phone_number, lastest_user_chatbot_step)
+      interaction = get_user_chatbot_interaction(to_phone_number)
+      interaction.delete
+      return true
+    end
+    return false
    end
 
   end
