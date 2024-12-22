@@ -14,9 +14,18 @@ class MasterSegmentCreator
         Rails.logger.info "Processing master record #{index + 1}/#{@master_ids.size} (ID: #{master_id})"
         
         master = Master.find(master_id)
+        if master.mobile.present?
+          normalized_mobile = master.mobile.to_s.gsub(/\D/, '')
+          normalized_mobile = normalized_mobile.to_s.sub(/^00/, '')
+          normalized_mobile = normalized_mobile.to_s.sub(/^05/, '971')
+          normalized_mobile = normalized_mobile.to_s.sub(/^0(?!5)/, '')
+        else
+          normalized_mobile = nil
+        end
+
         Segment.create!(
           master_segment_id: @master_segment_id, 
-          mobile: master.mobile,
+          mobile: normalized_mobile,
           person_name: master.name,
           person_email: master.email,
           added_by_id: @user_id,

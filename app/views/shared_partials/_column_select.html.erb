@@ -19,9 +19,16 @@
           <% if params[:search_column].present? %>
             <% params[:search_column].each_with_index do |column, index| %>
               <%= hidden_field_tag "search_column[]", column %>
-              <%= hidden_field_tag "search_term[]", @search_term[index] %>
-              <%= hidden_field_tag "exclude_term[]", @exclude_term[index] %>
-              <%= hidden_field_tag "exclude_empty[]", @exclude_empty[index] %>
+              <% if @search_term.present? %>
+                <%= hidden_field_tag "search_term[]", @search_term[index] %>
+              <% end %>
+              <% if @exclude_term.present? %>
+                <%= hidden_field_tag "exclude_term[]", @exclude_term[index] %>
+              <% end %>
+              <% if @exclude_empty.present? %>
+                <% value = @exclude_empty.permit!.to_h[index.to_s] %>
+                <%= hidden_field_tag "exclude_empty[#{index}]", value %>
+              <% end %>
             <% end %>
           <% end %>
 

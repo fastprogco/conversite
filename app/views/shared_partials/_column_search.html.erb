@@ -21,7 +21,10 @@
           </div>
           <div class="col-md-1">
             <div class="d-flex align-items-center">
-              <%= check_box_tag "exclude_empty[]", "1", params[:exclude_empty]&.[](index), class: "form-check-input me-1" %>
+              <%= hidden_field_tag "exclude_empty[#{index}]", "0", id: "exclude_empty_hidden_#{index}" %>
+              <%= check_box_tag "exclude_empty[#{index}]", "1", params[:exclude_empty]["#{index}"] == "1", 
+                  class: "form-check-input me-1",
+                  onclick: "toggleHiddenInput(this, #{index})" %>
               <label class="form-check-label mb-0">Exclude Empty</label>
             </div>
           </div>
@@ -58,7 +61,10 @@
         </div>
         <div class="col-md-1">
           <div class="d-flex align-items-center">
-            <%= check_box_tag "exclude_empty[]", "1", params[:exclude_empty]&.first, class: "form-check-input me-1" %>
+            <%= hidden_field_tag "exclude_empty[0]", "0", id: "exclude_empty_hidden_0" %>
+            <%= check_box_tag "exclude_empty[0]", "1", params[:exclude_empty]&.first == "1", 
+                class: "form-check-input me-1",
+                onclick: "toggleHiddenInput(this, 0)" %>
             <label class="form-check-label mb-0">Exclude Empty</label>
           </div>
         </div>
@@ -78,8 +84,18 @@
 <% end %>
 
 <script>
+function toggleHiddenInput(checkbox, index) {
+  const hiddenInput = document.getElementById(`exclude_empty_hidden_${index}`);
+  if (checkbox.checked) {
+    hiddenInput.disabled = true; // Prevent the hidden input from being submitted
+  } else {
+    hiddenInput.disabled = false; // Enable it back if unchecked
+  }
+}
+
 function addSearchField() {
   const container = document.getElementById('search-fields');
+  const index = container.children.length; // Calculate the index dynamically
   const newRow = document.createElement('div');
   newRow.className = 'row g-3 align-items-end mb-3';
   newRow.innerHTML = `
@@ -97,7 +113,9 @@ function addSearchField() {
     </div>
     <div class="col-md-1">
       <div class="d-flex align-items-center">
-        <input type="checkbox" name="exclude_empty[]" value="1" class="form-check-input me-1">
+        <input type="hidden" name="exclude_empty[${index}]" value="0" id="exclude_empty_hidden_${index}">
+        <input type="checkbox" name="exclude_empty[${index}]" value="1" class="form-check-input me-1" 
+          onclick="toggleHiddenInput(this, ${index})">
         <label class="form-check-label mb-0">Exclude Empty</label>
       </div>
     </div>

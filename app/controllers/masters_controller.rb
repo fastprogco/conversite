@@ -35,6 +35,8 @@ class MastersController < ApplicationController
       @search_term = params[:search_term]
       @exclude_term = params[:exclude_term]
       @exclude_empty = params[:exclude_empty]
+
+      puts "this is the exclude empty: #{@exclude_empty}"
      end
 
     def export
@@ -119,12 +121,8 @@ class MastersController < ApplicationController
       search_column = params[:search_column].to_a 
       search_term = params[:search_term].to_a
       exclude_term = params[:exclude_term].to_a 
-      exclude_empty = params[:exclude_empty].to_a
+      exclude_empty = params[:exclude_empty]
 
-      puts "search columns: #{search_column}"
-      puts "search term: #{search_term}"
-      puts "exclude term: #{exclude_term}"
-      puts "exclude empty: #{exclude_empty}"
       @masters = Master.all
       if search_column.present? && search_term.present?
         search_column.each_with_index do |column, index|
@@ -138,8 +136,7 @@ class MastersController < ApplicationController
             puts "this is the exclude term: #{exclude_term[index]}"
             @masters = @masters.where.not("#{column} ILIKE ?", "%#{exclude_term[index]}%")
           end
-
-          if exclude_empty.present? && exclude_empty[index].present?
+          if exclude_empty.present? && exclude_empty[index.to_s] == "1"
             @masters = @masters.where.not("#{column}": "")
           end
         end
