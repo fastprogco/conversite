@@ -17,6 +17,11 @@
   </div>
 
   <div class="mb-3">
+    <%= f.label :is_default, class: "form-label" %>
+    <%= f.check_box :is_default, class: "form-check-input" %>
+  </div>
+
+  <div class="mb-3">
     <%= f.label :master_segment_ids, class: "form-label" %>
     <div class="form-check d-flex flex-wrap gap-3">
       <%= f.collection_check_boxes :master_segment_ids, MasterSegment.where(is_deleted: false), :id, :name do |b| %>

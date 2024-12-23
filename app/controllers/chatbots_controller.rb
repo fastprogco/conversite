@@ -13,8 +13,13 @@ class ChatbotsController < ApplicationController
     def create
         @chatbot = Chatbot.new(chatbot_params)
         @chatbot.created_by = current_user
-        associate_master_segments(@chatbot, true)
+        if chatbot_params[:is_default] == "1"
+            @chatbot.is_default = true
+        else
+            @chatbot.is_default = false
+        end
         if @chatbot.save
+            associate_master_segments(@chatbot, true)
             redirect_to chatbots_path, notice: 'Chatbot was successfully created.'
         else
             render :new, status: :unprocessable_entity
@@ -27,8 +32,14 @@ class ChatbotsController < ApplicationController
 
     def update
         @chatbot = Chatbot.find(params[:id])
-        associate_master_segments(@chatbot, true)
+
+        if chatbot_params[:is_default] == "1"
+            @chatbot.is_default = true
+        else
+            @chatbot.is_default = false
+        end
         if @chatbot.update(chatbot_params)
+            associate_master_segments(@chatbot, true)
             redirect_to chatbots_path, notice: 'Chatbot was successfully updated.'
         else
             render :edit, status: :unprocessable_entity
@@ -49,9 +60,10 @@ class ChatbotsController < ApplicationController
 
     private
     def chatbot_params
-        params.require(:chatbot).permit(:name, :description, :select_valid_option, master_segment_ids: [])
+        params.require(:chatbot).permit(:name, :description, :select_valid_option, :is_default, master_segment_ids: [])
     end
 
+    #for each clicked master segment checkbox create the associated join in entry in the join table
     def associate_master_segments(chatbot, is_update = false)
         puts "here is master segment ids #{chatbot_params[:master_segment_ids]}"
         if is_update

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_21_183506) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_22_235229) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -185,6 +185,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_21_183506) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "select_valid_option"
+    t.boolean "is_default", default: false
     t.index ["created_by_id"], name: "index_chatbots_on_created_by_id"
     t.index ["deleted_by_id"], name: "index_chatbots_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_chatbots_on_edited_by_id"
