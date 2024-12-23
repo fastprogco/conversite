@@ -15,7 +15,7 @@ class Chatbot < ApplicationRecord
     private
 
     def only_one_default_chatbot
-        if Chatbot.where.not(id: id).where(is_default: true).exists?
+        if Chatbot.where.not(id: id).where(is_default: true, is_deleted: false).exists? && is_default == true
             errors.add(:base, "Only one default chatbot can be set to default")
         end
     end

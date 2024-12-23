@@ -53,6 +53,8 @@ module ChatbotCode
       #finds the latest chatbot the user is int
       lastest_user_chatbot_step = find_chatbot_step(to_phone_number)
 
+      puts "lastest user chatbot step 2: #{lastest_user_chatbot_step.present?}"
+
       if reply_id.present?
 
         if return_if_send_all_message_to_switched_chatbot_user(to_phone_number, lastest_user_chatbot_step, reply_id)
@@ -94,6 +96,7 @@ module ChatbotCode
           save_user_chatbot_interaction(to_phone_number, chatbot_step, reply_id)
         end
       else
+
         #if no button payload it means it si not a template button click
         # if it is a template button click then  send the latest chatbot step messages
         if !button_payload.present?
@@ -141,6 +144,8 @@ module ChatbotCode
 
       if user_chatbot_interaction.present?
 
+        #if therer is no button click meaning is it is a text message, check if the user is in the end step
+        #if the user is in the end step then allow the flow to continue by returning false
         if !incoming_clicked_button_id.present?
           probable_end_step = ChatbotStep.find_by(chatbot_button_reply_id: user_chatbot_interaction.clicked_button_id)
           if probable_end_step.present? && probable_end_step.end_chabot
@@ -162,8 +167,6 @@ module ChatbotCode
         
         chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
 
-        puts "saved step id: #{user_chatbot_interaction.chatbot_step_id}"
-        puts "incoming clicked button id: #{incoming_clicked_button_id}"
         is_incoming_clicked_button_back_button = incoming_clicked_button_id.include?("BACK_")
         is_saved_clicked_button_back_button = user_chatbot_interaction.clicked_button_id.include?("BACK_")
 
@@ -187,10 +190,6 @@ module ChatbotCode
         # if both are back buttons
         #you want to check if the incoming steps button_reply_ids includees saved chatbot_button_reply_id
         if(is_incoming_clicked_button_back_button && is_saved_clicked_button_back_button)
-          puts "HERE WE ARE IN THE BOTH SBACK BUTTON"
-          puts "ids #{ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
-          puts "incoming id #{incoming_clicked_button_id}"
-          puts "chabot_button_reply_id #{ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_reply_id}"
           if(!ChatbotStep.find(incoming_clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id).include?(ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_reply_id))
             send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
             return true
@@ -207,9 +206,6 @@ module ChatbotCode
         # if incoming is not back button and saved is back button
         #you want to check if the saved step button reply ids include the incoming step id
         if(!is_incoming_clicked_button_back_button && is_saved_clicked_button_back_button)
-          puts "HERE WE ARE IN THE SAVED BACK BUTTON"
-          puts "ids #{ChatbotStep.find(user_chatbot_interaction.clicked_button_id.split("_").last.to_i).chatbot_button_replies.pluck(:id)} "
-          puts "incoming id #{incoming_clicked_button_id}"
 
           #if it is a frst step after template button click then allow next step
           if user_chatbot_interaction.is_first_step_after_template_button_click
@@ -248,6 +244,8 @@ module ChatbotCode
 
 
     def find_chatbot_step(to_phone_number)
+        #find the chabot that has the segment the user is in and is the most recently created
+        #if the user is not in any segment then find the default chatbot
         result = Segment.joins("JOIN master_segments ON segments.master_segment_id = master_segments.id")
                         .joins("JOIN chatbots_master_segments ON master_segments.id = chatbots_master_segments.master_segment_id")
                         .joins("JOIN chatbots ON chatbots.id = chatbots_master_segments.chatbot_id")
@@ -257,8 +255,7 @@ module ChatbotCode
                         .first
 
 
-      chatbot = result&.chatbot_id ? Chatbot.find(result.chatbot_id) : Chatbot.joins("LEFT JOIN chatbots_master_segments ON chatbots.id = chatbots_master_segments.chatbot_id")
-                                       .where("chatbots_master_segments.master_segment_id IS NULL AND chatbots.is_deleted = false").first
+      chatbot = result&.chatbot_id ? Chatbot.find(result.chatbot_id) : Chatbot.find_by(is_default: true , is_deleted: false)
       chatbot_step = chatbot.chatbot_steps.where(chatbot_button_reply_id: nil, is_deleted: false).first
       return chatbot_step
     end
