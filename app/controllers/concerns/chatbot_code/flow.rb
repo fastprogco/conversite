@@ -484,7 +484,11 @@ module ChatbotCode
             if previous_button_reply.present? && previous_button_reply.is_trigger
               trigger_master_segment = MasterSegment.find_by(name: previous_button_reply.trigger_keyword)
               if trigger_master_segment.present?
-                trigger_master_segment.segments.where(mobile: to_phone_number).update(user_response: message_response_body)
+                segment = trigger_master_segment.segments.find_by(mobile: to_phone_number)
+                if segment.present?
+                  previous_reponse = segment.user_response ? " #{segment.user_response} " : ""
+                  segment.update(user_response: previous_reponse + message_response_body)
+                end
               end
             end
           end

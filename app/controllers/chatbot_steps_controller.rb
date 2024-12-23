@@ -91,7 +91,7 @@ class ChatbotStepsController < ApplicationController
                 return false;
             else
                 chain_of_steps = @chatbot_button_reply.chain_of_steps
-                MasterSegment.create(name: @chatbot_step.trigger_master_segment_name, chain_of_steps: chain_of_steps);
+                @master_segment = MasterSegment.create(name: @chatbot_step.trigger_master_segment_name, chain_of_steps: chain_of_steps, added_by: current_user);
                 return true;
             end
         end
