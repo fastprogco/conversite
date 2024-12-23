@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_22_235229) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_23_010940) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -167,6 +167,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_22_235229) do
     t.string "end_chabot_reply"
     t.boolean "has_go_back_to_main", default: false
     t.string "go_back_to_main_button_title"
+    t.string "trigger_master_segment_name"
     t.index ["chatbot_button_reply_id"], name: "index_chatbot_steps_on_chatbot_button_reply_id"
     t.index ["chatbot_id"], name: "index_chatbot_steps_on_chatbot_id"
     t.index ["created_by_id"], name: "index_chatbot_steps_on_created_by_id"

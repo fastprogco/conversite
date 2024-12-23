@@ -15,12 +15,19 @@ class ChatbotStep < ApplicationRecord
     validates :description, presence: true, length: { maximum: 1024 }
     validates :footer, length: { maximum: 60 }
     validates :list_button_caption, length: { maximum: 20 }
-
     validate :previous_chatbot_step_belongs_to_same_chatbot
+
+    before_save :strip_and_downcase_trigger_master_segment_name
+    before_update :strip_and_downcase_trigger_master_segment_name
+
 
     def previous_chatbot_step_belongs_to_same_chatbot
         if previous_chatbot_step && previous_chatbot_step.chatbot != chatbot
             errors.add(:previous_chatbot_step_id, "must belong to the same chatbot")
         end
+    end
+
+    def strip_and_downcase_trigger_master_segment_name
+        self.trigger_master_segment_name = self.trigger_master_segment_name.strip.downcase if self.trigger_master_segment_name.present?
     end
 end
