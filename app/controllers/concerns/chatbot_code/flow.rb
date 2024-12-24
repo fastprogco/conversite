@@ -496,7 +496,7 @@ module ChatbotCode
             if previous_button_reply.present? && previous_button_reply.is_trigger
               trigger_master_segment = MasterSegment.find_by(name: previous_button_reply.trigger_keyword.strip.downcase)
               if trigger_master_segment.present?
-                segment = trigger_master_segment.segments.find_by(mobile: to_phone_number)
+                segment = trigger_master_segment.segments.where(mobile: to_phone_number).first
                 puts "end step segment: #{segment.present?}"
                 puts "to phone number: #{to_phone_number}"
                 puts "trigger master segment: #{trigger_master_segment.name}"
