@@ -498,6 +498,8 @@ module ChatbotCode
               if trigger_master_segment.present?
                 segment = trigger_master_segment.segments.find_by(mobile: to_phone_number)
                 puts "end step segment: #{segment.present?}"
+                puts "to phone number: #{to_phone_number}"
+                puts "trigger master segment: #{trigger_master_segment.name}"
                 if segment.present?
                   previous_reponse = segment.user_response ? " #{segment.user_response} " : ""
                   segment.update(user_response: previous_reponse + message_response_body)
