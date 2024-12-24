@@ -484,23 +484,17 @@ module ChatbotCode
 
    def check_chatbot_end_step(to_phone_number, message_response_body)
     interaction = get_user_chatbot_interaction(to_phone_number)
-    puts "end step interaction: #{interaction.present?}"
       if interaction.present?
         probable_end_step = ChatbotStep.find_by(chatbot_button_reply_id: interaction.clicked_button_id)
-        puts "end step probable_end_step: #{probable_end_step.present?}"
         if probable_end_step.present? && probable_end_step.end_chabot
-          puts "end step message_response_body: #{message_response_body.present?}"
           if message_response_body.present?
             previous_button_reply = ChatbotButtonReply.find(interaction.clicked_button_id)
-            puts "end step previous_button_reply: #{previous_button_reply.present?}"
             if previous_button_reply.present? && previous_button_reply.is_trigger
               trigger_master_segment = MasterSegment.find_by(name: previous_button_reply.trigger_keyword.strip.downcase, is_deleted: false)
               if trigger_master_segment.present?
                 #segment = trigger_master_segment.segments.where(mobile: to_phone_number).first
                 segment = Segment.find_by(mobile: to_phone_number.to_s, master_segment_id: trigger_master_segment.id, is_deleted: false)
-                puts "end step segment: #{segment.present?}"
-                puts "to phone number: #{to_phone_number}"
-                puts "trigger master segment: #{trigger_master_segment.name}"
+     
                 if segment.present?
                   previous_reponse = segment.user_response ? " #{segment.user_response} " : ""
                   segment.update(user_response: previous_reponse + message_response_body)
