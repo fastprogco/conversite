@@ -14,7 +14,8 @@ class ChatbotButtonRepliesController < ApplicationController
         
         previous_linked_chatbot_button_reply = @chatbot_step.chatbot_button_reply
         if previous_linked_chatbot_button_reply.present?
-            @chatbot_button_reply.chain_of_steps = previous_linked_chatbot_button_reply.chain_of_steps + " _ #{@chatbot_button_reply.title}"
+            previous_chain = previous_linked_chatbot_button_reply.chain_of_steps ? previous_linked_chatbot_button_reply.chain_of_steps : ""
+            @chatbot_button_reply.chain_of_steps = previous_chain + " _ #{@chatbot_button_reply.title}"
         else
             @chatbot_button_reply.chain_of_steps = @chatbot_button_reply.title
         end
@@ -23,7 +24,7 @@ class ChatbotButtonRepliesController < ApplicationController
         if chatbot_button_reply_params[:is_trigger] == "1"
             existing_master_segment = MasterSegment.find_by(name:@chatbot_button_reply.trigger_keyword.downcase, is_deleted: false)
             if existing_master_segment.present?
-                redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Trigger keyword already exists", status: :see_other
+                redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), alert: "Trigger keyword already exists", status: :see_other
             else
                 @master_segment = MasterSegment.new(name:@chatbot_button_reply.trigger_keyword.downcase, added_by_id: current_user.id, chain_of_steps: @chatbot_button_reply.chain_of_steps)
                 if @master_segment.save
@@ -53,7 +54,7 @@ class ChatbotButtonRepliesController < ApplicationController
         if existing_master_segment.present?
             if was_previously_trigger
                 if previous_trigger_keyword != current_trigger_keyword && current_trigger_keyword.present?
-                    redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Trigger keyword already exists", status: :see_other
+                    redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), alert: "Trigger keyword already exists", status: :see_other
                     return;
                 end
             end
