@@ -105,7 +105,9 @@ module ChatbotCode
           end
         else
           interaction = get_user_chatbot_interaction(to_phone_number)
-          interaction.update(is_first_step_after_template_button_click: true)
+          if interaction.present?
+            interaction.update(is_first_step_after_template_button_click: true)
+          end
         end
 
         chatbot_step = lastest_user_chatbot_step
