@@ -32,7 +32,6 @@ class ChatbotStepsController < ApplicationController
         if @chatbot_step.save
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), notice: "Chatbot step created successfully"
         else
-            puts "Chatbot step creation failed #{@chatbot_step.errors.full_messages.join(', ')}"
             redirect_to new_chatbot_chatbot_step_path(@chatbot, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "Chatbot step creation failed #{@chatbot_step.errors.full_messages.join(', ')}"
         end
     end
