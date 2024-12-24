@@ -269,12 +269,18 @@ module ChatbotCode
 
       buttons_count = chatbot_step.chatbot_button_replies.where(is_deleted: false).count
 
-      if buttons_count > 2 && chatbot_step.chatbot_button_reply_id.present?
+      if chatbot_step.chatbot_button_reply_id.present?
+        max_buttons_count = 2
+      else
+        max_buttons_count = 3
+      end
+      
+      if buttons_count > max_buttons_count
         send_message_as_interactive_list(to_phone_number, chatbot_step)
         return;
       end
 
-      buttons = chatbot_step.chatbot_button_replies.where(is_deleted: false).map { |button| { type: "reply", reply: { id: button.id, title: button.title } } }
+      buttons = chatbot_step.chatbot_button_replies.where(is_deleted: false).order(:order).map { |button| { type: "reply", reply: { id: button.id, title: button.title } } }
       buttons.push({ type: "reply", reply: { id: "BACK_#{chatbot_step.previous_chatbot_step_id}", title: "back" } }) if chatbot_step.previous_chatbot_step_id.present?
       header = chatbot_step.header
       body = chatbot_step.description
@@ -311,7 +317,7 @@ module ChatbotCode
 
     def send_message_as_interactive_list(to_phone_number, chatbot_step)
       
-        rows = chatbot_step.chatbot_button_replies.where(is_deleted: false).map do |button|
+        rows = chatbot_step.chatbot_button_replies.where(is_deleted: false).order(:order).map do |button|
           {
             id: button.id,
             title: button.title,
