@@ -490,7 +490,7 @@ module ChatbotCode
           if message_response_body.present?
             previous_button_reply = ChatbotButtonReply.find(interaction.clicked_button_id)
             if previous_button_reply.present? && previous_button_reply.is_trigger
-              trigger_master_segment = MasterSegment.find_by(name: previous_button_reply.trigger_keyword)
+              trigger_master_segment = MasterSegment.find_by(name: previous_button_reply.trigger_keyword.strip.downcase)
               if trigger_master_segment.present?
                 segment = trigger_master_segment.segments.find_by(mobile: to_phone_number)
                 if segment.present?
