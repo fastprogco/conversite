@@ -18,13 +18,21 @@ class ChatbotStepsController < ApplicationController
         @chatbot_step.previous_chatbot_step = ChatbotStep.find(params[:previous_chatbot_step_id]) if params[:previous_chatbot_step_id].present?
         @chatbot_step.chatbot_button_reply_id = ChatbotButtonReply.find(params[:chatbot_button_reply_id]).id if params[:chatbot_button_reply_id].present?
 
-        if !check_and_create_trigger_button_if_is_end_step
-            redirect_to new_chatbot_chatbot_step_path(@chatbot, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "Chatbot step creation failed #{@chatbot_step.errors.full_messages.join(', ')}"
-            return
-        end
-        if @chatbot_step.save
-            redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Chatbot step created successfully"
+
+        get_leading_button_reply
+        if !check_existing_and_save_end_chatbot_step_master_segment(chatbot_step_params[:end_chabot])
+            update_leading_button_reply_to_trigger
         else
+            if !params[:chatbot_button_reply_id]
+                 redirect_to new_chatbot_chatbot_step_path(@chatbot, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "Chatbot step creation failed , master segment already exists"
+                 return
+            end
+        end
+
+        if @chatbot_step.save
+            redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), notice: "Chatbot step created successfully"
+        else
+            puts "Chatbot step creation failed #{@chatbot_step.errors.full_messages.join(', ')}"
             redirect_to new_chatbot_chatbot_step_path(@chatbot, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "Chatbot step creation failed #{@chatbot_step.errors.full_messages.join(', ')}"
         end
     end
@@ -42,9 +50,19 @@ class ChatbotStepsController < ApplicationController
             return;
         end
 
+        get_leading_button_reply
+        if !check_existing_and_save_end_chatbot_step_master_segment(chatbot_step_params[:end_chabot])
+            update_leading_button_reply_to_trigger
+        else
+            if !params[:chatbot_button_reply_id]
+                 redirect_to new_chatbot_chatbot_step_path(@chatbot, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "Chatbot step update failed , master segment already exists"
+                 return
+            end
+        end
+
         @chatbot_step.edited_by = current_user
         if @chatbot_step.update(chatbot_step_params)
-            redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step), notice: "Chatbot step updated successfully"
+            redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), notice: "Chatbot step updated successfully"
         else
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "Chatbot step update failed #{@chatbot_step.errors.full_messages.join(', ')}"
         end
@@ -73,7 +91,9 @@ class ChatbotStepsController < ApplicationController
     end
 
     def get_leading_button_reply
-        @chatbot_button_reply = ChatbotButtonReply.find(@chatbot_step.chatbot_button_reply_id);
+        if @chatbot_step.chatbot_button_reply_id.present?
+            @chatbot_button_reply = ChatbotButtonReply.find(@chatbot_step.chatbot_button_reply_id);
+        end
     end
 
     def update_leading_button_reply_to_trigger
@@ -84,33 +104,23 @@ class ChatbotStepsController < ApplicationController
         end
     end
 
-    def check_existing_and_save_end_chatbot_step_master_segment
-        if @chatbot_step.end_chabot == true
+    def check_existing_and_save_end_chatbot_step_master_segment(is_end_chatbot_step)
+        if is_end_chatbot_step
             existing_msater_segment = MasterSegment.find_by(name: @chatbot_step.trigger_master_segment_name, is_deleted: false);
             if existing_msater_segment.present?
-                return false;
+                return true;
             else
                 chain_of_steps = @chatbot_button_reply.chain_of_steps
                 @master_segment = MasterSegment.create(name: @chatbot_step.trigger_master_segment_name, chain_of_steps: chain_of_steps, added_by: current_user);
-                return true;
+                return false;
             end
         end
-    end
-
-
-    def check_and_create_trigger_button_if_is_end_step
-        get_leading_button_reply
-        if check_existing_and_save_end_chatbot_step_master_segment
-            update_leading_button_reply_to_trigger
-            return true;
-        else
-            return false;
-        end
+        
     end
 
     def check_trigger_master_segment_name_change(chatbot_step_params)
         if chatbot_step_params[:end_chabot] == "1" 
-            if @chatbot_step.trigger_master_segment_name != chatbot_step_params[:trigger_master_segment_name]
+            if @chatbot_step.trigger_master_segment_name != chatbot_step_params[:trigger_master_segment_name] && @chatbot_step.trigger_master_segment_name.present?
                 return false;
             end
         end
