@@ -4,6 +4,22 @@ class BroadcastReportsController < ApplicationController
   def index
     @page = params[:page] || 1
     @broadcast = Broadcast.find(params[:broadcast_id])
-    @broadcast_reports = @broadcast.broadcast_reports.order(created_at: :desc).page(@page).per(10)
+    # @broadcast_reports = @broadcast.broadcast_reports.order(created_at: :desc).page(@page).per(10).map do |report|
+    #   last_conversation = Conversation.where(mobile_number: report.mobile_number).order(created_at: :desc).first
+    #   report.attributes.merge(
+    #     conversation_within_24_hours: last_conversation.present? && last_conversation.created_at > report.created_at + 24.hours ? 'No' : 'Yes'
+    #   )
+    # end
+    @broadcast_reports = @broadcast.broadcast_reports
+                              .joins("LEFT JOIN LATERAL (SELECT * FROM conversations WHERE conversations.mobile_number = broadcast_reports.mobile ORDER BY created_at DESC LIMIT 1) last_conversation ON true")
+                              .select("broadcast_reports.*, 
+                                        CASE 
+                                          WHEN last_conversation.created_at IS NULL THEN 'No'
+                                          WHEN last_conversation.created_at > broadcast_reports.created_at + interval '24 hours' THEN 'No'
+                                          ELSE 'Yes'
+                                        END AS conversation_within_last_24_hours_of_report")
+                              .order("broadcast_reports.created_at DESC")
+                              .page(@page)
+                              .per(10)
   end
 end

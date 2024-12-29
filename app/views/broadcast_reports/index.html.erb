@@ -17,6 +17,8 @@
               <th>Delivered On</th>
               <th>Seen On</th>
               <th>Reason for Failure</th>
+              <th>Reply</th>
+              <th>Conversation</th>
             </tr>
           </thead>
           <tbody>
@@ -30,6 +32,8 @@
                 <td><%= report.delivered_on %></td>
                 <td><%= report.seen_on %></td>
                 <td><%= report.reason_for_failure %></td>
+                <td><%= report.conversation_within_last_24_hours_of_report %></td>
+                <td><%= link_to "Open", conversations_path(phone_number: report.mobile), class: "btn btn-primary"%></td>
               </tr>
             <% end %>
           </tbody>

@@ -44,13 +44,25 @@ document.addEventListener('turbo:load', function() {
   const messageContainer = document.getElementById('messages');
   const messageForm = document.getElementById('message-form');
   const conversationContainer = document.getElementById('conversation-container');
+  const initial_phone_number  = "<%= @initial_phone_number%>"
 
   let page = 1;
   let currentPhone = null;
   let loading = false;
 
+  if(initial_phone_number != ""){
+    currentPhone = initial_phone_number;
+    document.querySelectorAll('.phone-number').forEach(phone => {
+      if(phone.dataset.phone === currentPhone) {
+        phone.classList.add('active');
+      }
+    });
+    loadMessages();
+  }
+
   // Handle phone number selection
   document.querySelectorAll('.phone-number').forEach(phone => {
+ 
     phone.addEventListener('click', function(e) {
       e.preventDefault();
       document.querySelectorAll('.phone-number').forEach(p => p.classList.remove('active'));
