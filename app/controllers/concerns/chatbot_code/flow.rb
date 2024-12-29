@@ -52,10 +52,9 @@ module ChatbotCode
 
       #finds the latest chatbot the user is int
       lastest_user_chatbot_step = find_chatbot_step(to_phone_number)
+      interaction = get_user_chatbot_interaction(to_phone_number)
 
-      puts "lastest user chatbot step 2: #{lastest_user_chatbot_step.present?}"
-
-      if reply_id.present?
+      if reply_id.present? && interaction.present?
 
         if return_if_send_all_message_to_switched_chatbot_user(to_phone_number, lastest_user_chatbot_step, reply_id)
           return
@@ -117,6 +116,10 @@ module ChatbotCode
         end
       end
 
+      #thi si will save a chatbot interaction with no step since it is the first tome the user interacts with the chabot
+      if chatbot_step.present? && !interaction.present?
+        save_user_chatbot_interaction(to_phone_number, chatbot_step, nil)
+      end
       send_all_messages(to_phone_number, chatbot_step)
     end
 
@@ -145,6 +148,19 @@ module ChatbotCode
       user_chatbot_interaction = get_user_chatbot_interaction(to_phone_number)
 
       if user_chatbot_interaction.present?
+        chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
+        
+        #if there is no clicked_button_id it means it was first time chatbot activateion
+        # we let him go through if the incoming clicked buutton id is in the first step buttons
+        #otherwise block him it is a rogue click
+        if user_chatbot_interaction.clicked_button_id == nil
+          if !ChatbotStep.find(user_chatbot_interaction.chatbot_step_id).chatbot_button_replies.pluck(:id).include?(incoming_clicked_button_id.to_i)
+            send_please_select_valid_option_message(to_phone_number, chatbot.select_valid_option)
+            return true
+          else
+            return false
+          end
+        end
 
         #if therer is no button click meaning is it is a text message, check if the user is in the end step
         #if the user is in the end step then allow the flow to continue by returning false
@@ -167,7 +183,6 @@ module ChatbotCode
           end
         end
         
-        chatbot = Chatbot.find(user_chatbot_interaction.chatbot_id)
 
         is_incoming_clicked_button_back_button = incoming_clicked_button_id.include?("BACK_")
         is_saved_clicked_button_back_button = user_chatbot_interaction.clicked_button_id.include?("BACK_")
