@@ -8,7 +8,11 @@
       <%= form_with url: broadcast_broadcast_reports_path(@broadcast), method: :get, local: true, class: "mb-4" do |f| %>
         <div class="form-group">
           <%= f.label :message_status, "Filter by Message Status" %>
-          <%= f.select :message_status, [["All", ""]] + BroadcastReport.message_statuses.keys.map { |status| [status.humanize, status] }, {}, class: "form-control" %>
+          <%= f.select :message_status, [["All", ""]] + BroadcastReport.message_statuses.keys.map { |status| [status.humanize, status] }, { selected: @message_status }, class: "form-control" %>
+        </div>
+        <div class="form-group">
+          <%= f.label :response_status, "Filter by Response Status" %>
+          <%= f.select :response_status, [["All", ""], ["Yes", "yes"], ["No", "no"]], {selected: @response_status}, class: "form-control" %>
         </div>
         <div class="form-group">
           <%= f.submit "Filter", class: "btn btn-primary my-3" %>
@@ -27,7 +31,7 @@
               <th>Delivered On</th>
               <th>Seen On</th>
               <th>Reason for Failure</th>
-              <th>Reply</th>
+              <th>Response</th>
               <th>Conversation</th>
             </tr>
           </thead>
