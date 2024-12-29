@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_23_010940) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_29_213335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -187,6 +187,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_23_010940) do
     t.datetime "updated_at", null: false
     t.text "select_valid_option"
     t.boolean "is_default", default: false
+    t.string "optout_success_message"
     t.index ["created_by_id"], name: "index_chatbots_on_created_by_id"
     t.index ["deleted_by_id"], name: "index_chatbots_on_deleted_by_id"
     t.index ["edited_by_id"], name: "index_chatbots_on_edited_by_id"
@@ -269,6 +270,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_23_010940) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.string "land_sub_num"
+  end
+
+  create_table "optouts", force: :cascade do |t|
+    t.string "mobile_number"
+    t.string "facebook_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "segments", force: :cascade do |t|

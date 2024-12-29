@@ -9,7 +9,14 @@ class BroadcastJob < ApplicationJob
     puts "Starting Broadcast Job"
     broadcast.master_segment.segments.where(is_deleted: false).select('DISTINCT ON (mobile) *').each do |segment|
       puts "Sending message to #{segment.mobile}"
+
       if !segment.mobile.present? || segment.mobile == "0" || segment.mobile == "null"
+        next
+      end
+
+      optout = Optout.find_by(mobile_number: segment.mobile)
+      if optout.present?
+        puts "optout from broadcast for phone #{segment.mobile}"
         next
       end
 
@@ -28,12 +35,6 @@ class BroadcastJob < ApplicationJob
         if response[:body].present?
           error_body = JSON.parse(response[:body]) rescue nil
           if error_body && error_body['error']
-            puts "Error Message: #{error_body['error']['message']}"
-            puts "Error Type: #{error_body['error']['type']}" 
-            puts "Error Code: #{error_body['error']['code']}"
-            puts "FB Trace ID: #{error_body['error']['fbtrace_id']}"
-            puts "whatsapp_message_id: #{error_body['error']['whatsapp_message_id']}"
-
             BroadcastReport.create(
               broadcast: broadcast,
               broadcast_name: broadcast.name,

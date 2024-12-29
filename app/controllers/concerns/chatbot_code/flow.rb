@@ -6,6 +6,7 @@ module ChatbotCode
 
     def start(to_phone_number, params)
       puts "starting flow"
+      puts "params from start flow#{params}"
       decide_next_step(to_phone_number, params)
     end
 
@@ -42,6 +43,14 @@ module ChatbotCode
       user_name = payload&.dig(:user_name)
       button_payload = payload&.dig(:button_payload)
 
+      lastest_user_chatbot_step = find_chatbot_step(to_phone_number)
+      interaction = get_user_chatbot_interaction(to_phone_number)
+
+
+      if stop_promotion(button_payload, to_phone_number, user_name, lastest_user_chatbot_step, interaction)
+        return
+      end
+
       if message_response_body.present?
         create_conversation(to_phone_number, { text: { content: message_response_body } }, false)
       end
@@ -51,8 +60,6 @@ module ChatbotCode
       puts "reply_id: #{reply_id}"
 
       #finds the latest chatbot the user is int
-      lastest_user_chatbot_step = find_chatbot_step(to_phone_number)
-      interaction = get_user_chatbot_interaction(to_phone_number)
 
       if reply_id.present? && interaction.present?
 
@@ -558,6 +565,22 @@ module ChatbotCode
       return true
     end
     return false
+   end
+
+   def stop_promotion(button_payload, to_phone_number, user_name, latest_chatbot_step, interaction)
+      if button_payload == "Stop promotions"
+        create_conversation(to_phone_number, { text: { buttons: "Stop promotions" } }, false) 
+        existing = Optout.find_by(mobile_number: to_phone_number)
+        if !existing.present?
+          Optout.create(mobile_number: to_phone_number, facebook_name: user_name)
+          send_text_message(to_phone_number, latest_chatbot_step.chatbot.optout_success_message)
+          if interaction.present?
+            interaction.delete
+          end
+        end 
+        return true
+      end
+      return false
    end
 
   end

@@ -60,7 +60,7 @@ class ChatbotsController < ApplicationController
 
     private
     def chatbot_params
-        params.require(:chatbot).permit(:name, :description, :select_valid_option, :is_default, master_segment_ids: [])
+        params.require(:chatbot).permit(:name, :description, :select_valid_option, :is_default,:optout_success_message, master_segment_ids: [])
     end
 
     #for each clicked master segment checkbox create the associated join in entry in the join table
