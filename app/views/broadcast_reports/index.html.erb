@@ -5,6 +5,33 @@
     </div>
     <div class="card-body">
 
+
+<!-- Status Counts table-->
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sent</th>
+              <th>Delivered</th>
+              <th>Read</th>
+              <th>Replied</th>
+              <th>Failed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= @status_counts["sent"] || 0 %></td>
+              <td><%= @status_counts["delivered"] || 0 %></td>
+              <td><%= @status_counts["read"] || 0 %></td>
+              <td><%= @status_counts["replied"] || 0 %></td>
+              <td><%= @status_counts["failed"] || 0 %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+<!-- END Status Counts table-->
+
+<!-- Filter Form -->
       <%= form_with url: broadcast_broadcast_reports_path(@broadcast), method: :get, local: true, class: "mb-4" do |f| %>
         <div class="form-group">
           <%= f.label :message_status, "Filter by Message Status" %>
@@ -19,6 +46,9 @@
         </div>
       <% end %>
 
+<!-- END Filter Form -->
+
+<!-- Main Table -->
       <div class="table-responsive">
         <table class="table table-striped table-hover">
           <thead >
@@ -59,3 +89,5 @@
     </div>
   </div>
 </div>
+<!-- END Main Table -->
+

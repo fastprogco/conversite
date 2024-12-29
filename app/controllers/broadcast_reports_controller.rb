@@ -6,6 +6,11 @@ class BroadcastReportsController < ApplicationController
     @broadcast = Broadcast.find(params[:broadcast_id])
     @message_status = params[:message_status] || ''
     @response_status = params[:response_status] || ''
+    @status_counts = @broadcast.broadcast_reports
+                              .where(message_status: BroadcastReport.message_statuses.values_at(:sent, :delivered, :read, :replied, :failed))
+                              .group(:message_status)
+                              .count
+
     puts "response Status is here #{@response_status}"
     # @broadcast_reports = @broadcast.broadcast_reports.order(created_at: :desc).page(@page).per(10).map do |report|
     #   last_conversation = Conversation.where(mobile_number: report.mobile_number).order(created_at: :desc).first
