@@ -25,18 +25,16 @@ class MastersController < ApplicationController
       @page = params[:page] || 1
       @count = Master.count
    
-      get_masters
-      @selected_masters_count = @masters.count
-      @masters = @masters.page(@page).order(created_at: :desc).per(10)
-
-
       @columns = params[:columns]&.to_unsafe_h
       @search_column = params[:search_column]
       @search_term = params[:search_term]
       @exclude_term = params[:exclude_term]
       @exclude_empty = params[:exclude_empty]
+      @prevent_duplicates = params[:prevent_duplicates]
 
-      puts "this is the exclude empty: #{@exclude_empty}"
+      get_masters
+      @selected_masters_count = Master.from(@masters, :masters).count
+      @masters = @masters.page(@page).per(10)
      end
 
     def export
@@ -122,11 +120,15 @@ class MastersController < ApplicationController
       search_term = params[:search_term].to_a
       exclude_term = params[:exclude_term].to_a 
       exclude_empty = params[:exclude_empty]
+      prevent_duplicates = params[:prevent_duplicates]
 
       @masters = Master.all
       if search_column.present? && search_term.present?
+        distinct_columns = []
         search_column.each_with_index do |column, index|
           next if column.blank? 
+
+          distinct_columns << column if prevent_duplicates &&  prevent_duplicates[index.to_s] == "1"
 
           if search_term.present? && search_term[index].present?
             @masters = @masters.where("#{column} ILIKE ?", "%#{search_term[index]}%")
@@ -139,8 +141,19 @@ class MastersController < ApplicationController
           if exclude_empty.present? && exclude_empty[index.to_s] == "1"
             @masters = @masters.where.not("#{column}": "")
           end
+
         end
-        @masters = @masters.order(created_at: :desc)
+        unless distinct_columns.empty?
+          distinct_columns_list = distinct_columns.first
+
+          @masters = @masters.select("DISTINCT ON (#{distinct_columns_list}) *")
+                                    .order("#{distinct_columns_list}, created_at DESC")
+        end
+
+        if distinct_columns.empty?
+         @selected_masters_count = @masters.count
+        end
+
       end
     end
 end
