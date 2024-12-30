@@ -39,9 +39,6 @@ class MastersController < ApplicationController
 
     def export
       get_masters
-
-      puts "this is the count of masters: #{@masters.count}"
-
       @column_groups = [
         ['file_name', 'date', 'name', 'mobile', 'nationality', 'procedure', 'procedure_name', 'amount', 'area_name'],
         ['combine', 'master_project', 'project', 'plot_pre_reg_num', 'building_num', 'building_name', 'size', 'unit_number', 'dm_num'],

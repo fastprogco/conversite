@@ -27,6 +27,10 @@
               <% value = @exclude_empty.permit!.to_h[index.to_s] %>
               <%= hidden_field_tag "exclude_empty[#{index}]", value %>
             <% end %>
+             <% if @prevent_duplicates.present? %>
+                <% value = @prevent_duplicates.permit!.to_h[index.to_s] %>
+                <%= hidden_field_tag "prevent_duplicates[#{index}]", value %>
+             <% end %>
           <% end %>
         <% end %>
         
