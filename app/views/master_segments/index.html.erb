@@ -2,17 +2,51 @@
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
           <h2>Master Segments</h2>
           <%= link_to "New Master Segment", new_master_segment_path, class: "btn btn-primary" %>
         </div>
         <div class="card-body">
+          <%= form_with url: master_segments_path, method: :get, local: true, class: "mb-4" do |form| %>
+            <div class="row g-2">
+              <div class="col-md-5">
+                <%= form.label :name, "Search by Name", class: "form-label" %>
+                <%= form.text_field :name, value: params[:name], class: "form-control", placeholder: "Enter name" %>
+              </div>
+              <div class="col-md-5">
+                <%= form.label :mobile, "Search by Mobile", class: "form-label" %>
+                <%= form.text_field :mobile, value: params[:mobile], class: "form-control", placeholder: "Enter mobile" %>
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <%= form.submit "Search", class: "btn btn-primary w-100" %>
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <%= link_to "Clear", master_segments_path, class: "btn btn-secondary w-100" %>
+              </div>
+            </div>
+          <% end %>
+
           <table class="table table-striped">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Chain of Steps</th>
+                <th>
+                  <%= link_to master_segments_path(sort: "name", direction: sort_direction("name")) do %>
+                    Name
+                    <i class="<%= arrow_class('name') %>"></i>
+                  <% end %>
+                </th>
+                <th>
+                  <%= link_to master_segments_path(sort: "description", direction: sort_direction("description")) do %>
+                    Description
+                    <i class="<%= arrow_class('description') %>"></i>
+                  <% end %>
+                </th>
+                <th>
+                  <%= link_to master_segments_path(sort: "chain_of_steps", direction: sort_direction("chain_of_steps")) do %>
+                    Chain of Steps
+                    <i class="<%= arrow_class('chain_of_steps') %>"></i>
+                  <% end %>
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -38,3 +72,23 @@
     </div>
   </div>
 </div>
+
+<style>
+  .active-sort {
+    font-weight: bold;
+    color: #007bff; /* Blue color for active sort link */
+  }
+
+  .sort-arrow {
+    margin-left: 5px;
+    font-size: 12px;
+  }
+
+  .sort-up::after {
+    content: "▲"; /* Up arrow */
+  }
+
+  .sort-down::after {
+    content: "▼"; /* Down arrow */
+  }
+</style>

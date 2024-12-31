@@ -3,8 +3,27 @@ class MasterSegmentsController < ApplicationController
 
   def index
     @page = params[:page] || 1
-    @master_segments = MasterSegment.where(is_deleted: false).order(created_at: :desc).page(@page).per(10)
+    allowed_sort_columns = ['name', 'description', 'chain_of_steps', 'created_at']
+    allowed_sort_descriptions = ['asc', 'desc']
+
+    @sort_column = params[:sort].presence_in(allowed_sort_columns) || 'created_at'
+    @sort_direction = params[:direction].presence_in(allowed_sort_descriptions) || 'desc'
+
+
+    @master_segments = MasterSegment.where(is_deleted: false)
+
+    if params[:name].present? || params[:mobile].present?
+      @master_segments = @master_segments.joins(:segments)
+                                          .where("segments.person_name ILIKE :name AND segments.mobile = :mobile", 
+                                                name: "%#{params[:name]}%", mobile: params[:mobile])
+                                          .distinct
+                                         
+    end
+
+    @master_segments = @master_segments.order(Arel.sql("#{@sort_column} #{@sort_direction}")).page(@page).per(10)
   end
+
+
 
   def destroy
     @master_segment = MasterSegment.find(params[:id])
