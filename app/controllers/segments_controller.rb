@@ -1,6 +1,6 @@
 class SegmentsController < ApplicationController
-  before_action :authorize_super_admin, only: [:destroy]
-  before_action :set_master_segment, only: [:index, :new, :create, :edit, :update, :destroy]
+  before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy, :show]
+  before_action :set_master_segment, only: [:index, :new, :create, :edit, :update, :destroy, :show]
 
   def index
     @segments = @master_segment.segments.where(segments: {is_deleted: false}).page(params[:page]).per(10)
@@ -42,6 +42,10 @@ class SegmentsController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def show
+    @segment = @master_segment.segments.find(params[:id])
   end
 
   private

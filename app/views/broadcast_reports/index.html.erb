@@ -33,14 +33,29 @@
 
 <!-- Filter Form -->
       <%= form_with url: broadcast_broadcast_reports_path(@broadcast), method: :get, local: true, class: "mb-4" do |f| %>
-        <div class="form-group">
-          <%= f.label :message_status, "Filter by Message Status" %>
-          <%= f.select :message_status, [["All", ""]] + BroadcastReport.message_statuses.keys.map { |status| [status.humanize, status] }, { selected: @message_status }, class: "form-control" %>
+      <div class="row">
+        <div class="col-4">
+           <div class="form-group">
+            <%= f.label :message_status, "Filter by Message Status" %>
+            <%= f.select :message_status, [["All", ""]] + BroadcastReport.message_statuses.keys.map { |status| [status.humanize, status] }, { selected: @message_status }, class: "form-control" %>
+          </div>
         </div>
-        <div class="form-group">
-          <%= f.label :response_status, "Filter by Response Status" %>
-          <%= f.select :response_status, [["All", ""], ["Yes", "yes"], ["No", "no"]], {selected: @response_status}, class: "form-control" %>
+        <div class="col-4">
+          <div class="form-group">
+            <%= f.label :response_status, "Filter by Response Status" %>
+            <%= f.select :response_status, [["All", ""], ["Yes", "yes"], ["No", "no"]], {selected: @response_status}, class: "form-control" %>
+          </div>
         </div>
+         <div class="col-4">
+          <div class="form-group">
+            <%= f.label :trigger_segments, "Filter Presence Trigger Segment" %>
+            <%= f.select :trigger_segments, [["All", ""], ["Yes", "yes"], ["No", "no"]], {selected: @trigger_segments}, class: "form-control" %>
+          </div>
+        </div>
+      </div>
+
+
+
         <div class="form-group">
           <%= f.submit "Filter", class: "btn btn-primary my-3" %>
         </div>
@@ -63,6 +78,7 @@
               <th>Reason for Failure</th>
               <th>Response</th>
               <th>Conversation</th>
+              <th>Trigger Segment</th>
             </tr>
           </thead>
           <tbody>
@@ -77,7 +93,13 @@
                 <td><%= report.seen_on %></td>
                 <td><%= report.reason_for_failure %></td>
                 <td><%= report.conversation_within_last_24_hours_of_report %></td>
+                <%= report[:segment_id]%>
                 <td><%= link_to "Open", conversations_path(phone_number: report.mobile), class: "btn btn-primary"%></td>
+                <td>
+                  <% if  report[:segment_id].present?%>
+                  <%= link_to "Open", master_segment_segment_path(report[:master_segment_id], report[:segment_id]), class: "btn btn-primary"%>
+                  <% end %>
+                </td>
               </tr>
             <% end %>
           </tbody>
