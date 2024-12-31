@@ -1,27 +1,28 @@
 class MasterSegmentsController < ApplicationController
   before_action :authorize_super_admin, only: [:index, :destroy]
+    def index
+      @page = params[:page] || 1
+      allowed_sort_columns = ['name', 'description', 'chain_of_steps', 'created_at']
+      allowed_sort_descriptions = ['asc', 'desc']
 
-  def index
-    @page = params[:page] || 1
-    allowed_sort_columns = ['name', 'description', 'chain_of_steps', 'created_at']
-    allowed_sort_descriptions = ['asc', 'desc']
+      @sort_column = params[:sort].presence_in(allowed_sort_columns) || 'created_at'
+      @sort_direction = params[:direction].presence_in(allowed_sort_descriptions) || 'desc'
 
-    @sort_column = params[:sort].presence_in(allowed_sort_columns) || 'created_at'
-    @sort_direction = params[:direction].presence_in(allowed_sort_descriptions) || 'desc'
+      @master_segments = MasterSegment.where(is_deleted: false).joins('INNER JOIN segments ON segments.master_segment_id = master_segments.id')
 
+      if params[:name].present? || params[:mobile].present?
+        # Ensure the join with segments is correctly specified
+        @master_segments = @master_segments.where("segments.person_name ILIKE :name AND segments.mobile = :mobile", 
+                                                  name: "%#{params[:name]}%", mobile: params[:mobile])
+      end
 
-    @master_segments = MasterSegment.where(is_deleted: false)
-
-    if params[:name].present? || params[:mobile].present?
-      @master_segments = @master_segments.joins(:segments)
-                                          .where("segments.person_name ILIKE :name AND segments.mobile = :mobile", 
-                                                name: "%#{params[:name]}%", mobile: params[:mobile])
-                                          .distinct
-                                         
-    end
-
-    @master_segments = @master_segments.order(Arel.sql("#{@sort_column} #{@sort_direction}")).page(@page).per(10)
+      @master_segments = @master_segments.select("master_segments.*, COUNT(segments.id) AS segments_count")
+                                        .group("master_segments.id")
+                                        .order(Arel.sql("#{@sort_column} #{@sort_direction}"))
+                                        .page(@page)
+                                        .per(10)
   end
+
 
 
 

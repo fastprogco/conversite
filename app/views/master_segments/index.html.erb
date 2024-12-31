@@ -30,23 +30,24 @@
             <thead>
               <tr>
                 <th>
-                  <%= link_to master_segments_path(sort: "name", direction: sort_direction("name")) do %>
+                  <%= link_to master_segments_path(sort: "name", direction: sort_direction("name"), name: params[:name], mobile: params[:mobile]) do %>
                     Name
                     <i class="<%= arrow_class('name') %>"></i>
                   <% end %>
                 </th>
                 <th>
-                  <%= link_to master_segments_path(sort: "description", direction: sort_direction("description")) do %>
+                  <%= link_to master_segments_path(sort: "description", direction: sort_direction("description"), name: params[:name], mobile: params[:mobile]) do %>
                     Description
                     <i class="<%= arrow_class('description') %>"></i>
                   <% end %>
                 </th>
                 <th>
-                  <%= link_to master_segments_path(sort: "chain_of_steps", direction: sort_direction("chain_of_steps")) do %>
+                  <%= link_to master_segments_path(sort: "chain_of_steps", direction: sort_direction("chain_of_steps"), name: params[:name], mobile: params[:mobile]) do %>
                     Chain of Steps
                     <i class="<%= arrow_class('chain_of_steps') %>"></i>
                   <% end %>
                 </th>
+                <th>Number of segments</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -56,6 +57,7 @@
                   <td><%= master_segment.name %></td>
                   <td><%= master_segment.description %></td>
                   <td><%= master_segment.chain_of_steps %></td>
+                  <td><%= master_segment[:segments_count] %></td>
                   <td>
                     <%= link_to "Show Segments", master_segment_segments_path(master_segment), class: "btn btn-sm btn-warning" %>
                     <%= link_to "Delete", master_segment_path(master_segment), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
