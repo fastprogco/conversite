@@ -21,7 +21,7 @@ class BroadcastReportsController < ApplicationController
     # end
 
     @broadcast_reports = @broadcast.broadcast_reports
-                              .joins("LEFT JOIN conversations ON conversations.mobile_number = broadcast_reports.mobile AND conversations.created_at < broadcast_reports.created_at + interval '24 hours'")
+                              .joins("LEFT JOIN conversations ON conversations.mobile_number = broadcast_reports.mobile AND conversations.created_at > broadcast_reports.created_at AND  conversations.created_at < broadcast_reports.created_at + interval '24 hours'")
                               .joins("LEFT JOIN (SELECT mobile, created_at, id, master_segment_id FROM segments) segmentsx ON segmentsx.mobile = broadcast_reports.mobile AND segmentsx.created_at > broadcast_reports.created_at")
                               .joins("LEFT JOIN master_segments on master_segments.id = segmentsx.master_segment_id")
                               .select("DISTINCT ON (broadcast_reports.id) broadcast_reports.*, segmentsx.id as segment_id,  master_segments.id as master_segment_id,
