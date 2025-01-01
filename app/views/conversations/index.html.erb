@@ -55,9 +55,11 @@ document.addEventListener('turbo:load', function() {
     document.querySelectorAll('.phone-number').forEach(phone => {
       if(phone.dataset.phone === currentPhone) {
         phone.classList.add('active');
+        loadMessages();
+      }else{
+        phone.classList.remove('active');
       }
     });
-    loadMessages();
   }
 
   // Handle phone number selection
