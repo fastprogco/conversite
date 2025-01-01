@@ -27,8 +27,8 @@ class BroadcastReportsController < ApplicationController
                               .select("DISTINCT ON (broadcast_reports.*) broadcast_reports.*, segmentsx.id as segment_id,  master_segments.id as master_segment_id,
                                         CASE 
                                           WHEN last_conversation.created_at IS NULL THEN 'No'
-                                          WHEN last_conversation.created_at > broadcast_reports.created_at + interval '24 hours' THEN 'No'
-                                          ELSE 'Yes'
+                                          WHEN last_conversation.created_at < broadcast_reports.created_at + interval '24 hours' THEN 'YES'
+                                          ELSE 'NO'
                                         END AS conversation_within_last_24_hours_of_report")
                               .where("message_status = :message_status OR :message_status_string = '' OR :message_status_string = 'all'", message_status: BroadcastReport.message_statuses[@message_status], message_status_string: @message_status)
                               .where("(:response_status = 'yes' AND last_conversation.created_at IS NOT NULL AND last_conversation.created_at <= broadcast_reports.created_at + interval '24 hours') OR (:response_status = 'no' AND (last_conversation.created_at IS NULL OR last_conversation.created_at > broadcast_reports.created_at + interval '24 hours')) OR :response_status = ''", response_status: @response_status)
