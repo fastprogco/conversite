@@ -78,6 +78,7 @@
               <th>Reason for Failure</th>
               <th>Response</th>
               <th>Conversation</th>
+              <th>Trigger Segment Count</th>
               <th>Trigger Segment</th>
             </tr>
           </thead>
@@ -92,12 +93,13 @@
                 <td><%= report.delivered_on %></td>
                 <td><%= report.seen_on %></td>
                 <td><%= report.reason_for_failure %></td>
-                <td><%= report.conversation_within_last_24_hours_of_report %></td>
+                <td><%= report[:conversation_within_last_24_hours_of_report] %></td>
                 <%= report[:segment_id]%>
                 <td><%= link_to "Open", conversations_path(phone_number: report.mobile), class: "btn btn-primary"%></td>
+                <td><%= report[:segment_ids].length if report[:segment_ids] %></td>
                 <td>
                   <% if  report[:segment_id].present?%>
-                  <%= link_to "Open", master_segment_segment_path(report[:master_segment_id], report[:segment_id]), class: "btn btn-primary"%>
+                  <%= link_to "Open", segments_by_id_path(report[:master_segment_id], report[:segment_id], segment_ids: report[:segment_ids]), class: "btn btn-primary"%>
                   <% end %>
                 </td>
               </tr>

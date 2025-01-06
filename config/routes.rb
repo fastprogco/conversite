@@ -67,5 +67,7 @@ Rails.application.routes.draw do
   post '/webhook', to: 'webhook#receive'
   get '/webhook', to: 'webhook#verify'
 
+  get '/segments/by_id', to: "segments#segments_by_id", as: "segments_by_id"
+
 
 end

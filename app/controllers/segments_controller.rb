@@ -1,5 +1,5 @@
 class SegmentsController < ApplicationController
-  before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy, :show]
+  before_action :authorize_super_admin, only: [:index, :new, :create, :edit, :update, :destroy, :show, :segments_by_id]
   before_action :set_master_segment, only: [:index, :new, :create, :edit, :update, :destroy, :show]
 
   def index
@@ -47,6 +47,12 @@ class SegmentsController < ApplicationController
   def show
     @segment = @master_segment.segments.find(params[:id])
   end
+
+  def segments_by_id
+    segment_ids = params[:segment_ids]
+    @segments = Segment.where(id: segment_ids).page(params[:page]).per(10)
+  end
+
 
   private
 
