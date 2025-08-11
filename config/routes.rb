@@ -17,15 +17,16 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :masters do
-    collection do
-      get :excel_import_new
-      post :import_excel
-      get :export
-      post :create_segment
-    end
-    get :index
-  end
+
+  #resources :masters do
+  #  collection do
+  #    get :excel_import_new
+  #    post :import_excel
+  #    get :export
+  #    post :create_segment
+  #  end
+  #  get :index
+  #end
 
   resources :chatbots, only: [:index, :new, :create, :edit, :update, :destroy] do
     resources :chatbot_steps, only: [:index, :new, :create, :edit, :update, :destroy] do
@@ -35,9 +36,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :master_segments, only: [:index, :new, :create, :edit, :update, :destroy] do
-    resources :segments, only: [:index, :new, :edit, :update, :create, :destroy, :show]
-  end
+#  resources :master_segments, only: [:index, :new, :create, :edit, :update, :destroy] do
+#    resources :segments, only: [:index, :new, :edit, :update, :create, :destroy, :show]
+#  end
 
   resources :whatsapp_accounts, only: [:index, :new, :create, :edit, :update, :destroy]
   resources :templates, only: [:index, :new, :create, :edit, :update, :destroy]
