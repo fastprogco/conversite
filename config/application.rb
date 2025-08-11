@@ -28,7 +28,7 @@ module Globex
   #email settings
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-      address:              'smtp.gmail.com',
+      address:              'smtp-mail.outlook.com',
       port:                 587,
       domain:               Rails.application.credentials.dig(:email, :domain), # For development
       user_name:            Rails.application.credentials.dig(:email, :username),

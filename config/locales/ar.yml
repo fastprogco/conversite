@@ -38,6 +38,7 @@ ar:
   confirmation_instructions: "تأكيد التسجيل"
   dear: "عزيزي"
   welcome_to_globex: "مرحبا بك في جلوبكس"
+  welcome_to_conversite: "مرحبا بك في conversite"
   click_below_to_confirm_email: "يرجى النقر على الرابط أدناه لتأكيد بريدك الإلكتروني"
   confirm_email: "تأكيد البريد الإلكتروني"
   reset_password: "إعادة تعيين كلمة المرور"
