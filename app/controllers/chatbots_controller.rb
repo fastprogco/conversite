@@ -3,7 +3,7 @@ class ChatbotsController < ApplicationController
 
     def index
         @page = params[:page] || 1
-        @chatbots = Chatbot.where(is_deleted: false).order(created_at: :desc).page(@page).per(10)
+        @chatbots = Chatbot.where(is_deleted: false, created_by: current_user).order(created_at: :desc).page(@page).per(10)
     end
 
     def new

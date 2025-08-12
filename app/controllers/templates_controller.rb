@@ -4,7 +4,7 @@ class TemplatesController < ApplicationController
 
   def index
     @page = params[:page] || 1
-    @templates = Template.where(is_deleted: false).page(@page).per(10)
+    @templates = Template.where(is_deleted: false, added_by: current_user).page(@page).per(10)
   end
 
   def new

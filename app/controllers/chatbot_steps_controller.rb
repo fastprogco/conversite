@@ -20,6 +20,7 @@ class ChatbotStepsController < ApplicationController
 
 
         get_leading_button_reply
+=begin
         if !check_existing_and_save_end_chatbot_step_master_segment(chatbot_step_params[:end_chabot])
             update_leading_button_reply_to_trigger
         else
@@ -28,6 +29,7 @@ class ChatbotStepsController < ApplicationController
                  return
             end
         end
+=end
 
         if @chatbot_step.save
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), notice: "Chatbot step created successfully"
@@ -48,8 +50,8 @@ class ChatbotStepsController < ApplicationController
             redirect_to edit_chatbot_chatbot_step_path(@chatbot, @chatbot_step, previous_chatbot_step_id: @chatbot_step.previous_chatbot_step_id, chatbot_button_reply_id: @chatbot_step.chatbot_button_reply_id), alert: "You are not allowed to change the trigger master segment name"
             return;
         end
-
         get_leading_button_reply
+=begin
         if !check_existing_and_save_end_chatbot_step_master_segment(chatbot_step_params[:end_chabot])
             update_leading_button_reply_to_trigger
         else
@@ -58,6 +60,7 @@ class ChatbotStepsController < ApplicationController
                  return
             end
         end
+=end
 
         @chatbot_step.edited_by = current_user
         if @chatbot_step.update(chatbot_step_params)

@@ -4,7 +4,7 @@ class WhatsappAccountsController < ApplicationController
 
     def index
         @page = params[:page] || 1
-        @whatsapp_accounts = WhatsappAccount.where(is_deleted: false).page(@page).per(10)
+        @whatsapp_accounts = WhatsappAccount.where(is_deleted: false, added_by: current_user).page(@page).per(10)
     end
 
     def new
