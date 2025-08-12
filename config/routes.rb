@@ -57,6 +57,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :email_broadcasts, only: [:new, :create]
+
   root "sessions#new"
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'

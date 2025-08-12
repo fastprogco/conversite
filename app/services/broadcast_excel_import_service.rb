@@ -24,7 +24,7 @@ class BroadcastExcelImportService
   # cleans them by removing dashes, and returns an array of unique mobile numbers.
   def import
     temp_file = Tempfile.new(["excel_import_#{Time.now.to_i}_#{SecureRandom.hex(8)}", '.xlsx'])
-    mobile_numbers = []
+    items = []
     begin
       temp_file.binmode
       puts "Downloading file from URL: #{@file_url}"
@@ -47,18 +47,18 @@ class BroadcastExcelImportService
         normalized_row = row.transform_keys { |key| key.gsub(/\d+$/, '') }
         next if normalized_row.values.compact.empty?
 
-        mobile = normalized_row["A"]&.gsub('-', '')
-        puts "Extracted mobile: #{mobile}"
-        mobile_numbers << mobile if mobile && !mobile.empty?
+        item = normalized_row["A"]&.gsub('-', '')
+        puts "Extracted item: #{item}"
+        items << item if item && !item.empty?
       end
     ensure
       temp_file.close
       temp_file.unlink
     end
 
-    mobile_numbers.uniq
+    items.uniq
 
-    puts "Extracted mobile numbers: #{mobile_numbers.inspect}"
-    mobile_numbers
+    puts "Extracted mobile numbers: #{items.inspect}"
+    items
   end
 end

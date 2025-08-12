@@ -1,0 +1,30 @@
+<h1>Broadcast Emails</h1>
+
+<%= form_with model: @email_broadcast_draft, url: email_broadcasts_path, local: true, multipart: true do |f| %>
+  <div>
+    <%= f.label :subject %><br>
+    <%= f.text_field :subject, required: true %>
+  </div>
+
+  <div style="margin-top: 15px;">
+    <%= f.label :body, "Email Body" %><br>
+    <%= f.rich_text_area :body, required: true %>
+  </div>
+
+  <div style="margin-top: 15px;">
+    <%= label_tag :file, "Excel File with Emails" %><br>
+    <%= file_field_tag :file, required: true %>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <%= f.submit "Send Emails" %>
+  </div>
+<% end %>
+
+<% if notice %>
+  <p style="color: green; margin-top: 20px;"><%= notice %></p>
+<% end %>
+
+<% if alert %>
+  <p style="color: red; margin-top: 20px;"><%= alert %></p>
+<% end %>
