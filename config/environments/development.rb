@@ -85,5 +85,5 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = {  :host => Rails.application.credentials.dig(:email, :domain), :port => 3000  }
 
-  config.hosts << "pfqq055g-4000.euw.devtunnels.ms"
+  config.hosts << "pfqq055g-3000.euw.devtunnels.ms"
 end

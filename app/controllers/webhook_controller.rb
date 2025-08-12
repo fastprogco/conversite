@@ -33,7 +33,7 @@ class WebhookController < ApplicationController
     puts token
     puts challenge
 
-    if mode == 'subscribe' && token == "globex-123-secure-token"
+    if mode == 'subscribe' && token == "conversite-123-secure-token"
       render plain: challenge
       Rails.logger.info "Webhook verified successfully!"
     else

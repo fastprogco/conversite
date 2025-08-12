@@ -42,8 +42,11 @@ module ChatbotCode
       message_response_body = payload&.dig(:message_response_body)
       user_name = payload&.dig(:user_name)
       button_payload = payload&.dig(:button_payload)
+      recipient_phone_number_id = payload&.dig(:recipient_phone_number_id)
 
-      lastest_user_chatbot_step = find_chatbot_step(to_phone_number)
+      set_whatsapp_account(recipient_phone_number_id)
+
+      lastest_user_chatbot_step = find_chatbot_step(to_phone_number, recipient_phone_number_id)
       interaction = get_user_chatbot_interaction(to_phone_number)
 
 
@@ -267,7 +270,8 @@ module ChatbotCode
     end
 
 
-    def find_chatbot_step(to_phone_number)
+    def find_chatbot_step(to_phone_number, recipient_phone_number_id)
+=begin
         #find the chabot that has the segment the user is in and is the most recently created
         #if the user is not in any segment then find the default chatbot
         result = Segment.joins("JOIN master_segments ON segments.master_segment_id = master_segments.id")
@@ -277,9 +281,15 @@ module ChatbotCode
                         .where("segments.mobile = ? AND chatbots.is_deleted = false AND master_segments.is_deleted = false AND segments.is_deleted = false", to_phone_number)
                         .select("chatbots.id AS chatbot_id, chatbots.created_at AS chatbot_created_at")
                         .first
+=end
 
-
+=begin
       chatbot = result&.chatbot_id ? Chatbot.find(result.chatbot_id) : Chatbot.find_by(is_default: true , is_deleted: false)
+      chatbot_step = chatbot.chatbot_steps.where(chatbot_button_reply_id: nil, is_deleted: false).first
+=end
+
+      owner_of_chatbot = WhatsappAccount.find_by(phone_number_id: recipient_phone_number_id)&.added_by
+      chatbot = Chatbot.find_by(is_default: true, is_deleted: false, created_by: owner_of_chatbot)
       chatbot_step = chatbot.chatbot_steps.where(chatbot_button_reply_id: nil, is_deleted: false).first
       return chatbot_step
     end
@@ -392,8 +402,11 @@ module ChatbotCode
       user_name = recieved_params.dig('entry', 0, 'changes', 0, 'value', 'contacts', 0, 'profile', 'name')
 
       button_payload = recieved_params.dig('entry', 0, 'changes', 0, 'value', 'messages', 0, 'button', 'payload')
+
+      recipient_phone_number_id = params.dig('entry', 0, 'changes', 0, 'value', 'metadata', 'phone_number_id')
+
      
-      { button_reply_id: button_reply_id, message_response_body: message_response_body, list_reply_id: list_reply_id, user_name: user_name, button_payload: button_payload }
+      { button_reply_id: button_reply_id, message_response_body: message_response_body, list_reply_id: list_reply_id, user_name: user_name, button_payload: button_payload, recipient_phone_number_id: recipient_phone_number_id }
     end
 
     def send_mutlimedia_messages(to_phone_number, chatbot_step)
@@ -581,6 +594,12 @@ module ChatbotCode
         return true
       end
       return false
+   end
+
+   def set_whatsapp_account(recipient_phone_number_id)
+      whatsapp_account = WhatsappAccount.find_by(phone_number_id: recipient_phone_number_id)
+      WhatsappMessageService.access_token = whatsapp_account.token
+      WhatsappMessageService.phone_number_id = whatsapp_account.phone_number_id
    end
 
   end

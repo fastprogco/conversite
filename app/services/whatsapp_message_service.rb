@@ -3,6 +3,7 @@ require 'http'
 class WhatsappMessageService
   class << self
     attr_accessor :phone_number_id, :url, :access_token, :url_without_phone_number_id
+    attr_accessor :recipient_phone_number_id
 
     def send_interactive_message(to_phone_number, interactive_message_object)
 
@@ -295,15 +296,23 @@ class WhatsappMessageService
     end
   end
 
+=begin
   self.phone_number_id = Rails.env.development? ? "429210470286934" : "465726443298163"
   self.access_token = Rails.env.development? ? "EAAV3mOP1vYoBO9UA65kWxgO3NzuICcn7TiyXc8cXhCZAKFm4b1nMUtw3AQ6zwknf4w5FEZB3eZCvhqH0sv52EEJ27tm8t9qwwO2B1ieBcPA5WUw69BF5Iz45eEQ121NS7qahEu7lPV3bWS2MFxFokRDJozcvT0nTXHNd6o6nVflRK02ZCnu8uhaVuyHl9WZBv9gZDZD" : "EAAIS68btaNwBOZBMzMjyfJrCaSfrUbwCyxYZAA9ZCZAyqbaeLucVp6OZCuCBKeGT98lCeySGqFVxSqhlcb1AEZCXzrg0VsfqX98HZBUGGXcDMtlVRQXZA2BagCbVzLbkQq3lFIj6Imb4gZAsaq3q1slBIy3pWUVozjDHMwZAbjxMlwH4TVsNYJHt2rXCcFZC1aNSCiYDwZDZD"
+=end
+  self.phone_number_id = ""
+  self.access_token = ""
 
   self.url = "https://graph.facebook.com/v20.0/#{phone_number_id}"
   self.url_without_phone_number_id = "https://graph.facebook.com/v20.0/"
-  # GLOBEX TEST
-  #GLOBEX
-  #self.phone_number_id = "465726443298163"
-  #self.access_token = "EAAIS68btaNwBOZBMzMjyfJrCaSfrUbwCyxYZAA9ZCZAyqbaeLucVp6OZCuCBKeGT98lCeySGqFVxSqhlcb1AEZCXzrg0VsfqX98HZBUGGXcDMtlVRQXZA2BagCbVzLbkQq3lFIj6Imb4gZAsaq3q1slBIy3pWUVozjDHMwZAbjxMlwH4TVsNYJHt2rXCcFZC1aNSCiYDwZDZD"
 
- 
+def self.phone_number_id=(value)
+  @phone_number_id = value
+  @url = "https://graph.facebook.com/v20.0/#{value}"
+end
+
+def self.access_token=(value)
+  @access_token = value
+end
+
 end
