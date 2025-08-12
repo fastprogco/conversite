@@ -2,7 +2,19 @@ module ChatbotCode
   module Flow
     extend ActiveSupport::Concern
 
+    class << self
+      attr_accessor :recipient_phone_number_id
+    end
 
+        # Instance method to set it
+    def set_recipient_phone_number_id(value)
+      Flow.recipient_phone_number_id = value
+    end
+
+    # Instance method to get it
+    def get_recipient_phone_number_id
+      Flow.recipient_phone_number_id
+    end
 
     def start(to_phone_number, params)
       puts "starting flow"
@@ -44,6 +56,7 @@ module ChatbotCode
       button_payload = payload&.dig(:button_payload)
       recipient_phone_number_id = payload&.dig(:recipient_phone_number_id)
 
+      set_recipient_phone_number_id(recipient_phone_number_id)
       set_whatsapp_account(recipient_phone_number_id)
 
       lastest_user_chatbot_step = find_chatbot_step(to_phone_number, recipient_phone_number_id)
@@ -146,12 +159,12 @@ module ChatbotCode
       if existing_interaction.present?
         existing_interaction.update(chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id, chatbot_id: chatbot_step.chatbot_id)
       else
-        UserChatbotInteraction.create(mobile_number: to_phone_number, chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id, chatbot_id: chatbot_step.chatbot_id)
+        UserChatbotInteraction.create(mobile_number: to_phone_number, chatbot_step_id: chatbot_step.id, clicked_button_id: clicked_button_id, chatbot_id: chatbot_step.chatbot_id, recipient_phone_number_id: get_recipient_phone_number_id())
       end
     end
 
     def get_user_chatbot_interaction(to_phone_number)
-      UserChatbotInteraction.find_by(mobile_number: to_phone_number)
+      UserChatbotInteraction.find_by(mobile_number: to_phone_number, recipient_phone_number_id: get_recipient_phone_number_id())
     end
 
     def lock_user_in_chatbot_step(to_phone_number, incoming_clicked_button_id, latest_user_chatbot_step = nil)
@@ -469,7 +482,8 @@ module ChatbotCode
         longitude: details[:longitude] || "",
         location_name: details[:location_name] || "",
         location_description: details[:location_description] || "",
-        is_from_chat_bot: is_from_chat_bot
+        is_from_chat_bot: is_from_chat_bot,
+        recipient_phone_number_id: get_recipient_phone_number_id()
       )
     end
 

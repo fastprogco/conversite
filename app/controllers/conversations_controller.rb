@@ -2,7 +2,8 @@ class ConversationsController < ApplicationController
   before_action :authorize_super_admin, only: [:index, :conversations_by_phone_number, :respond]
   def index
     @initial_phone_number = params[:phone_number]
-    @phone_numbers = Conversation.select(:mobile_number).distinct
+    whatsapp_account = WhatsappAccount.find_by(added_by: current_user, is_deleted: false)
+    @phone_numbers = Conversation.where(recipient_phone_number_id: whatsapp_account.phone_number_id ).select(:mobile_number).distinct
   end
 
   def conversations_by_phone_number
@@ -10,7 +11,8 @@ class ConversationsController < ApplicationController
     @per_page = params[:per_page] || 10
     @conversations = Conversation.page(@page).per(@per_page)
     if params[:mobile_number].present?
-      @conversations = @conversations.where(mobile_number: params[:mobile_number]).order(created_at: :desc)
+      whatsapp_account = WhatsappAccount.find_by(added_by: current_user, is_deleted: false)
+      @conversations = @conversations.where(mobile_number: params[:mobile_number], recipient_phone_number_id: whatsapp_account.phone_number_id).order(created_at: :desc)
     end
     render json: @conversations
   end

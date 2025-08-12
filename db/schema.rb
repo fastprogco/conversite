@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_11_204152) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_12_194009) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -213,6 +213,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_204152) do
     t.string "location_name"
     t.string "location_description"
     t.jsonb "text"
+    t.string "recipient_phone_number_id"
   end
 
   create_table "good_job_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -415,6 +416,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_204152) do
     t.datetime "updated_at", null: false
     t.bigint "chatbot_id", null: false
     t.boolean "is_first_step_after_template_button_click", default: false
+    t.string "recipient_phone_number_id"
     t.index ["chatbot_id"], name: "index_user_chatbot_interactions_on_chatbot_id"
     t.index ["chatbot_step_id"], name: "index_user_chatbot_interactions_on_chatbot_step_id"
   end
