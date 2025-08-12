@@ -28,12 +28,12 @@ module Globex
   #email settings
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-      address:              'smtp-mail.outlook.com',
+      address:              'smtp.gmail.com',
       port:                 587,
       domain:               Rails.application.credentials.dig(:email, :domain), # For development
       user_name:            Rails.application.credentials.dig(:email, :username),
       password:             Rails.application.credentials.dig(:email, :password),
-      authentication:       'login',
+      authentication:       'plain',
       enable_starttls_auto: true
     }
 
