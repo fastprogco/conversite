@@ -1,5 +1,6 @@
 class S3FileUploader
   def self.upload(file_path, environment)
+    puts "Starting upload to S3: #{file_path}"
     # Extract the file name from the file path
     file_name = File.basename(file_path)
 

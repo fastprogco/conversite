@@ -1,4 +1,5 @@
 require 'sidekiq/web'
+require "good_job/engine"
 
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -69,6 +70,8 @@ Rails.application.routes.draw do
   get '/webhook', to: 'webhook#verify'
 
   get '/segments/by_id', to: "segments#segments_by_id", as: "segments_by_id"
+
+  mount GoodJob::Engine => '/good_job'
 
 
 end

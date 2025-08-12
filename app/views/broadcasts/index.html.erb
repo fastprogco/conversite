@@ -13,7 +13,6 @@
                 <th>Broadcast Name</th>
                 <th>WhatsApp Account</th>
                 <th>Template</th>
-                <th>Segment</th>
                 <th>Timing</th>
                 <th>Actions</th>
               </tr>
@@ -24,7 +23,6 @@
                   <td><%= broadcast.name %></td>
                   <td><%= broadcast.whatsapp_account&.name %></td>
                   <td><%= broadcast.template&.name %></td>
-                  <td><%= broadcast.master_segment&.name %></td>
                   <td><%= broadcast.timing %></td>
                   <td>
                     <%= link_to "Edit", edit_broadcast_path(broadcast), class: "btn btn-sm btn-primary" %>

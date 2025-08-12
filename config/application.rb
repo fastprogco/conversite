@@ -42,6 +42,7 @@ module Globex
   config.i18n.available_locales = [:ar, :en] 
 
 
-  config.active_job.queue_adapter = :sidekiq
+  #config.active_job.queue_adapter = :sidekiq
+  config.active_job.queue_adapter = :good_job
   end
 end

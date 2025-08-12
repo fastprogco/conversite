@@ -1,27 +1,22 @@
 class BroadcastJob < ApplicationJob
   queue_as :default
 
-  def perform(broadcast)
+  def perform(broadcast, mobile_numbers)
     whatsapp_account = broadcast.whatsapp_account
     template = broadcast.template
     timing = broadcast.timing.to_sym
 
     puts "Starting Broadcast Job"
-    broadcast.master_segment.segments.where(is_deleted: false).select('DISTINCT ON (mobile) *').each do |segment|
-      puts "Sending message to #{segment.mobile}"
+    #broadcast.master_segment.segments.where(is_deleted: false).select('DISTINCT ON (mobile) *').each do |segment|
+    mobile_numbers.each do |mobile|
+      puts "Sending message to #{mobile}"
 
-      if !segment.mobile.present? || segment.mobile == "0" || segment.mobile == "null"
-        next
-      end
-
-      optout = Optout.find_by(mobile_number: segment.mobile)
-      if optout.present?
-        puts "optout from broadcast for phone #{segment.mobile}"
+      if !mobile.present?
         next
       end
 
       response = WhatsappMessageService.send_text_message_template_with_phone_number_id(
-        segment.mobile,
+        mobile,
         template.meta_template_name,
         template.language,
         template.component.present? ? JSON.parse(template.component) : {},
@@ -38,9 +33,9 @@ class BroadcastJob < ApplicationJob
             BroadcastReport.create(
               broadcast: broadcast,
               broadcast_name: broadcast.name,
-              mobile: segment.mobile,
-              name: segment.person_name,
-              nationality: segment.nationality,
+              mobile: mobile,
+              name: "",
+              nationality: "",
               message_status: :failed,
               reason_for_failure: error_body['error']['message']
             )
@@ -50,9 +45,9 @@ class BroadcastJob < ApplicationJob
         BroadcastReport.create(
           broadcast: broadcast,
           broadcast_name: broadcast.name,
-          mobile: segment.mobile,
-          name: segment.person_name,
-          nationality: segment.nationality,
+          mobile: mobile,
+          name: "",
+          nationality: "",
           message_status: :sent,
           sent_on: Time.now.utc,
           whatsapp_message_id: response.is_a?(HTTP::Response) ? JSON.parse(response.body)['messages'].first['id'] : response['messages'].first['id']
