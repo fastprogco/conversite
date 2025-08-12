@@ -33,7 +33,7 @@ module Globex
       domain:               Rails.application.credentials.dig(:email, :domain), # For development
       user_name:            Rails.application.credentials.dig(:email, :username),
       password:             Rails.application.credentials.dig(:email, :password),
-      authentication:       'plain',
+      authentication:       'login',
       enable_starttls_auto: true
     }
 
