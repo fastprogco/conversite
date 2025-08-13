@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2>Email Settings</h2>
+          <%= link_to "Add New Email Setting", new_email_setting_path, class: "btn btn-primary float-end" %>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>SMTP Host</th>
+                <th>Port</th>
+                <th>Email Address</th>
+                <th>User Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @email_settings.each do |email_setting| %>
+                <tr>
+                  <td><%= email_setting.name %></td>
+                  <td><%= email_setting.smtp_host %></td>
+                  <td><%= email_setting.port %></td>
+                  <td><%= email_setting.email_address %></td>
+                  <td><%= email_setting.user_name %></td>
+                  <td>
+                    <%= link_to "Show", email_setting_path(email_setting), class: "btn btn-sm btn-info" %>
+                    <%= link_to "Edit", edit_email_setting_path(email_setting), class: "btn btn-sm btn-primary" %>
+                    <%= link_to "Delete", email_setting_path(email_setting),
+                        data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                        class: "btn btn-sm btn-danger" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @email_settings %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

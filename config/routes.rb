@@ -58,6 +58,7 @@ Rails.application.routes.draw do
   end
 
   resources :email_broadcasts, only: [:new, :create]
+  resources :email_settings
 
   root "sessions#new"
   post 'login', to: 'sessions#create'

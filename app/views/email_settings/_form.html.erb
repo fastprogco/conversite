@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2><%= email_setting.new_record? ? "New Email Setting" : "Edit Email Setting" %></h2>
+        </div>
+        <div class="card-body">
+          <%= form_with(model: email_setting, local: true) do |form| %>
+            <% if email_setting.errors.any? %>
+              <div class="alert alert-danger">
+                <h4><%= pluralize(email_setting.errors.count, "error") %> prohibited this email setting from being saved:</h4>
+                <ul>
+                  <% email_setting.errors.each do |error| %>
+                    <li><%= error.full_message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= form.label :name, class: "form-label" %>
+              <%= form.text_field :name, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :smtp_host, class: "form-label" %>
+              <%= form.text_field :smtp_host, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :port, class: "form-label" %>
+              <%= form.number_field :port, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :email_address, class: "form-label" %>
+              <%= form.text_field :email_address, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :user_name, class: "form-label" %>
+              <%= form.text_field :user_name, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :password, class: "form-label" %>
+              <%= form.password_field :password, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.submit class: "btn btn-primary" %>
+              <%= link_to "Cancel", email_settings_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
