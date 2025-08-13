@@ -86,7 +86,7 @@ module ChatbotCode
         is_back_button = reply_id.include?("BACK_")
         if is_back_button
           chatbot_step = ChatbotStep.find(reply_id.split("_").last)
-          create_conversation(to_phone_number, { text: { buttons: "back" } }, false) if reply_id.present?
+          create_conversation(to_phone_number, { text: { buttons: "العودة" } }, false) if reply_id.present?
           if lock_user_in_chatbot_step(to_phone_number, reply_id)
             return
           end
@@ -328,7 +328,7 @@ module ChatbotCode
       end
 
       buttons = chatbot_step.chatbot_button_replies.where(is_deleted: false).order(:order).map { |button| { type: "reply", reply: { id: button.id, title: button.title } } }
-      buttons.push({ type: "reply", reply: { id: "BACK_#{chatbot_step.previous_chatbot_step_id}", title: "back" } }) if chatbot_step.previous_chatbot_step_id.present?
+      buttons.push({ type: "reply", reply: { id: "BACK_#{chatbot_step.previous_chatbot_step_id}", title: "العودة" } }) if chatbot_step.previous_chatbot_step_id.present?
       header = chatbot_step.header
       body = chatbot_step.description
       footer = chatbot_step.footer
@@ -374,7 +374,7 @@ module ChatbotCode
         if chatbot_step.previous_chatbot_step_id.present? && chatbot_step.chatbot_button_reply_id.present?
           rows.push({
             id: "BACK_#{chatbot_step.previous_chatbot_step_id}",
-            title: "back"
+            title: "العودة"
           })
         end
 
