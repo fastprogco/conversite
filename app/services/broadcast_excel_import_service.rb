@@ -47,7 +47,7 @@ class BroadcastExcelImportService
         normalized_row = row.transform_keys { |key| key.gsub(/\d+$/, '') }
         next if normalized_row.values.compact.empty?
 
-        item = normalized_row["A"]&.gsub('-', '')
+        item = normalized_row["A"]
         puts "Extracted item: #{item}"
         items << item if item && !item.empty?
       end
