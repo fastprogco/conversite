@@ -4,13 +4,13 @@ require 'roo'
 class BroadcastEmailsJob < ApplicationJob
   queue_as :default
 
-  def perform(emails, subject, body_html)
+  def perform(emails, subject, body_html, email_setting_id)
     emails.each do |email|
       next if email.blank?
       next unless valid_email?(email)
 
       # Send the email asynchronously via deliver_later
-      BroadcastMailer.broadcast_email(email, subject, body_html).deliver_later
+      BroadcastMailer.broadcast_email(email, subject, body_html, email_setting_id).deliver_now
     end
   end
 

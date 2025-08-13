@@ -39,7 +39,8 @@ class EmailBroadcastsController < ApplicationController
 
       service = BroadcastExcelImportService.new(@file_url)
       emails = service.import
-      BroadcastEmailsJob.perform_later(emails, subject, body.to_s)
+      email_setting_id = EmailSetting.find_by(added_by: current_user)&.id
+      BroadcastEmailsJob.perform_later(emails, subject, body.to_s, email_setting_id)
       return false
   end
 end

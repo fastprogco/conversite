@@ -3,12 +3,25 @@ class BroadcastMailer < ApplicationMailer
   include ActionView::Helpers::SanitizeHelper
   default from: 'globexdxb.noreply@gmail.com'
 
-  def broadcast_email(to_email, subject, body_html)
+  def broadcast_email(to_email, subject, body_html, email_setting_id)
     @body_html = body_html
 
-    mail(to: to_email, subject: subject) do |format|
+    # Fetch SMTP settings from EmailSetting
+    setting = EmailSetting.find(email_setting_id)
+    mail(
+      to: to_email,
+      subject: subject,
+      delivery_method_options: {
+        address: setting.smtp_host,
+        port: setting.port,
+        user_name: setting.user_name,
+        password: setting.password,
+        authentication: :plain,
+        enable_starttls_auto: true
+      }
+    ) do |format|
       format.html { render html: @body_html.html_safe }
-      format.text { strip_tags(@body_html) }  # fallback plain text version
+      format.text { strip_tags(@body_html) } # fallback plain text
     end
   end
 end
