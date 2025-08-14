@@ -1,25 +1,71 @@
 <h1>Broadcast Emails</h1>
 
-<%= form_with model: @email_broadcast_draft, url: email_broadcasts_path, local: true, multipart: true do |f| %>
-  <div>
-    <%= f.label :subject %><br>
-    <%= f.text_field :subject, required: true %>
+<!-- Nav Tabs -->
+<ul class="nav nav-tabs" id="broadcastTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="custom-form-tab" data-bs-toggle="tab" data-bs-target="#custom-form" type="button" role="tab">
+      Custom Email
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="template-tab" data-bs-toggle="tab" data-bs-target="#template-form" type="button" role="tab">
+      From Template
+    </button>
+  </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content" id="broadcastTabsContent" style="margin-top: 20px;">
+  
+  <!-- Custom Email Form -->
+  <div class="tab-pane fade show active" id="custom-form" role="tabpanel">
+    <%= form_with model: @email_broadcast_draft, url: email_broadcasts_path, local: true, multipart: true do |f| %>
+      <div>
+        <%= f.label :subject %><br>
+        <%= f.text_field :subject, required: true %>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <%= f.label :body, "Email Body" %><br>
+        <%= f.rich_text_area :body, required: true %>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <%= label_tag :file, "Excel File with Emails" %><br>
+        <%= file_field_tag :file, required: true %>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <%= f.submit "Send Emails" %>
+      </div>
+    <% end %>
   </div>
 
-  <div style="margin-top: 15px;">
-    <%= f.label :body, "Email Body" %><br>
-    <%= f.rich_text_area :body, required: true %>
-  </div>
+  <!-- Template Email Form -->
+  <div class="tab-pane fade" id="template-form" role="tabpanel">
+    <%= form_with url: email_broadcasts_path, local: true, multipart: true do |f| %>
+      
+      <div>
+        <%= label_tag :template_id, "Choose Email Template" %><br>
+        <%= select_tag :template_id, options_from_collection_for_select(EmailTemplate.all, :id, :title), prompt: "Select a template", required: true, id: "template-select" %>
+      </div>
 
-  <div style="margin-top: 15px;">
-    <%= label_tag :file, "Excel File with Emails" %><br>
-    <%= file_field_tag :file, required: true %>
-  </div>
+      <div style="margin-top: 15px;">
+        <%= label_tag :subject, "Email Subject" %><br>
+        <%= text_field_tag :subject, nil, required: true, id: "template-subject" %>
+      </div>
 
-  <div style="margin-top: 20px;">
-    <%= f.submit "Send Emails" %>
+      <div style="margin-top: 15px;">
+        <%= label_tag :file, "Excel File with Emails" %><br>
+        <%= file_field_tag :file, required: true %>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <%= f.submit "Send Emails from Template" %>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</div>
 
 <% if notice %>
   <p style="color: green; margin-top: 20px;"><%= notice %></p>
@@ -28,3 +74,21 @@
 <% if alert %>
   <p style="color: red; margin-top: 20px;"><%= alert %></p>
 <% end %>
+
+<!-- Inline JS to populate subject when template is selected -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var templateSelect = document.getElementById("template-select");
+    var subjectField = document.getElementById("template-subject");
+
+    templateSelect.addEventListener("change", function () {
+      var selectedOption = templateSelect.options[templateSelect.selectedIndex];
+      if (selectedOption && selectedOption.text) {
+        // Only set subject if empty, so user can override it
+        if (!subjectField.value) {
+          subjectField.value = selectedOption.text;
+        }
+      }
+    });
+  });
+</script>

@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2><%= email_template.new_record? ? "New Email Template" : "Edit Email Template" %></h2>
+        </div>
+        <div class="card-body">
+          <%= form_with(model: email_template, local: true) do |form| %>
+            <% if email_template.errors.any? %>
+              <div class="alert alert-danger">
+                <h4><%= pluralize(email_template.errors.count, "error") %> prohibited this email template from being saved:</h4>
+                <ul>
+                  <% email_template.errors.each do |error| %>
+                    <li><%= error.full_message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= form.label :title, class: "form-label" %>
+              <%= form.text_field :title, class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :html, class: "form-label" %>
+              <%= form.text_area :html, class: "form-control", rows: 6 %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.submit class: "btn btn-primary" %>
+              <%= link_to "Cancel", email_templates_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

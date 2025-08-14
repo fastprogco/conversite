@@ -1,25 +1,37 @@
 class EmailBroadcastsController < ApplicationController
+  before_action :authorize_super_admin, only: [ :new, :create]
+
   def new
     @email_broadcast_draft = EmailBroadcastDraft.new
   end
+def create
+  uploaded_file = params[:file]
 
-  def create
-    uploaded_file = params[:file]
+  if params[:template_id].present?
+    template = EmailTemplate.find_by(id: params[:template_id])
+    if template.nil?
+      redirect_to new_email_broadcast_path, alert: "Selected template not found."
+      return
+    end
+
+    subject = params[:subject].presence || template.title # Always check params first
+    body = template.html
+  else
     subject = params[:email_broadcast_draft][:subject]
-    body = params[:email_broadcast_draft][:body] # HTML content from Trix editor
-
-    if uploaded_file.nil? || subject.blank? || body.blank?
-      redirect_to new_email_broadcast_path, alert: "All fields are required."
-      return
-    end
-
-    should_return = upload_file_and_check_should_return(uploaded_file, subject, body)
-    if should_return
-      return
-    end
-
-    redirect_to new_email_broadcast_path, notice: "Emails are being sent in the background."
+    body = params[:email_broadcast_draft][:body]
   end
+
+  if uploaded_file.nil? || subject.blank? || body.blank?
+    redirect_to new_email_broadcast_path, alert: "All fields are required (including subject)."
+    return
+  end
+
+  should_return = upload_file_and_check_should_return(uploaded_file, subject, body)
+  return if should_return
+
+  redirect_to new_email_broadcast_path, notice: "Emails are being sent in the background."
+end
+
 
   
   def upload_file_and_check_should_return(file, subject, body)
