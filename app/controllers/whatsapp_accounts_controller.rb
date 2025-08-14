@@ -34,14 +34,16 @@ class WhatsappAccountsController < ApplicationController
     end
 
     def destroy
-        @whatsapp_account.deleted_by = current_user
-        @whatsapp_account.is_deleted = true
+        @whatsapp_account.soft_delete(current_user)
+
         if @whatsapp_account.save
             redirect_to whatsapp_accounts_path, notice: 'Whatsapp account was successfully deleted.'
         else
-            redirect_to whatsapp_accounts_path, alert: 'Failed to delete Whatsapp account.'
+            error_messages = @whatsapp_account.errors.full_messages.join(', ')
+            redirect_to whatsapp_accounts_path, alert: "Failed to delete Whatsapp account. Errors: #{error_messages}"
         end
     end
+
 
     private
 
