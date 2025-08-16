@@ -15,7 +15,8 @@ def create
     end
 
     subject = params[:subject].presence || template.title # Always check params first
-    body = template.html
+    body = template.html_file.attached? ? template.html_file.download : template.html
+    body = body.to_s
   else
     subject = params[:email_broadcast_draft][:subject]
     body = params[:email_broadcast_draft][:body]
