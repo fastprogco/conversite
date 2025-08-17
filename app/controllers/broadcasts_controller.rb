@@ -70,11 +70,11 @@ class BroadcastsController < ApplicationController
   end
 
   def set_whatsapp_accounts
-    @whatsapp_accounts = WhatsappAccount.where(is_deleted: false)
+    @whatsapp_accounts = WhatsappAccount.where(is_deleted: false, added_by: current_user)
   end
 
   def set_templates
-    @templates = Template.where(is_deleted: false)
+    @templates = Template.where(is_deleted: false, added_by: current_user)
   end
 
   def set_master_segments

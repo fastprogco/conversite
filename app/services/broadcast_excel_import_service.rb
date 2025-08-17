@@ -49,7 +49,7 @@ class BroadcastExcelImportService
 
         item = normalized_row["A"]
         puts "Extracted item: #{item}"
-        items << item if item && !item.empty?
+        items << item if item
       end
     ensure
       temp_file.close
