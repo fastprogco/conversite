@@ -4,6 +4,9 @@ en:
   logout: "Logout"
   signup: "Sign up"
   must_match_password: "Must match password"
+  confirmation_instruction: "Confirmation instructions"
+  confirmation_instructions: "Confirmation instructions"
+  reset_password_instructions: "Reset password instructions"
   activerecord:
     errors:
       format: "%{attribute} %{message}"
