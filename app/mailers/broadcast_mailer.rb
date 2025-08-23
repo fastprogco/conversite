@@ -3,8 +3,15 @@ class BroadcastMailer < ApplicationMailer
   include ActionView::Helpers::SanitizeHelper
   default from: 'globexdxb.noreply@gmail.com'
 
-  def broadcast_email(to_email, subject, body_html, email_setting_id)
+  def broadcast_email(to_email, subject, body_html, email_setting_id, attachment_ids = [])
     @body_html = body_html
+
+     # Attach files from ActionText draft
+    attachment_ids.each do |signed_id|
+      blob = ActiveStorage::Blob.find_signed(signed_id)
+      attachments[blob.filename.to_s] = blob.download
+    end
+
 
     # Fetch SMTP settings from EmailSetting
     setting = EmailSetting.find(email_setting_id)
