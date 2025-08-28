@@ -1,17 +1,23 @@
 # app/mailers/broadcast_mailer.rb
 class BroadcastMailer < ApplicationMailer
   include ActionView::Helpers::SanitizeHelper
+  require "open-uri"
+
   default from: 'globexdxb.noreply@gmail.com'
 
-  def broadcast_email(to_email, subject, body_html, email_setting_id, attachment_ids = [])
+  # attachment_files: array of hashes [{url: "...", filename: "..."}]
+  def broadcast_email(to_email, subject, body_html, email_setting_id, attachment_files = [])
     @body_html = body_html
 
-     # Attach files from ActionText draft
-    attachment_ids.each do |signed_id|
-      blob = ActiveStorage::Blob.find_signed(signed_id)
-      attachments[blob.filename.to_s] = blob.download
+    # Attach files from S3 URLs with proper filenames
+    attachment_files.each do |file|
+      begin
+        next unless file[:url] && file[:filename]
+        attachments[file[:filename]] = URI.open(file[:url]).read
+      rescue => e
+        Rails.logger.error "Failed to attach file from URL #{file[:url]}: #{e.message}"
+      end
     end
-
 
     # Fetch SMTP settings from EmailSetting
     setting = EmailSetting.find(email_setting_id)
