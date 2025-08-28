@@ -11,36 +11,33 @@ class EmailBroadcastsController < ApplicationController
     if params[:template_id].present?
       template = EmailTemplate.find_by(id: params[:template_id])
       if template.nil?
-        redirect_to new_email_broadcast_path, alert: "Selected template not found."
-        return
+        redirect_to new_email_broadcast_path, alert: "Selected template not found." and return
       end
 
       subject = params[:subject].presence || template.title
       body    = template.html_file.attached? ? template.html_file.download : template.html
       body    = body.to_s
-      attachment_files = [] # empty for template
+      attachment_files = [] # no attachments for template
     else
       @email_broadcast_draft = EmailBroadcastDraft.new(email_broadcast_draft_params)
 
       unless @email_broadcast_draft.save
-        redirect_to new_email_broadcast_path, alert: "Could not save email draft."
-        return
+        redirect_to new_email_broadcast_path, alert: "Could not save email draft." and return
       end
 
       subject = @email_broadcast_draft.subject
       body    = @email_broadcast_draft.body.to_s
 
-      # Upload ActionText attachments to S3 and keep original filenames
       environment = Rails.env.production? ? "prod" : "dev"
-      attachment_files = @email_broadcast_draft.body.body.attachments.map do |att|
 
-        puts "Processing attachment: #{att.filename}"
+      # Upload ActionText attachments via IO
+      attachment_files = @email_broadcast_draft.body.body.attachments.map do |att|
         blob = att.attachable.is_a?(ActiveStorage::Blob) ? att.attachable : nil
         next unless blob
 
         begin
-          tempfile_path = ActiveStorage::Blob.service.send(:path_for, blob.key)
-          s3_url = S3FileUploader.upload(tempfile_path, environment)
+          file_io = StringIO.new(blob.download)
+          s3_url = S3FileUploader.upload_from_io(file_io, blob.filename.to_s, environment)
           { url: s3_url, filename: blob.filename.to_s }
         rescue => e
           Rails.logger.error "Attachment upload failed: #{e.message}"
@@ -50,15 +47,14 @@ class EmailBroadcastsController < ApplicationController
     end
 
     if uploaded_file.nil? || subject.blank? || body.blank?
-      redirect_to new_email_broadcast_path, alert: "All fields are required (including subject)."
-      return
+      redirect_to new_email_broadcast_path, alert: "All fields are required (including subject)." and return
     end
 
     should_return = upload_file_and_check_should_return(
       uploaded_file,
       subject,
       body,
-      attachment_files, # pass array of hashes {url, filename}
+      attachment_files,
       @email_broadcast_draft&.id
     )
     return if should_return
@@ -73,18 +69,16 @@ class EmailBroadcastsController < ApplicationController
 
     environment = Rails.env.production? ? "prod" : "dev"
     begin
-      puts "Uploading file to S3: #{file.tempfile.path}"
-      @file_url = S3FileUploader.upload(file.tempfile.path, environment)
+      file_io = StringIO.new(file.read)
+      @file_url = S3FileUploader.upload_from_io(file_io, file.original_filename, environment)
     rescue StandardError => e
-      redirect_to new_email_broadcast_path, alert: t("upload_to_s3_error") + ": #{e.message}"
-      return true
+      redirect_to new_email_broadcast_path, alert: t("upload_to_s3_error") + ": #{e.message}" and return true
     end
 
     service = BroadcastExcelImportService.new(@file_url)
     emails = service.import
     email_setting_id = EmailSetting.find_by(added_by: current_user)&.id
 
-    puts "Attachment files: #{attachment_files.inspect}"
     BroadcastEmailsJob.perform_later(emails, subject, body.to_s, email_setting_id, attachment_files, draft_id)
     false
   end

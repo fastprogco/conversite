@@ -1,4 +1,3 @@
-# app/mailers/broadcast_mailer.rb
 class BroadcastMailer < ApplicationMailer
   include ActionView::Helpers::SanitizeHelper
   require "open-uri"
@@ -9,17 +8,15 @@ class BroadcastMailer < ApplicationMailer
   def broadcast_email(to_email, subject, body_html, email_setting_id, attachment_files = [])
     @body_html = body_html
 
-    # Attach files from S3 URLs with proper filenames
     attachment_files.each do |file|
+      next unless file[:url] && file[:filename]
       begin
-        next unless file[:url] && file[:filename]
         attachments[file[:filename]] = URI.open(file[:url]).read
       rescue => e
         Rails.logger.error "Failed to attach file from URL #{file[:url]}: #{e.message}"
       end
     end
 
-    # Fetch SMTP settings from EmailSetting
     setting = EmailSetting.find(email_setting_id)
     mail(
       to: to_email,
@@ -34,7 +31,7 @@ class BroadcastMailer < ApplicationMailer
       }
     ) do |format|
       format.html { render html: @body_html.html_safe }
-      format.text { strip_tags(@body_html) } # fallback plain text
+      format.text { strip_tags(@body_html) }
     end
   end
 end
