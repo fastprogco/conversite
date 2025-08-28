@@ -31,6 +31,9 @@ class EmailBroadcastsController < ApplicationController
       environment = Rails.env.production? ? "prod" : "dev"
 
       # Upload ActionText attachments via IO
+
+      puts "Uploading attachments..."
+      puts @email_broadcast_draft.body.body.attachments.inspect
       attachment_files = @email_broadcast_draft.body.body.attachments.map do |att|
         blob = att.attachable.is_a?(ActiveStorage::Blob) ? att.attachable : nil
         next unless blob
