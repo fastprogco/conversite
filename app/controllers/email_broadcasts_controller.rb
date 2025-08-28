@@ -33,6 +33,8 @@ class EmailBroadcastsController < ApplicationController
       # Upload ActionText attachments to S3 and keep original filenames
       environment = Rails.env.production? ? "prod" : "dev"
       attachment_files = @email_broadcast_draft.body.body.attachments.map do |att|
+
+        puts "Processing attachment: #{att.filename}"
         blob = att.attachable.is_a?(ActiveStorage::Blob) ? att.attachable : nil
         next unless blob
 
