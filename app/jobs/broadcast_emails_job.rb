@@ -5,6 +5,7 @@ class BroadcastEmailsJob < ApplicationJob
   queue_as :default
 
   def perform(emails, subject, body_html, email_setting_id, attachment_urls = [], draft_id = nil)
+    puts "Emails to send: #{emails.inspect}"
     emails.each do |email|
       next if email.blank?
       next unless valid_email?(email)
